@@ -35,26 +35,27 @@ This project follows a **microservices architecture**, where each service is res
   - Role-based access control (ADMIN, USER)
   - Manage user profiles (update email, username)
 
-### 4. Rating Service ⭐
-- **Purpose:** Handles user ratings and reviews for movies.
-- **Key Features:**
-  - Users can rate movies (0-100%) in different categories (acting, directing, etc.)
-  - Calculate an **overall movie rating**
-  - Retrieve user-specific ratings and comments
+### 4. 📝 Feedback Service
 
-### 5. Recommendation Service 🎯
-- **Purpose:** Suggests similar movies or top-rated movies based on user preferences.
-- **Key Features:**
-  - Recommend movies based on genre and user ratings
-  - Suggest top-rated movies
-  - Find movies with similar cast or crew
+  - **Purpose**: Handles both user ratings and written reviews for movies.
 
-### 6. Review Service 📝
-- **Purpose:** Allows users to write detailed reviews for movies.
-- **Key Features:**
-  - Users can submit **written reviews** along with ratings
-  - Retrieve all reviews for a movie
-  - Allow administrators to moderate reviews
+  - **Key Features**:
+    - Users can rate movies (0–100%) in different categories (acting, directing, etc.)
+    - Users can submit written reviews along with ratings
+    - Retrieve all feedback (ratings + reviews) for a movie
+    - Calculate an overall movie rating
+    - Retrieve user-specific feedback
+    - Allow administrators to moderate reviews
+
+---
+
+  - ### 5. 🎯 Recommendation Service
+
+  - **Purpose**: Suggests similar movies or top-rated movies based on user preferences and feedback.
+
+  - **Key Features**:
+    - Recommend movies based on genre and user feedback
+
 
 
 ## Use case
