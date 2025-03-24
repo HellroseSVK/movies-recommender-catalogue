@@ -8,10 +8,7 @@ RUN mvn clean install -DskipTests && \
 FROM eclipse-temurin:21.0.2_13-jre-jammy
 WORKDIR /app
 COPY --from=build /app/app.jar .
-COPY /etc/feedback.properties /app/etc/application.properties
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]
 FROM ubuntu:latest
-LABEL authors="dani3l"
-
 ENTRYPOINT ["top", "-b"]
