@@ -11,6 +11,8 @@ services:
     build: ./film-person-service
     ports:
       - "8082:8080"
+    volumes:
+      - ./config/film-person.properties:/app/etc/application.properties
 
   user-service:
     build: ./user-service
@@ -23,8 +25,12 @@ services:
     build: ./feedback-service
     ports:
       - "8084:8080"
+    volumes:
+      - ./config/feedback.properties:/app/etc/application.properties
 
   recommendation-service:
     build: ./recommendation-service
     ports:
       - "8085:8080"
+    volumes:
+      - ./config/recommendation.properties:/app/etc/application.properties
