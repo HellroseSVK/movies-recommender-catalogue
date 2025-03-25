@@ -38,6 +38,7 @@
         <module>user-service</module>
         <module>feedback-service</module>
         <module>recommendation-service</module>
+        <module>shared</module>
     </modules>
 
     <dependencyManagement>
