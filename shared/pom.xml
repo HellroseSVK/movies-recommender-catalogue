@@ -11,10 +11,7 @@
 
     <packaging>jar</packaging>
     <version>1.0.0</version>
-
-    <groupId>org.movierc</groupId>
     <artifactId>shared</artifactId>
-
     <dependencies>
 
     </dependencies>
