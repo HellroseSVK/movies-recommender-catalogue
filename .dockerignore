@@ -1,0 +1,12 @@
+.idea/
+*.iml
+*.iws
+/.settings
+.classpath
+.project
+.springBeans
+.sonar/
+.sonarlint/
+.gitlab-ci.yml
+.gitattributes
+README.md

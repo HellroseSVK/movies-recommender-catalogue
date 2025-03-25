@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  movie-service:
+    build: ./movie-service
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./config/movie/external-app.properties:/app/etc/application.properties
+
+  film-person-service:
+    build: ./film-person-service
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./config/film-person/external-app.properties:/app/etc/application.properties
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./config/user/external-app.properties:/app/etc/application.properties
+
+  feedback-service:
+    build: ./feedback-service
+    ports:
+      - "8084:8080"
+    volumes:
+      - ./config/feedback/external-app.properties:/app/etc/application.properties
+
+  recommendation-service:
+    build: ./recommendation-service
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./config/recommendation/external-app.properties:/app/etc/application.properties
