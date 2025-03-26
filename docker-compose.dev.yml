@@ -1,0 +1,16 @@
+name: Movie Recommender Catalogue Dev
+services:
+  artemis:
+    image: apache/activemq-artemis:latest
+    container_name: artemis-broker
+    environment:
+      - ARTEMIS_USERNAME=artemis
+      - ARTEMIS_PASSWORD=artemis
+      - DISABLE_SECURITY=true
+    ports:
+      - "61616:61616"  # JMS port
+      - "8161:8161"    # Web console
+    volumes:
+      - artemis-data:/var/lib/artemis/data
+volumes:
+  artemis-data:
