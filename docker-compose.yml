@@ -34,3 +34,16 @@ services:
       - "8085:8080"
     volumes:
       - ./config/recommendation/external-app.properties:/app/etc/application.properties
+
+  artemis:
+    image: apache/activemq-artemis:latest
+    container_name: artemis-broker
+    environment:
+      - ARTEMIS_USERNAME=artemis
+      - ARTEMIS_PASSWORD=artemis
+      - DISABLE_SECURITY=true
+    ports:
+      - "61616:61616"  # JMS port
+      - "8161:8161"    # Web console
+    volumes:
+      - artemis-data:/var/lib/artemis/data
