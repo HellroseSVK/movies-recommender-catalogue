@@ -31,11 +31,15 @@ public class MovieCreatedEvent implements Serializable {
 
     private float rating;
 
+    @Getter
+    @Setter
     public static class Genre implements Serializable {
         private UUID id;
         private String name;
     }
 
+    @Getter
+    @Setter
     public static class FilmPerson implements Serializable {
         private UUID id;
         private String name;

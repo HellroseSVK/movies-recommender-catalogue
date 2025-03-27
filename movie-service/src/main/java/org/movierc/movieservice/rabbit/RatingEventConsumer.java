@@ -1,12 +1,11 @@
-package org.movierc.movieservice.jms;
+package org.movierc.movieservice.rabbit;
 
 import lombok.AllArgsConstructor;
 import org.movierc.events.rating.MovieRatedEvent;
-import org.movierc.events.rating.RatingEvents;
 import org.movierc.movieservice.repository.MovieRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jms.annotation.JmsListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ public class RatingEventConsumer {
 
     private final MovieRepository movieRepository;
 
-    @JmsListener(destination = RatingEvents.MOVIE_RATED_QUEUE)
+    @RabbitListener(queues = "#{movieRatedQueue.getName()}")
     public void handleMovieRatedEvent(@Payload MovieRatedEvent event) {
         var movie = movieRepository.findById(event.getMovieId());
 

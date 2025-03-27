@@ -1,8 +1,6 @@
 package org.movierc.movieservice.service;
 
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.movierc.events.movie.MovieCreatedEvent;
 import org.movierc.movieservice.dto.MovieCreateDto;
 import org.movierc.movieservice.dto.MovieDto;
 import org.movierc.movieservice.dto.MovieUpdateDto;
@@ -11,7 +9,9 @@ import org.movierc.movieservice.entity.Movie;
 import org.movierc.movieservice.exception.FilmPersonNotFoundException;
 import org.movierc.movieservice.exception.GenreNotFoundException;
 import org.movierc.movieservice.exception.MovieNotFoundException;
-import org.movierc.movieservice.jms.MovieEventProducer;
+import org.movierc.movieservice.rabbit.MovieEventProducer;
+import org.movierc.movieservice.mappers.MovieCreateDtoMapper;
+import org.movierc.movieservice.mappers.MovieMapper;
 import org.movierc.movieservice.repository.FilmPersonRepository;
 import org.movierc.movieservice.repository.GenreRepository;
 import org.movierc.movieservice.repository.MovieRepository;
@@ -28,31 +28,32 @@ public class MovieService {
     private final FilmPersonRepository filmPersonRepository;
     private final MovieRepository movieRepository;
     private final MovieEventProducer movieEventProducer;
-    private final ModelMapper modelMapper;
+    private final MovieMapper movieMapper;
+    private final MovieCreateDtoMapper movieCreateDtoMapper;
 
     public List<MovieDto> getAllMovies() {
         return movieRepository.findAll().stream()
-                .map(m -> modelMapper.map(m, MovieDto.class))
+                .map(movieMapper::movieToMovieDto)
                 .collect(Collectors.toList());
     }
 
     public MovieDto getMovieById(UUID id) {
         return movieRepository.findById(id)
-                .map(m -> modelMapper.map(m, MovieDto.class))
+                .map(movieMapper::movieToMovieDto)
                 .orElseThrow(() -> new MovieNotFoundException(id));
     }
 
     public MovieDto createMovie(MovieCreateDto movieCreateDto) {
-        Movie movie = modelMapper.map(movieCreateDto, Movie.class);
+        Movie movie = movieCreateDtoMapper.movieCreateDtoToMovie(movieCreateDto);
 
         movie.setGenres(findGenres(movieCreateDto));
         setFilmPersons(movie, movieCreateDto);
 
         Movie savedMovie = movieRepository.save(movie);
 
-        movieEventProducer.sendMovieCreatedEvent(modelMapper.map(savedMovie, MovieCreatedEvent.class));
+        movieEventProducer.sendMovieCreatedEvent(movieMapper.movieToMovieCreatedEvent(movie));
 
-        return modelMapper.map(savedMovie, MovieDto.class);
+        return movieMapper.movieToMovieDto(savedMovie);
     }
 
     private List<Genre> findGenres(MovieCreateDto movieCreateDto) {
@@ -111,7 +112,7 @@ public class MovieService {
         movie.setGenres(movieUpdateDto.getGenres());
 
         Movie updatedMovie = movieRepository.save(movie);
-        return modelMapper.map(updatedMovie, MovieDto.class);
+        return movieMapper.movieToMovieDto(updatedMovie);
     }
 
     public void deleteMovie(UUID id) {
