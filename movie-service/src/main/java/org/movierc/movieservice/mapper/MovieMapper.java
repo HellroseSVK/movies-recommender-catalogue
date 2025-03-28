@@ -10,10 +10,6 @@ import org.movierc.movieservice.entity.Genre;
 import org.movierc.movieservice.entity.Movie;
 
 @Mapper(uses = {
-        MovieMapper.MovieCreatedEventGenreMapper.class,
-        MovieMapper.MovieCreatedEventFilmPersonMapper.class,
-        MovieMapper.MovieUpdatedEventGenreMapper.class,
-        MovieMapper.MovieUpdatedEventFilmPersonMapper.class
 })
 public interface MovieMapper {
     MovieDto movieToMovieDto(Movie movie);
@@ -23,24 +19,4 @@ public interface MovieMapper {
     MovieUpdatedEvent movieToMovieUpdatedEvent(Movie movie);
 
     MovieDeletedEvent movieToMovieDeletedEvent(Movie movie);
-
-    @Mapper
-    interface MovieCreatedEventGenreMapper {
-        MovieCreatedEvent.Genre movieGenreToMovieCreatedEventGenre(Genre genre);
-    }
-
-    @Mapper
-    interface MovieCreatedEventFilmPersonMapper {
-        MovieCreatedEvent.FilmPerson filmPersonToMovieCreatedEventFilmPerson(FilmPerson genre);
-    }
-
-    @Mapper
-    interface MovieUpdatedEventGenreMapper {
-        MovieUpdatedEvent.Genre movieGenreToMovieUpdatedEventGenre(Genre genre);
-    }
-
-    @Mapper
-    interface MovieUpdatedEventFilmPersonMapper {
-        MovieUpdatedEvent.FilmPerson filmPersonToMovieUpdatedEventFilmPerson(FilmPerson genre);
-    }
 }

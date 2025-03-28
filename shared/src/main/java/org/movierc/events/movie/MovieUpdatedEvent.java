@@ -20,26 +20,12 @@ public class MovieUpdatedEvent implements Serializable {
     private String title;
     private String description;
     private List<String> images;
-    private List<Genre> genres;
+    private List<MovieGenre> genres;
 
-    private List<FilmPerson> cast;
-    private FilmPerson director;
-    private FilmPerson screenwriter;
-    private FilmPerson cinematographer;
-    private FilmPerson composer;
-    private FilmPerson sourceMaterialAuthor;
-
-    @Getter
-    @Setter
-    public static class Genre implements Serializable {
-        private UUID id;
-        private String name;
-    }
-
-    @Getter
-    @Setter
-    public static class FilmPerson implements Serializable {
-        private UUID id;
-        private String name;
-    }
+    private List<MovieFilmPerson> cast;
+    private MovieFilmPerson director;
+    private MovieFilmPerson screenwriter;
+    private MovieFilmPerson cinematographer;
+    private MovieFilmPerson composer;
+    private MovieFilmPerson sourceMaterialAuthor;
 }
