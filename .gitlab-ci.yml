@@ -1,0 +1,25 @@
+image: maven:3.9.6-eclipse-temurin-21-alpine
+
+stages:
+  - build
+  - test
+
+default:
+  tags:
+    - shared-fi
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+build:
+  stage: build
+  script:
+    - echo "Building the project..."
+    - mvn clean $MAVEN_CLI_OPTS -DskipTests package
+
+test:
+    stage: test
+    script:
+        - mvn $MAVEN_CLI_OPTS test
+    dependencies:
+        - build
