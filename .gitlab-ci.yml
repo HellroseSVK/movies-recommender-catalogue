@@ -1,0 +1,21 @@
+stages:
+  - build
+  - test
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+image: openjdk:21-jdk-slim
+
+build:
+  stage: build
+  script:
+    - echo "Building the project..."
+    - mvn clean $MAVEN_CLI_OPTS -DskipTests package
+
+test:
+    stage: test
+    script:
+        - mvn $MAVEN_CLI_OPTS test
+    dependencies:
+        - build
