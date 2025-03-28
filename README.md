@@ -59,8 +59,8 @@ This project follows a **microservices architecture**, where each service is res
 
 
 ## Use case
-![Use Case](images/useCase.png)
+![Use Case](https://gitlab.fi.muni.cz/xtefr/movies-recommender-catalogue/-/wikis/uploads/2adf2376ab25e987a9962c24c976aa7a/useCase.png)
 
 
 ## Class diagram
-![Class diagram](images/classDiagram.png)
+![Class diagram](https://gitlab.fi.muni.cz/xtefr/movies-recommender-catalogue/-/wikis/uploads/04e1356a0d7d60760c59a327c0336254/classDiagram.png)
