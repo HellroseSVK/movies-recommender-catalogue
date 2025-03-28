@@ -2,7 +2,6 @@ package org.movierc.movieservice.configuration;
 
 import org.movierc.events.EventUtil;
 import org.movierc.events.filmPerson.FilmPersonEvents;
-import org.movierc.events.movie.MovieEvents;
 import org.movierc.events.rating.RatingEvents;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -24,11 +23,6 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue movieCreatedQueue() {
-        return new Queue(EventUtil.forService(MovieEvents.MOVIE_CREATED_QUEUE, SERVICE_ID), true);
-    }
-
-    @Bean
     public Queue filmPersonCreatedQueue() {
         return new Queue(EventUtil.forService(FilmPersonEvents.FILM_PERSON_CREATED_QUEUE, SERVICE_ID), true);
     }
@@ -36,14 +30,6 @@ public class RabbitConfig {
     @Bean
     public Queue movieRatedQueue() {
         return new Queue(EventUtil.forService(RatingEvents.MOVIE_RATED_QUEUE, SERVICE_ID), true);
-    }
-
-    @Bean
-    public Binding movieCreatedBinding(Queue movieCreatedQueue, TopicExchange topicExchange) {
-        return BindingBuilder
-                .bind(movieCreatedQueue)
-                .to(topicExchange)
-                .with(EventUtil.all(MovieEvents.MOVIE_CREATED_QUEUE));
     }
 
     @Bean

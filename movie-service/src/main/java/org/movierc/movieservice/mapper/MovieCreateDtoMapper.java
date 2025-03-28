@@ -1,8 +1,7 @@
-package org.movierc.movieservice.mappers;
+package org.movierc.movieservice.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.movierc.movieservice.dto.MovieCreateDto;
 import org.movierc.movieservice.entity.Movie;
 

@@ -9,9 +9,9 @@ import org.movierc.movieservice.entity.Movie;
 import org.movierc.movieservice.exception.FilmPersonNotFoundException;
 import org.movierc.movieservice.exception.GenreNotFoundException;
 import org.movierc.movieservice.exception.MovieNotFoundException;
+import org.movierc.movieservice.mapper.MovieCreateDtoMapper;
+import org.movierc.movieservice.mapper.MovieMapper;
 import org.movierc.movieservice.rabbit.MovieEventProducer;
-import org.movierc.movieservice.mappers.MovieCreateDtoMapper;
-import org.movierc.movieservice.mappers.MovieMapper;
 import org.movierc.movieservice.repository.FilmPersonRepository;
 import org.movierc.movieservice.repository.GenreRepository;
 import org.movierc.movieservice.repository.MovieRepository;
@@ -46,19 +46,45 @@ public class MovieService {
     public MovieDto createMovie(MovieCreateDto movieCreateDto) {
         Movie movie = movieCreateDtoMapper.movieCreateDtoToMovie(movieCreateDto);
 
-        movie.setGenres(findGenres(movieCreateDto));
+        movie.setGenres(findGenres(movieCreateDto.getGenres()));
         setFilmPersons(movie, movieCreateDto);
 
         Movie savedMovie = movieRepository.save(movie);
 
-        movieEventProducer.sendMovieCreatedEvent(movieMapper.movieToMovieCreatedEvent(movie));
+        movieEventProducer.sendMovieCreatedEvent(movieMapper.movieToMovieCreatedEvent(savedMovie));
 
         return movieMapper.movieToMovieDto(savedMovie);
     }
 
-    private List<Genre> findGenres(MovieCreateDto movieCreateDto) {
-        return movieCreateDto
-                .getGenres()
+
+    public MovieDto updateMovie(UUID id, MovieUpdateDto movieUpdateDto) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+
+        movie.setTitle(movieUpdateDto.getTitle());
+        movie.setDescription(movieUpdateDto.getDescription());
+        movie.setImages(movieUpdateDto.getImages());
+
+        Movie updatedMovie = movieRepository.save(movie);
+
+        movieEventProducer.sendMovieUpdatedEvent(movieMapper.movieToMovieUpdatedEvent(updatedMovie));
+
+        return movieMapper.movieToMovieDto(updatedMovie);
+    }
+
+    public void deleteMovie(UUID id) {
+        var movie = movieRepository.findById(id);
+        if (movie.isEmpty()) {
+            throw new MovieNotFoundException(id);
+        }
+
+        movieRepository.deleteById(id);
+
+        movieEventProducer.sendMovieDeletedEvent(movieMapper.movieToMovieDeletedEvent(movie.get()));
+    }
+
+    private List<Genre> findGenres(List<UUID> genreIds) {
+        return genreIds
                 .stream()
                 .map(genreId -> genreRepository.findById(genreId)
                         .orElseThrow(() -> new GenreNotFoundException(genreId))
@@ -102,23 +128,37 @@ public class MovieService {
         );
     }
 
-    public MovieDto updateMovie(UUID id, MovieUpdateDto movieUpdateDto) {
-        Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new MovieNotFoundException(id));
+    public MovieDto assignGenre(UUID movieId, UUID genreId) {
+        var maybeMovie = movieRepository.findById(movieId);
+        if (maybeMovie.isEmpty()) {
+            throw new MovieNotFoundException(movieId);
+        }
+        var movie = maybeMovie.get();
 
-        movie.setTitle(movieUpdateDto.getTitle());
-        movie.setDescription(movieUpdateDto.getDescription());
-        movie.setImages(movieUpdateDto.getImages());
-        movie.setGenres(movieUpdateDto.getGenres());
+        var maybeGenre = genreRepository.findById(genreId);
+        if (maybeGenre.isEmpty()) {
+            throw new GenreNotFoundException(genreId);
+        }
+        var genre = maybeGenre.get();
 
-        Movie updatedMovie = movieRepository.save(movie);
+        movie.getGenres().add(genre);
+
+        var updatedMovie = movieRepository.save(movie);
+        movieEventProducer.sendMovieUpdatedEvent(movieMapper.movieToMovieUpdatedEvent(updatedMovie));
         return movieMapper.movieToMovieDto(updatedMovie);
     }
 
-    public void deleteMovie(UUID id) {
-        if (!movieRepository.existsById(id)) {
-            throw new MovieNotFoundException(id);
+    public MovieDto removeGenre(UUID movieId, UUID genreId) {
+        var maybeMovie = movieRepository.findById(movieId);
+        if (maybeMovie.isEmpty()) {
+            throw new MovieNotFoundException(movieId);
         }
-        movieRepository.deleteById(id);
+        var movie = maybeMovie.get();
+
+        movie.setGenres(movie.getGenres().stream().filter(g -> !g.getId().equals(genreId)).toList());
+
+        var updatedMovie = movieRepository.save(movie);
+        movieEventProducer.sendMovieUpdatedEvent(movieMapper.movieToMovieUpdatedEvent(updatedMovie));
+        return movieMapper.movieToMovieDto(updatedMovie);
     }
 }

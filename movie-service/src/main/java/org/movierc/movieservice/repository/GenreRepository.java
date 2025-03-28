@@ -17,8 +17,16 @@ public class GenreRepository {
         genres.add(new Genre(UUID.fromString("894061B7-4D80-4537-891A-18F008515D5A"), "Action"));
     }
 
+    public List<Genre> findAll() {
+        return List.copyOf(genres);
+    }
+
     public List<Genre> findByIdIn(Set<UUID> ids) {
         return genres.stream().filter(g -> ids.contains(g.getId())).toList();
+    }
+
+    public Optional<Genre> findByName(String name) {
+        return genres.stream().filter(g -> g.getName().equals(name)).findFirst();
     }
 
     public Optional<Genre> findById(UUID id) {
@@ -36,4 +44,7 @@ public class GenreRepository {
         return genre;
     }
 
+    public void deleteById(UUID id) {
+        genres.removeIf(g -> g.getId().equals(id));
+    }
 }

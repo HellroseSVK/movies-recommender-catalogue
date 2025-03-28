@@ -11,8 +11,8 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi moviesGroupedOpenApi() {
         return GroupedOpenApi.builder()
-                .group("movies")
-                .pathsToMatch("/api/v1/movies/**")
+                .group("Movies API V1")
+                .pathsToMatch("/api/v1/**")
                 .build();
     }
 

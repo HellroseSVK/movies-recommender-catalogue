@@ -2,7 +2,7 @@ package org.movierc.movieservice.rabbit;
 
 import lombok.AllArgsConstructor;
 import org.movierc.events.filmPerson.FilmPersonCreatedEvent;
-import org.movierc.movieservice.mappers.FilmPersonCreatedEventMapper;
+import org.movierc.movieservice.mapper.FilmPersonCreatedEventMapper;
 import org.movierc.movieservice.repository.FilmPersonRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

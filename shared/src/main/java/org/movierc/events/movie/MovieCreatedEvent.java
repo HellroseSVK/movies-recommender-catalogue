@@ -29,8 +29,6 @@ public class MovieCreatedEvent implements Serializable {
     private FilmPerson composer;
     private FilmPerson sourceMaterialAuthor;
 
-    private float rating;
-
     @Getter
     @Setter
     public static class Genre implements Serializable {

@@ -1,6 +1,7 @@
 package org.movierc.movieservice.controller;
 
 import org.movierc.movieservice.exception.FilmPersonNotFoundException;
+import org.movierc.movieservice.exception.GenreAlreadyExistsException;
 import org.movierc.movieservice.exception.GenreNotFoundException;
 import org.movierc.movieservice.exception.MovieNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -24,5 +25,10 @@ public class MovieExceptionHandler {
     @ExceptionHandler(MovieNotFoundException.class)
     public ResponseEntity<?> handleMovieNotFound(MovieNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(GenreAlreadyExistsException.class)
+    public ResponseEntity<?> handleGenreAlreadyExists(GenreAlreadyExistsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 }

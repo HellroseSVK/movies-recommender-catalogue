@@ -34,4 +34,12 @@ public class MovieFacade {
     public void deleteMovie(UUID id) {
         movieService.deleteMovie(id);
     }
+
+    public MovieDto assignGenre(UUID movieId, UUID genreId) {
+        return movieService.assignGenre(movieId, genreId);
+    }
+
+    public MovieDto removeGenre(UUID movieId, UUID genreId) {
+        return movieService.removeGenre(movieId, genreId);
+    }
 }

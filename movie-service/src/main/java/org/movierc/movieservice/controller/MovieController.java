@@ -1,5 +1,6 @@
 package org.movierc.movieservice.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.movierc.movieservice.dto.MovieCreateDto;
 import org.movierc.movieservice.dto.MovieDto;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/api/v1/movies")
+@RequestMapping("/api/v1/movie")
 @RestController
 @AllArgsConstructor
 public class MovieController {
@@ -36,13 +37,13 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<MovieDto> createMovie(@RequestBody MovieCreateDto movieCreateDto) {
+    public ResponseEntity<MovieDto> createMovie(@RequestBody @Valid MovieCreateDto movieCreateDto) {
         MovieDto createdMovie = movieFacade.createMovie(movieCreateDto);
         return new ResponseEntity<>(createdMovie, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MovieDto> updateMovie(@PathVariable UUID id, @RequestBody MovieUpdateDto movieUpdateDto) {
+    public ResponseEntity<MovieDto> updateMovie(@PathVariable UUID id, @RequestBody @Valid MovieUpdateDto movieUpdateDto) {
         return ResponseEntity.ok(movieFacade.updateMovie(id, movieUpdateDto));
     }
 

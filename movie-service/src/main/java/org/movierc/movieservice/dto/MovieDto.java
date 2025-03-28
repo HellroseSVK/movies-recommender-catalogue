@@ -18,7 +18,7 @@ public class MovieDto {
     private String title;
     private String description;
     private List<String> images;
-    private List<Genre> genres;
+    private List<GenreDto> genres;
     private List<FilmPersonDto> cast;
     private FilmPersonDto director;
     private FilmPersonDto screenwriter;
