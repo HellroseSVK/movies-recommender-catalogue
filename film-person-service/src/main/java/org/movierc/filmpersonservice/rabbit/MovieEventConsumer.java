@@ -5,7 +5,6 @@ import org.movierc.events.movie.MovieCreatedEvent;
 import org.movierc.events.movie.MovieFilmPersonRolesAddedEvent;
 import org.movierc.events.movie.MovieFilmPersonRolesRemovedEvent;
 import org.movierc.events.movie.MovieUpdatedEvent;
-import org.movierc.filmpersonservice.exception.FilmPersonNotFoundException;
 import org.movierc.filmpersonservice.mapper.FilmPersonMovieAssignmentMapper;
 import org.movierc.filmpersonservice.mapper.MovieEventMapper;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
@@ -28,7 +27,7 @@ public class MovieEventConsumer {
     private final FilmPersonMovieAssignmentMapper filmPersonMovieAssignmentMapper;
 
     @RabbitListener(queues = "#{movieCreatedQueue.getName()}")
-    public void handleMovieRatedEvent(@Payload MovieCreatedEvent event) {
+    public void handleMovieCreatedEvent(@Payload MovieCreatedEvent event) {
         if (!movieRepository.existsById(event.getId())) {
             movieRepository.save(movieEventMapper.movieCreatedEventToMovie(event));
         }
