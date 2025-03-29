@@ -21,11 +21,4 @@ public class MovieUpdatedEvent implements Serializable {
     private String description;
     private List<String> images;
     private List<MovieGenre> genres;
-
-    private List<MovieFilmPerson> cast;
-    private MovieFilmPerson director;
-    private MovieFilmPerson screenwriter;
-    private MovieFilmPerson cinematographer;
-    private MovieFilmPerson composer;
-    private MovieFilmPerson sourceMaterialAuthor;
 }

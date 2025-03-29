@@ -19,7 +19,7 @@ public class FilmPersonEventConsumer {
     private final FilmPersonRepository filmPersonRepository;
 
     @RabbitListener(queues = "#{filmPersonCreatedQueue.getName()}")
-    public void handleMovieRatedEvent(@Payload FilmPersonCreatedEvent event) {
+    public void handleFilmPersonCreatedEvent(@Payload FilmPersonCreatedEvent event) {
         if (filmPersonRepository.findById(event.getId()).isEmpty()) {
             filmPersonRepository.save(filmPersonCreatedEventMapper.filmPersonCreatedEventToFilmPerson(event));
         }

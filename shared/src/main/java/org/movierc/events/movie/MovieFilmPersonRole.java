@@ -17,6 +17,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class MovieFilmPersonRole implements Serializable {
     private UUID movieId;
-    private UUID personId;
+    private UUID filmPersonId;
     private FilmPersonRole role;
 }
