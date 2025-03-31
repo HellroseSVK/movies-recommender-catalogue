@@ -9,7 +9,6 @@ import org.movierc.filmpersonservice.mapper.FilmPersonCreateDtoMapper;
 import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
 import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
-import org.movierc.filmpersonservice.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class FilmPersonService {
     private final FilmPersonRepository filmPersonRepository;
-    private final MovieRepository movieRepository;
     private final FilmPersonEventProducer filmPersonEventProducer;
     private final FilmPersonMapper filmPersonMapper;
     private final FilmPersonCreateDtoMapper filmPersonCreateDtoMapper;

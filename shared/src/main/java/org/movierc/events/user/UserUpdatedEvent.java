@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.movierc.shared.enm.UserRole;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserUpdatedEvent {

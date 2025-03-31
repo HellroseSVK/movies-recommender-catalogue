@@ -12,8 +12,6 @@ import java.util.UUID;
 )
 public interface MovieCreateDtoMapper {
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")
-    @Mapping(target = "numberOfRatings", constant = "0")
-    @Mapping(target = "totalRating", constant = "0")
     @Mapping(target = "genres", ignore = true)
     @Mapping(target = "cast", ignore = true)
     @Mapping(target = "director", ignore = true)
