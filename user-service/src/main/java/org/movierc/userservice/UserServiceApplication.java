@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Import;
 @Import({SharedConfig.class})
 public class UserServiceApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(UserServiceApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(UserServiceApplication.class, args);
+    }
 
 }

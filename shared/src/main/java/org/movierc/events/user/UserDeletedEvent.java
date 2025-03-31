@@ -1,6 +1,7 @@
 package org.movierc.events.user;
 
 import lombok.*;
+
 import java.util.UUID;
 
 @Builder

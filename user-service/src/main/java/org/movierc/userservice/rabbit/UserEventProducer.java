@@ -13,17 +13,17 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class UserEventProducer {
-  private final RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-  public void sendUserCreatedEvent(UserCreatedEvent event) {
-    rabbitTemplate.convertAndSend(EventUtil.forService(UserEvents.USER_CREATED_QUEUE, RabbitConfig.SERVICE_ID), event);
-  }
+    public void sendUserCreatedEvent(UserCreatedEvent event) {
+        rabbitTemplate.convertAndSend(EventUtil.forService(UserEvents.USER_CREATED_QUEUE, RabbitConfig.SERVICE_ID), event);
+    }
 
-  public void sendUserUpdatedEvent(UserUpdatedEvent event) {
-    rabbitTemplate.convertAndSend(EventUtil.forService(UserEvents.USER_UPDATED_QUEUE, RabbitConfig.SERVICE_ID), event);
-  }
+    public void sendUserUpdatedEvent(UserUpdatedEvent event) {
+        rabbitTemplate.convertAndSend(EventUtil.forService(UserEvents.USER_UPDATED_QUEUE, RabbitConfig.SERVICE_ID), event);
+    }
 
-  public void sendUserDeletedEvent(UserDeletedEvent event) {
-    rabbitTemplate.convertAndSend(EventUtil.forService(UserEvents.USER_DELETED_QUEUE, RabbitConfig.SERVICE_ID), event);
-  }
+    public void sendUserDeletedEvent(UserDeletedEvent event) {
+        rabbitTemplate.convertAndSend(EventUtil.forService(UserEvents.USER_DELETED_QUEUE, RabbitConfig.SERVICE_ID), event);
+    }
 }

@@ -10,7 +10,10 @@ import org.movierc.userservice.entity.User;
 @Mapper
 public interface UserMapper {
     UserDto userToUserDto(User user);
+
     UserCreatedEvent userToUserCreatedEvent(User user);
+
     UserUpdatedEvent userToUserUpdatedEvent(User user);
+
     UserDeletedEvent userToUserDeletedEvent(User user);
 }

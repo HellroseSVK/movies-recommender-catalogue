@@ -8,9 +8,9 @@ import org.movierc.userservice.entity.User;
 import java.util.UUID;
 
 @Mapper(
-  imports = {UUID.class}
+    imports = {UUID.class}
 )
 public interface UserCreateDtoMapper {
-  @Mapping(target = "id", expression = "java(UUID.randomUUID())")
-  User userCreateDtoToUser(UserCreateDto user);
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    User userCreateDtoToUser(UserCreateDto user);
 }
