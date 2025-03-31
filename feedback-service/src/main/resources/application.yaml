@@ -1,6 +1,6 @@
 spring:
   application:
-    name: film-person-service
+    name: feedback-service
   artemis:
     broker-url: "${ACTIVEMQ_BROKER_URL:tcp://localhost:61616}"
     user: "${ACTIVEMQ_USER:artemis}"

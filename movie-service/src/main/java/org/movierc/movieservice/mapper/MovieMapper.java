@@ -5,12 +5,9 @@ import org.movierc.events.movie.MovieCreatedEvent;
 import org.movierc.events.movie.MovieDeletedEvent;
 import org.movierc.events.movie.MovieUpdatedEvent;
 import org.movierc.movieservice.dto.MovieDto;
-import org.movierc.movieservice.entity.FilmPerson;
-import org.movierc.movieservice.entity.Genre;
 import org.movierc.movieservice.entity.Movie;
 
-@Mapper(uses = {
-})
+@Mapper
 public interface MovieMapper {
     MovieDto movieToMovieDto(Movie movie);
 

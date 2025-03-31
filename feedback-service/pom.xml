@@ -51,11 +51,6 @@
             <artifactId>spring-rabbit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.movierc</groupId>
-            <artifactId>user-service</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
