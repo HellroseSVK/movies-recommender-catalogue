@@ -36,8 +36,6 @@ public class GenreRepository {
     public Genre save(Genre genre) {
         if (genres.stream().anyMatch(g -> g.getId().equals(genre.getId()))) {
             genres.removeIf(g -> g.getId().equals(genre.getId()));
-        } else {
-            genre.setId(UUID.randomUUID());
         }
 
         genres.add(genre);

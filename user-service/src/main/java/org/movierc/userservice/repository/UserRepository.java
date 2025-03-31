@@ -27,8 +27,6 @@ public class UserRepository {
     public User save(User user) {
         if (users.stream().anyMatch(u -> u.getId().equals(user.getId()))) {
             users.removeIf(u -> u.getId().equals(user.getId()));
-        } else {
-            user.setId(UUID.randomUUID());
         }
 
         users.add(user);
