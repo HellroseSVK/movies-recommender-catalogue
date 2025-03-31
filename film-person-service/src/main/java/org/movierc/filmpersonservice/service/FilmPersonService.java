@@ -4,14 +4,11 @@ import lombok.AllArgsConstructor;
 import org.movierc.filmpersonservice.dto.FilmPersonCreateDto;
 import org.movierc.filmpersonservice.dto.FilmPersonDto;
 import org.movierc.filmpersonservice.dto.FilmPersonUpdateDto;
-import org.movierc.filmpersonservice.entity.FilmPerson;
 import org.movierc.filmpersonservice.exception.FilmPersonNotFoundException;
-import org.movierc.filmpersonservice.exception.MovieNotFoundException;
 import org.movierc.filmpersonservice.mapper.FilmPersonCreateDtoMapper;
 import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
 import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
-import org.movierc.filmpersonservice.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +19,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class FilmPersonService {
     private final FilmPersonRepository filmPersonRepository;
-    private final MovieRepository movieRepository;
     private final FilmPersonEventProducer filmPersonEventProducer;
     private final FilmPersonMapper filmPersonMapper;
     private final FilmPersonCreateDtoMapper filmPersonCreateDtoMapper;
@@ -49,14 +45,14 @@ public class FilmPersonService {
         return filmPersonMapper.filmPersonToFilmPersonDto(savedFilmPerson);
     }
 
-    public FilmPersonDto updateFilmPerson(UUID id, FilmPersonUpdateDto filmPersonCreateDto) {
+    public FilmPersonDto updateFilmPerson(UUID id, FilmPersonUpdateDto filmPersonUpdateDto) {
         var filmPerson = filmPersonRepository.findById(id)
                 .orElseThrow(() -> new FilmPersonNotFoundException(id));
 
-        filmPerson.setName(filmPersonCreateDto.getName());
-        filmPerson.setImage(filmPersonCreateDto.getImage());
-        filmPerson.setDateOfBirth(filmPersonCreateDto.getDateOfBirth());
-        filmPerson.setBiography(filmPersonCreateDto.getBiography());
+        filmPerson.setName(filmPersonUpdateDto.getName());
+        filmPerson.setImage(filmPersonUpdateDto.getImage());
+        filmPerson.setDateOfBirth(filmPersonUpdateDto.getDateOfBirth());
+        filmPerson.setBiography(filmPersonUpdateDto.getBiography());
 
         var savedFilmPerson = filmPersonRepository.save(filmPerson);
 
