@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -14,6 +15,6 @@ import java.util.UUID;
 public class MovieRatingUpdatedEvent {
     private UUID movieId;
     private UUID userId;
-    private int newRating;
-    private int oldRating;
+    private List<RatingDetail> newRatingDetails;
+    private List<RatingDetail> oldRatingDetails;
 }

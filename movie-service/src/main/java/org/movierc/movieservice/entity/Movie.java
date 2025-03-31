@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Builder
@@ -28,10 +30,13 @@ public class Movie {
     private FilmPerson composer;
     private FilmPerson sourceMaterialAuthor;
 
-    private int totalRating;
-    private int numberOfRatings;
+    private final Map<UUID, Integer> totalRatings = new HashMap<>();
+    private final Map<UUID, Integer> numbersOfRatings = new HashMap<>();
 
     public float getRating() {
+        int totalRating = totalRatings.values().stream().mapToInt(Integer::intValue).sum();
+        int numberOfRatings = numbersOfRatings.values().stream().mapToInt(Integer::intValue).sum();
+
         if (numberOfRatings == 0) {
             return 0;
         }
