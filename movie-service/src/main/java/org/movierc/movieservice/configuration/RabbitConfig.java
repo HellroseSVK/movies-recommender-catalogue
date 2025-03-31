@@ -28,11 +28,6 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue movieRatedQueue() {
-        return new Queue(EventUtil.forService(RatingEvents.MOVIE_RATED_QUEUE, SERVICE_ID), true);
-    }
-
-    @Bean
     public Binding filmPersonCreatedBinding(Queue filmPersonCreatedQueue, TopicExchange topicExchange) {
         return BindingBuilder
                 .bind(filmPersonCreatedQueue)
@@ -41,11 +36,42 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Binding movieRatedBinding(Queue movieRatedQueue, TopicExchange topicExchange) {
+    public Queue movieRatingCreatedQueue() {
+        return new Queue(EventUtil.forService(RatingEvents.MOVIE_RATING_CREATED_QUEUE, SERVICE_ID), true);
+    }
+
+    @Bean
+    public Queue movieRatingUpdatedQueue() {
+        return new Queue(EventUtil.forService(RatingEvents.MOVIE_RATING_UPDATED_QUEUE, SERVICE_ID), true);
+    }
+
+    @Bean
+    public Queue movieRatingDeletedQueue() {
+        return new Queue(EventUtil.forService(RatingEvents.MOVIE_RATING_DELETED_QUEUE, SERVICE_ID), true);
+    }
+
+    @Bean
+    public Binding movieRatingCreatedBinding(Queue movieRatingCreatedQueue, TopicExchange topicExchange) {
         return BindingBuilder
-                .bind(movieRatedQueue)
+                .bind(movieRatingCreatedQueue)
                 .to(topicExchange)
-                .with(EventUtil.all(RatingEvents.MOVIE_RATED_QUEUE));
+                .with(EventUtil.all(RatingEvents.MOVIE_RATING_CREATED_QUEUE));
+    }
+
+    @Bean
+    public Binding movieRatingUpdatedBinding(Queue movieRatingUpdatedQueue, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(movieRatingUpdatedQueue)
+                .to(topicExchange)
+                .with(EventUtil.all(RatingEvents.MOVIE_RATING_UPDATED_QUEUE));
+    }
+
+    @Bean
+    public Binding movieRatingDeletedBinding(Queue movieRatingDeletedQueue, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(movieRatingDeletedQueue)
+                .to(topicExchange)
+                .with(EventUtil.all(RatingEvents.MOVIE_RATING_DELETED_QUEUE));
     }
 
     @Bean

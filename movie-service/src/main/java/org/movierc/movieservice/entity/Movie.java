@@ -28,13 +28,13 @@ public class Movie {
     private FilmPerson composer;
     private FilmPerson sourceMaterialAuthor;
 
-    private float totalRating;
-    private float numberOfRatings;
+    private int totalRating;
+    private int numberOfRatings;
 
     public float getRating() {
         if (numberOfRatings == 0) {
             return 0;
         }
-        return totalRating / numberOfRatings;
+        return (float) totalRating / numberOfRatings;
     }
 }

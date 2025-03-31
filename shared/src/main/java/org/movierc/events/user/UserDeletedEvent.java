@@ -1,4 +1,4 @@
-package org.movierc.events.rating;
+package org.movierc.events.user;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +11,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public class MovieRatedEvent {
-    private UUID movieId;
-    private UUID userId;
-    private float rating;
+public class UserDeletedEvent {
+    private UUID id;
+    private String username;
+    private String email;
 }
