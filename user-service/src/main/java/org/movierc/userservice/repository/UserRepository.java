@@ -1,6 +1,5 @@
 package org.movierc.userservice.repository;
 
-import org.movierc.shared.enm.UserRole;
 import org.movierc.userservice.entity.User;
 import org.springframework.stereotype.Repository;
 
@@ -12,10 +11,6 @@ import java.util.UUID;
 @Repository
 public class UserRepository {
     private final List<User> users = new ArrayList<>();
-
-    {
-        users.add(new User(UUID.randomUUID(), "John Cena", "123456789", "johnCena@gmail.com", List.of(UserRole.USER)));
-    }
 
     public Optional<User> findByUsername(String username) {
         return users.stream().filter(u -> u.getUsername().equals(username)).findFirst();
