@@ -31,8 +31,6 @@ public class FilmPersonRepository {
     public FilmPerson save(FilmPerson filmPerson) {
         if (filmPersons.stream().anyMatch(fp -> fp.getId().equals(filmPerson.getId()))) {
             filmPersons.removeIf(fp -> fp.getId().equals(filmPerson.getId()));
-        } else {
-            filmPerson.setId(UUID.randomUUID());
         }
 
         filmPersons.add(filmPerson);
