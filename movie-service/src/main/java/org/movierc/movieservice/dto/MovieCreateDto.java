@@ -16,7 +16,6 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 public class MovieCreateDto {
     @NotBlank
     @Schema(example = "The Matrix")

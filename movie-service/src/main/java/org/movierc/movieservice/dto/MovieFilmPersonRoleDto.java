@@ -11,7 +11,6 @@ import org.movierc.shared.enm.FilmPersonRole;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 public class MovieFilmPersonRoleDto {
     private FilmPersonDto filmPerson;
     private FilmPersonRole role;

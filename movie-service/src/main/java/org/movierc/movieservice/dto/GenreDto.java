@@ -17,7 +17,7 @@ import java.util.UUID;
 public class GenreDto {
     @Valid
     private UUID id;
-    @Schema(type = "string", example = "Horror")
+    @Schema(example = "Horror")
     @NotBlank
     private String name;
 }

@@ -13,7 +13,6 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 public class RemoveFilmPersonRoleDto {
     private UUID personId;
     private FilmPersonRole role;
