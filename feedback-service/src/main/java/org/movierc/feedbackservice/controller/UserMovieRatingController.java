@@ -32,17 +32,17 @@ public class UserMovieRatingController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserMovieRatingDto>> getRatingsByUserId(@PathVariable(name = "userId") UUID userId) {
+    public ResponseEntity<List<UserMovieRatingDto>> getRatingsByUserId(@PathVariable UUID userId) {
         return ResponseEntity.ok(userMovieRatingFacade.getRatingsByUserId(userId));
     }
 
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<List<UserMovieRatingDto>> getRatingsByMovieId(@PathVariable(name = "movieId") UUID movieId) {
+    public ResponseEntity<List<UserMovieRatingDto>> getRatingsByMovieId(@PathVariable UUID movieId) {
         return ResponseEntity.ok(userMovieRatingFacade.getRatingsByMovieId(movieId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserMovieRatingDto> getRatingById(@PathVariable(name = "id") UUID id) {
+    public ResponseEntity<UserMovieRatingDto> getRatingById(@PathVariable UUID id) {
         return ResponseEntity.ok(userMovieRatingFacade.getRatingById(id));
     }
 
@@ -53,12 +53,12 @@ public class UserMovieRatingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserMovieRatingDto> updateRating(@PathVariable(name = "id") UUID id, @RequestBody UserMovieRatingUpdateDto userMovieRatingUpdateDto) {
+    public ResponseEntity<UserMovieRatingDto> updateRating(@PathVariable UUID id, @RequestBody UserMovieRatingUpdateDto userMovieRatingUpdateDto) {
         return ResponseEntity.ok(userMovieRatingFacade.updateRating(id, userMovieRatingUpdateDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRating(@PathVariable(name = "id") UUID id) {
+    public ResponseEntity<Void> deleteRating(@PathVariable UUID id) {
         userMovieRatingFacade.deleteRating(id);
         return ResponseEntity.noContent().build();
     }

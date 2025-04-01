@@ -31,12 +31,13 @@ public class RecommendationService {
     private final RatingDetailMapper ratingDetailMapper;
     private final RatingCategoryMapper ratingCategoryMapper;
 
-    private MovieDto transformTripletToMovieDto (Triplet<Movie, List<UserMovieRating>, Double> triplet) {
+    private MovieDto transformTripletToMovieDto(Triplet<Movie, List<UserMovieRating>, Double> triplet) {
         var movie = triplet.getValue0();
         var userRatings = getAverageRatingDetailForMovieFromUserRatings(triplet.getValue1()).stream()
                 .map(ratingDetail -> {
                     var categoryDto = ratingCategoryMapper.ratingCategoryToRatingCategoryDto(
-                            ratingCategoryRepository.findById(ratingDetail.getRatingCategoryId()).orElseThrow());
+                            ratingCategoryRepository.findById(ratingDetail.getRatingCategoryId())
+                                    .orElseThrow(() -> new CategoryNotFoundException(ratingDetail.getRatingCategoryId())));
                     return ratingDetailMapper.ratingDetailToRatingDetailDto(ratingDetail, categoryDto);
                 })
                 .toList();
@@ -53,7 +54,6 @@ public class RecommendationService {
                         .rating(entry.getValue().intValue())
                         .build()).toList();
     }
-
 
 
     public List<MovieDto> getRecommendations() {
@@ -99,16 +99,17 @@ public class RecommendationService {
 
         return movieRepository.findAll().stream()
                 .map(movie -> {
-                    var userRatings = userMovieRatingRepository.findByMovieId(movie.getId());
+                    var userRatings = userMovieRatingRepository.findByMovieId(movie.getId()).stream()
+                            .filter(userMovieRating -> userMovieRating.getRatingDetails().stream()
+                                    .anyMatch(ratingDetail -> categoryIds.contains(ratingDetail.getRatingCategoryId())))
+                            .toList();
                     var averageRating = userRatings.stream()
                             .mapToDouble(rating -> rating.getRatingDetails().stream()
-                                    .filter(ratingDetail -> categoryWeights.stream()
-                                            .anyMatch(categoryWeight -> categoryIds.contains(ratingDetail.getRatingCategoryId())))
                                     .mapToDouble(ratingDetail -> ratingDetail.getRating() * categoryWeights.stream()
                                             .filter(categoryWeight -> categoryWeight.getCategoryId().equals(ratingDetail.getRatingCategoryId()))
                                             .findFirst()
                                             // should not happen as we already filtered by categories inside categoryWeight
-                                            .orElseThrow(() ->  new CategoryNotFoundException(UUID.fromString("unknown")))
+                                            .orElseThrow(() -> new CategoryNotFoundException(UUID.fromString("unknown")))
                                             .getWeight())
                                     .average()
                                     .orElse(0))
@@ -124,9 +125,11 @@ public class RecommendationService {
     public List<MovieDto> getRecommendationsByRated(UUID userId) {
         return movieRepository.findAll().stream()
                 .map(movie -> {
-                    var userRatings = userMovieRatingRepository.findByMovieId(movie.getId());
-                    var averageRating = userRatings.stream()
+                    var userRatings = userMovieRatingRepository.findByMovieId(movie.getId()).stream()
                             .filter(userMovieRating -> userMovieRating.getUserId().equals(userId))
+                            .toList();
+                    var averageRating = userRatings.stream()
+
                             .mapToDouble(rating -> rating.getRatingDetails().stream()
                                     .mapToDouble(RatingDetail::getRating)
                                     .average()
@@ -148,5 +151,30 @@ public class RecommendationService {
                 .distinct()
                 .toList();
         return getRecommendationsByCategoriesAboveThreshold(interestedCategories, 0);
+    }
+
+    public List<MovieDto> getRecommendationsByMovieId(UUID movieId) {
+        var userIds = userMovieRatingRepository.findByMovieId(movieId).stream()
+                .map(UserMovieRating::getUserId)
+                .toList();
+
+        return movieRepository.findAll().stream()
+                .map(movie -> {
+                    var userRatings = userMovieRatingRepository.findByMovieId(movie.getId()).stream()
+                            .filter(userMovieRating -> userIds.contains(userMovieRating.getUserId()))
+                            .toList();
+                    var averageRating = userRatings.stream()
+                            .mapToDouble(rating -> rating.getRatingDetails().stream()
+                                    .mapToDouble(RatingDetail::getRating)
+                                    .average()
+                                    .orElse(0))
+                            .average()
+                            .orElse(0);
+                    return new Triplet<>(movie, userRatings, averageRating);
+                })
+                .filter(triplet -> !triplet.getValue0().getId().equals(movieId))
+                .sorted((t1, t2) -> Double.compare(t2.getValue2(), t1.getValue2()))
+                .map(this::transformTripletToMovieDto)
+                .toList();
     }
 }

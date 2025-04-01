@@ -34,4 +34,8 @@ public class RecommendationFacade {
     public List<MovieDto> getRecommendationsByRatedAllSimilarAboveThreshold(UUID userId, int threshold){
         return recommendationService.getRecommendationsByRatedAllSimilarAboveThreshold(userId, threshold);
     }
+
+    public List<MovieDto> getRecommendationsByMovieId(UUID movieId) {
+        return recommendationService.getRecommendationsByMovieId(movieId);
+    }
 }
