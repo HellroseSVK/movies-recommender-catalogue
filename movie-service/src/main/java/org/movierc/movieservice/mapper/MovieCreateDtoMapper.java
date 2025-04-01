@@ -13,11 +13,6 @@ import java.util.UUID;
 public interface MovieCreateDtoMapper {
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     @Mapping(target = "genres", ignore = true)
-    @Mapping(target = "cast", ignore = true)
-    @Mapping(target = "director", ignore = true)
-    @Mapping(target = "screenwriter", ignore = true)
-    @Mapping(target = "cinematographer", ignore = true)
-    @Mapping(target = "composer", ignore = true)
-    @Mapping(target = "sourceMaterialAuthor", ignore = true)
+    @Mapping(target = "filmPersonRoles", ignore = true)
     Movie movieCreateDtoToMovie(MovieCreateDto movie);
 }

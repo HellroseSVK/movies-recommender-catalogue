@@ -1,6 +1,7 @@
 package org.movierc.movieservice.controller;
 
 import org.movierc.movieservice.exception.FilmPersonNotFoundException;
+import org.movierc.movieservice.exception.FilmPersonWithThisRoleIsAlreadyAssigned;
 import org.movierc.movieservice.exception.GenreAlreadyExistsException;
 import org.movierc.movieservice.exception.GenreNotFoundException;
 import org.movierc.movieservice.exception.MovieNotFoundException;
@@ -29,6 +30,11 @@ public class MovieExceptionHandler {
 
     @ExceptionHandler(GenreAlreadyExistsException.class)
     public ResponseEntity<?> handleGenreAlreadyExists(GenreAlreadyExistsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(FilmPersonWithThisRoleIsAlreadyAssigned.class)
+    public ResponseEntity<?> handleFilmPersonWithThisRoleIsAlreadyAssigned(FilmPersonWithThisRoleIsAlreadyAssigned ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 }

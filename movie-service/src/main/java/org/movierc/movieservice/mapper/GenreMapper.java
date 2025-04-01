@@ -3,6 +3,7 @@ package org.movierc.movieservice.mapper;
 import org.mapstruct.Mapper;
 import org.movierc.events.genre.GenreCreatedEvent;
 import org.movierc.events.genre.GenreDeletedEvent;
+import org.movierc.events.movie.MovieGenre;
 import org.movierc.movieservice.dto.GenreDto;
 import org.movierc.movieservice.entity.Genre;
 
@@ -12,4 +13,6 @@ public interface GenreMapper {
 
     GenreCreatedEvent genreToGenreCreatedEvent(Genre genre);
     GenreDeletedEvent genreToGenreDeletedEvent(Genre genre);
+
+    MovieGenre genreToMovieGenre(Genre genre);
 }
