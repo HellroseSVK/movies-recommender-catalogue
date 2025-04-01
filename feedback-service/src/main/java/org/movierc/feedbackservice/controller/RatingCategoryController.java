@@ -26,7 +26,7 @@ public class RatingCategoryController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<RatingCategoryDto> getRatingCategoryById(@PathVariable UUID id) {
+    public ResponseEntity<RatingCategoryDto> getRatingCategoryById(@PathVariable(name = "id") UUID id) {
         return ResponseEntity.ok(ratingCategoryFacade.getRatingCategoryById(id));
     }
 
