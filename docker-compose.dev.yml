@@ -3,6 +3,7 @@ services:
   artemis:
     image: apache/activemq-artemis:latest
     container_name: artemis-broker
+    restart: unless-stopped
     environment:
       - ARTEMIS_USERNAME=artemis
       - ARTEMIS_PASSWORD=artemis
@@ -15,6 +16,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: local-rabbitmq
+    restart: unless-stopped
     ports:
       - "5672:5672"   # AMQP
       - "15672:15672" # RabbitMQ Management console: http://localhost:15672
