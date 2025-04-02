@@ -12,4 +12,4 @@ spring:
     username: "${RABBIT_BROKER_USER:rabbit}"
     password: "${RABBIT_BROKER_PASSWORD:rabbit}"
 server:
-  port: "${FEEDBACK_SERVICE_PORT:8081}"
+  port: "${FEEDBACK_SERVICE_PORT:8084}"
