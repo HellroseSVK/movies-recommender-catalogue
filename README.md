@@ -63,3 +63,7 @@ This project follows a **microservices architecture**, where each service is res
 
 ## Class diagram
 ![Class diagram](https://gitlab.fi.muni.cz/xtefr/movies-recommender-catalogue/-/wikis/uploads/04e1356a0d7d60760c59a327c0336254/classDiagram.png)
+
+## AI Disclosure
+
+During the development of this project, we utilized AI tools for coding assistance.
