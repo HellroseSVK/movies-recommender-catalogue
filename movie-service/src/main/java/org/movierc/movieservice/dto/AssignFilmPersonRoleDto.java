@@ -1,5 +1,6 @@
 package org.movierc.movieservice.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignFilmPersonRoleDto {
+    @NotNull
     private UUID filmPersonId;
+    @NotNull
     private FilmPersonRole role;
 }
