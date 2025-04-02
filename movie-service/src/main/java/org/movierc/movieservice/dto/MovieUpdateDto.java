@@ -15,7 +15,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 public class MovieUpdateDto {
     @Schema(example = "The Matrix")
     @NotBlank

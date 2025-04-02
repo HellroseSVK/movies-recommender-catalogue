@@ -18,7 +18,7 @@ import java.util.UUID;
 public class FilmPersonDto {
     @Valid
     private UUID id;
-    @Schema(type = "string", example = "Clark Kent")
+    @Schema(example = "Clark Kent")
     @NotBlank
     private String name;
 }
