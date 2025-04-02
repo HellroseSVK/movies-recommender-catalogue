@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,15 +21,12 @@ public class Movie {
     private UUID id;
     private String title;
     private String description;
-    private List<String> images;
+
+    private List<URL> images;
+
     private List<Genre> genres;
 
-    private List<FilmPerson> cast;
-    private FilmPerson director;
-    private FilmPerson screenwriter;
-    private FilmPerson cinematographer;
-    private FilmPerson composer;
-    private FilmPerson sourceMaterialAuthor;
+    private List<FilmPersonInMovieRole> filmPersonRoles;
 
     private final Map<UUID, Integer> totalRatings = new HashMap<>();
     private final Map<UUID, Integer> numbersOfRatings = new HashMap<>();

@@ -11,3 +11,5 @@ spring:
     port: "${RABBIT_BROKER_PORT:5672}"
     username: "${RABBIT_BROKER_USER:rabbit}"
     password: "${RABBIT_BROKER_PASSWORD:rabbit}"
+server:
+  port: "${FILM_PERSON_SERVICE_PORT:8082}"

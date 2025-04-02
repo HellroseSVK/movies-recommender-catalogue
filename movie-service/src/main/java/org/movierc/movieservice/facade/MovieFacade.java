@@ -1,9 +1,12 @@
 package org.movierc.movieservice.facade;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.movierc.movieservice.dto.AssignFilmPersonRoleDto;
 import org.movierc.movieservice.dto.MovieCreateDto;
 import org.movierc.movieservice.dto.MovieDto;
 import org.movierc.movieservice.dto.MovieUpdateDto;
+import org.movierc.movieservice.dto.RemoveFilmPersonRoleDto;
 import org.movierc.movieservice.service.MovieService;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +44,13 @@ public class MovieFacade {
 
     public MovieDto removeGenre(UUID movieId, UUID genreId) {
         return movieService.removeGenre(movieId, genreId);
+    }
+
+    public MovieDto assignFilmPerson(UUID movieId, @Valid AssignFilmPersonRoleDto assignFilmPersonRoleDto) {
+        return movieService.assignFilmPerson(movieId, assignFilmPersonRoleDto);
+    }
+
+    public MovieDto removeFilmPerson(UUID movieId, @Valid RemoveFilmPersonRoleDto removeFilmPersonRoleDto) {
+        return movieService.removeFilmPerson(movieId, removeFilmPersonRoleDto);
     }
 }

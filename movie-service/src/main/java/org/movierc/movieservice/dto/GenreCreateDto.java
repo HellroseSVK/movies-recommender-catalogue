@@ -1,6 +1,6 @@
 package org.movierc.movieservice.dto;
 
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 public class GenreCreateDto {
+    @Schema(example = "Horror")
     private String name;
 }

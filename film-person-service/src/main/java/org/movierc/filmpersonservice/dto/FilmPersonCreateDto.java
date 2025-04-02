@@ -1,6 +1,7 @@
 package org.movierc.filmpersonservice.dto;
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,9 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 public class FilmPersonCreateDto {
+    @NotBlank
+    @NotNull
     private String name;
     private String image;
     private LocalDate dateOfBirth;

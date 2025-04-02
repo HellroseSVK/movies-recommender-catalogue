@@ -82,7 +82,7 @@ public class MovieEventConsumer {
     public void handleMovieFilmPersonRolesRemovedEvent(@Payload MovieFilmPersonRolesRemovedEvent event) {
         event.getRemovedMovieFilmPersonRoles().forEach(movieFilmPersonRole ->
                 filmPersonRepository.findById(movieFilmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
-            filmPerson.getMovies().removeIf(m -> m.getMovieId().equals(movieFilmPersonRole.getFilmPersonId()));
+            filmPerson.getMovies().removeIf(m -> m.getMovieId().equals(movieFilmPersonRole.getMovieId()));
             filmPersonRepository.save(filmPerson);
         }));
 
