@@ -1,6 +1,5 @@
 package org.movierc.movieservice.dto;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RemoveFilmPersonRoleDto {
-    private UUID personId;
+    private UUID filmPersonId;
     private FilmPersonRole role;
 }
