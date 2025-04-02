@@ -1,0 +1,25 @@
+package org.movierc.recommendationservice.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MovieDto {
+    @Valid
+    private UUID id;
+    @Schema(example = "The Matrix")
+    @NotBlank
+    private String title;
+    private List<RatingDetailDto> userAverageRatings;
+}
