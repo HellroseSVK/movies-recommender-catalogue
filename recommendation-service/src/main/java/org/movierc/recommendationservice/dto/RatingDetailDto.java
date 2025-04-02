@@ -16,6 +16,6 @@ public class RatingDetailDto {
     private RatingCategoryDto category;
     @Min(0)
     @Max(100)
-    @Schema(example = "100")
+    @Schema(example = "100", description = "Rating value between 0 and 100")
     private int rating;
 }
