@@ -1,6 +1,7 @@
 package org.movierc.recommendationservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
@@ -33,8 +34,8 @@ public class RecommendationController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
             }
     )
     public ResponseEntity<List<MovieDto>> getRecommendations() {
@@ -52,8 +53,8 @@ public class RecommendationController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
             }
     )
     @GetMapping("/by-categories/{threshold}")
@@ -71,8 +72,8 @@ public class RecommendationController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
             }
     )
     @GetMapping("/by-categories/weighted")
@@ -89,8 +90,8 @@ public class RecommendationController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
             }
     )
     @GetMapping("/by-rated/{userId}")
@@ -109,8 +110,8 @@ public class RecommendationController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
             }
     )
     @GetMapping("/by-rated/{userId}/all-similar/{threshold}")
@@ -127,8 +128,8 @@ public class RecommendationController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Category not found"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
             }
     )
     @GetMapping("/by-movie/{movieId}")
