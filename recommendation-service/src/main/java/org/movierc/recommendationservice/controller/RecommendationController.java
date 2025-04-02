@@ -12,6 +12,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,23 +65,24 @@ public class RecommendationController {
     }
 
     @Operation(
-            summary = "Get recommendations in selected categories weighted by the user",
-            description = "Get a list of recommendations for the user based on the selected categories. The recommendations " +
-                    "are based on all users weighted average based on category. The weights are used as multiplication " +
-                    "factors for the average rating of each category. The recommendations are sorted by rating in descending order."
-
+        summary = "Get recommendations in selected categories weighted by the user",
+        description = "Get a list of recommendations for the user based on the selected categories. The recommendations " +
+            "are based on all users weighted average based on category. The weights are used as multiplication " +
+            "factors for the average rating of each category. The recommendations are sorted by rating in descending order."
     )
     @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
-            }
+        value = {
+            @ApiResponse(responseCode = "200", description = "Recommendations retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "text/plain")),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+        }
     )
-    @GetMapping("/by-categories/weighted")
-    public ResponseEntity<List<MovieDto>> getRecommendationsByCategoriesWeighted(@RequestParam List<GetRecommendationByCategoriesWeightedDto> categoryWeights) {
+    @PostMapping("/by-categories/weighted")
+    public ResponseEntity<List<MovieDto>> getRecommendationsByCategoriesWeighted(
+        @RequestBody List<GetRecommendationByCategoriesWeightedDto> categoryWeights) {
         return ResponseEntity.ok(recommendationFacade.getRecommendationsByCategoriesWeighted(categoryWeights));
     }
+
 
     @Operation(
             summary = "Get recommendations in already rated movies",
