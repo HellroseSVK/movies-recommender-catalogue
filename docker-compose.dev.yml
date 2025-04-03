@@ -1,4 +1,4 @@
-name: Movie Recommender Catalogue Dev
+name: movie_recommender_catalogue_dev
 services:
   artemis:
     image: apache/activemq-artemis:latest
