@@ -71,7 +71,7 @@ Recommended for launching all microservices at once.
 docker compose up --build
 ```
 
-> 🧠 **Don’t forget to create a `.env` file in the root directory with the following variables:**
+> 🧠 **You can optionally create a .env file in the root directory to override the default values below. These defaults are used automatically unless a different setup is needed:**
 > ```env
 > RABBIT_BROKER_HOST=localhost
 > RABBIT_BROKER_PORT=5672
@@ -89,8 +89,6 @@ docker compose up --build
 | Feedback Service       | 8084  | Ratings, reviews               |
 | Recommendation Service | 8085  | Movie recommendations          |
 | RabbitMQ Management UI | 15672 | http://localhost:15672         |
-
-> **RabbitMQ login**: `rabbit` / `rabbit`
 
 ---
 
