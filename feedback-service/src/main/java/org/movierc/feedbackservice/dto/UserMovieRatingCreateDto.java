@@ -17,12 +17,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Valid
 public class UserMovieRatingCreateDto {
-    @Valid
+    @NotNull
     private UUID userId;
-    @Valid
+    @NotNull
     private UUID movieId;
     private List<@Valid RatingDetailDto> ratingDetails;
-    @NotNull
     @Schema(example = "This movie was amazing!")
     private String comment;
 }

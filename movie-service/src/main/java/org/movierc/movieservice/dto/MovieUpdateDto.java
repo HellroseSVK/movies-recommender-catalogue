@@ -16,11 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovieUpdateDto {
-    @Schema(example = "The Matrix")
     @NotBlank
+    @Schema(example = "The Matrix")
     private String title;
     @Schema(example = "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
     private String description;
-    @Valid
     private List<URL> images;
 }

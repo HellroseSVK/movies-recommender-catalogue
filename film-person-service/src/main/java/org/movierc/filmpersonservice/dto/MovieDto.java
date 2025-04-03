@@ -1,5 +1,7 @@
 package org.movierc.filmpersonservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovieDto {
+    @NotNull
     private UUID id;
+    @NotBlank
     private String title;
 }

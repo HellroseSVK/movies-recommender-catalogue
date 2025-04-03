@@ -3,6 +3,7 @@ package org.movierc.recommendationservice.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class GetRecommendationByCategoriesWeightedDto {
-    @Valid
+    @NotNull
     private UUID categoryId;
     @Min(0)
     @Schema(example = "0.5")

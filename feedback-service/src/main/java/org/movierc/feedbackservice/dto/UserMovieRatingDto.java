@@ -16,12 +16,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserMovieRatingDto {
-    @Valid
-    private UUID id;
-    private UserDto user;
-    private MovieDto movie;
-    private List< @Valid RatingDetailDto> ratingDetails;
     @NotNull
+    private UUID id;
+    @Valid
+    @NotNull
+    private UserDto user;
+    @Valid
+    @NotNull
+    private MovieDto movie;
+    private List<@Valid RatingDetailDto> ratingDetails;
     @Schema(example = "This movie was amazing!")
     private String comment;
 }
