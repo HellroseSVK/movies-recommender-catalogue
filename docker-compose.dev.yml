@@ -1,18 +1,18 @@
 name: movie_recommender_catalogue_dev
-services:
-  artemis:
-    image: apache/activemq-artemis:latest
-    container_name: artemis-broker
-    restart: unless-stopped
-    environment:
-      - ARTEMIS_USERNAME=artemis
-      - ARTEMIS_PASSWORD=artemis
-      - DISABLE_SECURITY=true
-    ports:
-      - "61616:61616"  # JMS port
-      - "8161:8161"    # Artemis Web console: http://localhost:8161
-    volumes:
-      - artemis-data:/var/lib/artemis/data
+#services:
+#  artemis:
+#    image: apache/activemq-artemis:latest
+#    container_name: artemis-broker
+#    restart: unless-stopped
+#    environment:
+#      - ARTEMIS_USERNAME=artemis
+#      - ARTEMIS_PASSWORD=artemis
+#      - DISABLE_SECURITY=true
+#    ports:
+#      - "61616:61616"  # JMS port
+#      - "8161:8161"    # Artemis Web console: http://localhost:8161
+#    volumes:
+#      - artemis-data:/var/lib/artemis/data
   rabbitmq:
     image: rabbitmq:3-management
     container_name: local-rabbitmq
@@ -23,5 +23,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: rabbit
+
 volumes:
   artemis-data:
