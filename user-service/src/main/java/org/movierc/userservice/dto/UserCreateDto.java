@@ -1,7 +1,6 @@
 package org.movierc.userservice.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,6 @@ public class UserCreateDto {
     @Schema(example = "password")
     private String password;
     @NotBlank
-    @Email
     @Schema(example = "superman@krypton.com")
     private String email;
     @NotEmpty
