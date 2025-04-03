@@ -1,5 +1,6 @@
 package org.movierc.filmpersonservice.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,9 +22,10 @@ public class FilmPersonDto {
     private UUID id;
     @NotBlank
     private String name;
+    @Schema(example = "http://example.com/image1.jpg")
     private String image;
     private LocalDate dateOfBirth;
     private String biography;
-
+    @NotNull
     private List<@Valid FilmPersonMovieAssignmentDto> movies;
 }

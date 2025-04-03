@@ -21,6 +21,7 @@ public class UserMovieRatingCreateDto {
     private UUID userId;
     @NotNull
     private UUID movieId;
+    @NotNull
     private List<@Valid RatingDetailDto> ratingDetails;
     @Schema(example = "This movie was amazing!")
     private String comment;

@@ -25,8 +25,12 @@ public class MovieDto {
     private String title;
     @Schema(example = "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
     private String description;
+    @Schema(example = "http://example.com/image1.jpg")
+    @NotNull
     private List<URL> images;
+    @NotNull
     private List<GenreDto> genres;
+    @NotNull
     private List<@Valid MovieFilmPersonRoleDto> filmPersonRoles;
     private float rating;
 }
