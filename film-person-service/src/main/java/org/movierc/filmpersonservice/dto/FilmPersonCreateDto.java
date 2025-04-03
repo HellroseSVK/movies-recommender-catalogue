@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class FilmPersonCreateDto {
     @NotBlank
-    @NotNull
     private String name;
     private String image;
     private LocalDate dateOfBirth;

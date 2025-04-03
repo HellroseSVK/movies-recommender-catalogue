@@ -152,9 +152,9 @@ public class MovieService {
         }
         var movie = maybeMovie.get();
 
-        var maybeFilmPerson = filmPersonRepository.findById(assignFilmPersonRoleDto.getPersonId());
+        var maybeFilmPerson = filmPersonRepository.findById(assignFilmPersonRoleDto.getFilmPersonId());
         if (maybeFilmPerson.isEmpty()) {
-            throw new FilmPersonNotFoundException(assignFilmPersonRoleDto.getPersonId());
+            throw new FilmPersonNotFoundException(assignFilmPersonRoleDto.getFilmPersonId());
         }
         var filmPerson = maybeFilmPerson.get();
 
@@ -193,7 +193,7 @@ public class MovieService {
                         .filter(fpr ->
                                 fpr.getFilmPerson()
                                         .getId()
-                                        .equals(removeFilmPersonRoleDto.getPersonId())
+                                        .equals(removeFilmPersonRoleDto.getFilmPersonId())
                                         && fpr.getRole().equals(removeFilmPersonRoleDto.getRole())
                         )
                         .toList()
