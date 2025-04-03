@@ -3,17 +3,17 @@ package org.movierc.movieservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.movierc.movieservice.dto.MovieCreateDto;
-import org.movierc.movieservice.dto.MovieDto;
-import org.movierc.movieservice.dto.MovieUpdateDto;
+import org.movierc.movieservice.dto.*;
 import org.movierc.movieservice.exception.MovieNotFoundException;
 import org.movierc.movieservice.facade.MovieFacade;
+import org.movierc.shared.enm.FilmPersonRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -109,20 +109,34 @@ class MovieControllerTest {
     void createMovie_ValidInput_ReturnsCreatedMovieDto() throws Exception {
         // Setup
         MovieCreateDto createDto = MovieCreateDto.builder()
-                .title("New Movie")
-                .build();
+            .title("New Movie")
+            .description("A new movie description")
+            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+            .genres(List.of(UUID.randomUUID()))
+            .filmPersonRoles(List.of(MovieFilmPersonRoleCreateDto.builder()
+                .filmPersonId(UUID.randomUUID())
+                .role(FilmPersonRole.ACTOR)
+                .build()))
+            .build();
         MovieDto returnedDto = MovieDto.builder()
-                .id(UUID.randomUUID())
-                .title("New Movie")
-                .build();
+            .id(UUID.randomUUID())
+            .title("New Movie")
+            .description("A new movie description")
+            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+            .genres(List.of(GenreDto.builder().id(UUID.randomUUID()).name("Action").build()))
+            .filmPersonRoles(List.of(MovieFilmPersonRoleDto.builder()
+                .filmPerson(FilmPersonDto.builder().id(UUID.randomUUID()).name("John Doe").build())
+                .role(FilmPersonRole.ACTOR)
+                .build()))
+            .build();
         when(movieFacade.createMovie(ArgumentMatchers.any(MovieCreateDto.class))).thenReturn(returnedDto);
 
         // Act & Verify
         mockMvc.perform(post("/api/v1/movie")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title", is("New Movie")));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.title", is("New Movie")));
 
         verify(movieFacade).createMovie(ArgumentMatchers.any(MovieCreateDto.class));
     }
@@ -144,20 +158,29 @@ class MovieControllerTest {
         // Setup
         UUID id = UUID.randomUUID();
         MovieUpdateDto updateDto = MovieUpdateDto.builder()
-                .title("Updated Movie")
-                .build();
+            .title("Updated Movie")
+            .description("An updated movie description")
+            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+            .build();
         MovieDto updatedDto = MovieDto.builder()
-                .id(id)
-                .title("Updated Movie")
-                .build();
+            .id(id)
+            .title("Updated Movie")
+            .description("An updated movie description")
+            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+            .genres(List.of(GenreDto.builder().id(UUID.randomUUID()).name("Action").build()))
+            .filmPersonRoles(List.of(MovieFilmPersonRoleDto.builder()
+                .filmPerson(FilmPersonDto.builder().id(UUID.randomUUID()).name("John Doe").build())
+                .role(FilmPersonRole.ACTOR)
+                .build()))
+            .build();
         when(movieFacade.updateMovie(id, updateDto)).thenReturn(updatedDto);
 
         // Act & Verify
         mockMvc.perform(put("/api/v1/movie/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Updated Movie")));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.title", is("Updated Movie")));
 
         verify(movieFacade).updateMovie(id, updateDto);
     }
@@ -167,16 +190,18 @@ class MovieControllerTest {
         // Setup
         UUID id = UUID.randomUUID();
         MovieUpdateDto updateDto = MovieUpdateDto.builder()
-                .title("Non existent")
-                .build();
+            .title("Non existent")
+            .description("A non existent movie description")
+            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+            .build();
         when(movieFacade.updateMovie(id, updateDto))
-                .thenThrow(new MovieNotFoundException(id));
+            .thenThrow(new MovieNotFoundException(id));
 
         // Act & Verify
         mockMvc.perform(put("/api/v1/movie/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(status().isNotFound());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)))
+            .andExpect(status().isNotFound());
 
         verify(movieFacade).updateMovie(id, updateDto);
     }
