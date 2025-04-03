@@ -19,7 +19,7 @@ public class UserMovieRatingEventConsumer {
 
     private final UserMovieRatingMapper userMovieRatingMapper;
 
-    @RabbitListener(queues = "#movieRatingCreatedQueue.getName()")
+    @RabbitListener(queues = "#{movieRatingCreatedQueue.getName()}")
     public void handleMovieRatingCreatedEvent(MovieRatingCreatedEvent event) {
         if (!userMovieRatingRepository.existsByUserIdAndMovieId(event.getUserId(), event.getMovieId())) {
             userMovieRatingRepository.save(userMovieRatingMapper.userMovieRatingCreatedEventToUserMovieRating(event));
@@ -27,7 +27,7 @@ public class UserMovieRatingEventConsumer {
         logger.info("Received Movie Rating Created: {}", event);
     }
 
-    @RabbitListener(queues = "#movieRatingUpdatedQueue.getName()")
+    @RabbitListener(queues = "#{movieRatingUpdatedQueue.getName()}")
     public void handleMovieRatingUpdatedEvent(MovieRatingUpdatedEvent event) {
         if (!userMovieRatingRepository.existsByUserIdAndMovieId(event.getUserId(), event.getMovieId())) {
             userMovieRatingRepository.save(userMovieRatingMapper.userMovieRatingUpdatedEventToUserMovieRating(event));
@@ -35,7 +35,7 @@ public class UserMovieRatingEventConsumer {
         logger.info("Received Movie Rating Updated: {}", event);
     }
 
-    @RabbitListener(queues = "#movieRatingDeletedQueue.getName()")
+    @RabbitListener(queues = "#{movieRatingDeletedQueue.getName()}")
     public void handleMovieRatingDeletedEvent(MovieRatingDeletedEvent event) {
         if (!userMovieRatingRepository.existsByUserIdAndMovieId(event.getUserId(), event.getMovieId())) {
             userMovieRatingRepository.deleteByUserIdAndMovieId(event.getUserId(), event.getMovieId());
