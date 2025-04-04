@@ -7,6 +7,7 @@ services:
       - "8081:8081"
     volumes:
       - ./config/movie/external-app.properties:/app/etc/application.properties
+    env_file: ./etc/dev.env
 
   film-person-service:
     build:
@@ -16,6 +17,7 @@ services:
       - "8082:8082"
     volumes:
       - ./config/film-person/external-app.properties:/app/etc/application.properties
+    env_file: ./etc/dev.env
 
   user-service:
     build:
@@ -25,6 +27,7 @@ services:
       - "8083:8083"
     volumes:
       - ./config/user/external-app.properties:/app/etc/application.properties
+    env_file: ./etc/dev.env
 
   feedback-service:
     build:
@@ -34,6 +37,7 @@ services:
       - "8084:8084"
     volumes:
       - ./config/feedback/external-app.properties:/app/etc/application.properties
+    env_file: ./etc/dev.env
 
   recommendation-service:
     build:
@@ -43,19 +47,7 @@ services:
       - "8085:8085"
     volumes:
       - ./config/recommendation/external-app.properties:/app/etc/application.properties
-
-  artemis:
-    image: apache/activemq-artemis:latest
-    container_name: artemis-broker
-    environment:
-      - ARTEMIS_USERNAME=artemis
-      - ARTEMIS_PASSWORD=artemis
-      - DISABLE_SECURITY=true
-    ports:
-      - "61616:61616"  # JMS port
-      - "8161:8161"    # Web console
-    volumes:
-      - artemis-data:/var/lib/artemis/data
+    env_file: ./etc/dev.env
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -67,5 +59,3 @@ services:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: rabbit
 
-volumes:
-  artemis-data:
