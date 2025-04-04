@@ -55,7 +55,72 @@ This project follows a **microservices architecture**, where each service is res
 - **Key Features**:
     - Recommend movies based on genre and user feedback
 
+## 🛠️ Build & Run Guide
 
+This project can be run in two ways: using **Docker Compose** or **Maven**.
+
+---
+
+### ✅ 1. Running with Docker Compose
+
+Recommended for launching all microservices at once.
+
+#### 📦 Build & Run
+
+```bash
+docker compose up --build
+```
+
+> 🧠 **You can optionally create a .env file in the root directory to override the default values below. These defaults are used automatically unless a different setup is needed:**
+> ```env
+> RABBIT_BROKER_HOST=localhost
+> RABBIT_BROKER_PORT=5672
+> RABBIT_BROKER_USER=rabbit
+> RABBIT_BROKER_PASSWORD=rabbit
+> ```
+
+#### 📊 Available Services
+
+| Service                | Port  | Description                    |
+|------------------------|-------|--------------------------------|
+| Movie Service          | 8081  | Movie and genre management     |
+| Film Person Service    | 8082  | Actors, directors, creators    |
+| User Service           | 8083  | Users, login, roles            |
+| Feedback Service       | 8084  | Ratings, reviews               |
+| Recommendation Service | 8085  | Movie recommendations          |
+| RabbitMQ Management UI | 15672 | http://localhost:15672         |
+
+---
+
+### ☕️ 2. Running with Maven (for local development)
+
+If you want to run a single service manually, make sure RabbitMQ is running:
+
+```bash
+cd <service-name>
+mvn spring-boot:run
+```
+
+Example:
+```bash
+cd user-service
+mvn spring-boot:run
+```
+---
+
+### 🖊️ API Documentation (OpenAPI / Swagger)
+
+Once running, each service provides OpenAPI documentation at:
+
+| Service                | URL                                   |
+|------------------------|----------------------------------------|
+| Movie Service          | http://localhost:8081/swagger-ui.html |
+| Film Person Service    | http://localhost:8082/swagger-ui.html |
+| User Service           | http://localhost:8083/swagger-ui.html |
+| Feedback Service       | http://localhost:8084/swagger-ui.html |
+| Recommendation Service | http://localhost:8085/swagger-ui.html |
+
+---
 
 ## Use case
 ![Use Case](https://gitlab.fi.muni.cz/xtefr/movies-recommender-catalogue/-/wikis/uploads/2adf2376ab25e987a9962c24c976aa7a/useCase.png)
