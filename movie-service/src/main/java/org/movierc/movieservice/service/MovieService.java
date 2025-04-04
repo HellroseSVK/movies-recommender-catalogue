@@ -21,6 +21,7 @@ import org.movierc.movieservice.repository.GenreRepository;
 import org.movierc.movieservice.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class MovieService {
     public List<MovieDto> getAllMovies() {
         return movieRepository.findAll().stream()
                 .map(movieMapper::movieToMovieDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public MovieDto getMovieById(UUID id) {
@@ -93,7 +94,7 @@ public class MovieService {
                 .map(genreId -> genreRepository.findById(genreId)
                         .orElseThrow(() -> new GenreNotFoundException(genreId))
                 )
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private void setFilmPersons(Movie movie, MovieCreateDto movieCreateDto) {
@@ -106,7 +107,9 @@ public class MovieService {
                                 filmPersonRepository.findById(filmPersonRole.getFilmPersonId())
                                         .orElseThrow(() -> new FilmPersonNotFoundException(filmPersonRole.getFilmPersonId())),
                                 filmPersonRole.getRole()
-                        )).toList();
+                        )
+                )
+                .collect(Collectors.toCollection(ArrayList::new));
 
         movie.setFilmPersonRoles(resolvedFilmPersonRoles);
     }
@@ -138,7 +141,12 @@ public class MovieService {
         }
         var movie = maybeMovie.get();
 
-        movie.setGenres(movie.getGenres().stream().filter(g -> !g.getId().equals(genreId)).toList());
+        movie.setGenres(
+                movie.getGenres()
+                        .stream()
+                        .filter(g -> !g.getId().equals(genreId))
+                        .collect(Collectors.toCollection(ArrayList::new))
+        );
 
         var updatedMovie = movieRepository.save(movie);
         movieEventProducer.sendMovieUpdatedEvent(movieMapper.movieToMovieUpdatedEvent(updatedMovie));
@@ -196,7 +204,7 @@ public class MovieService {
                                         .equals(removeFilmPersonRoleDto.getFilmPersonId())
                                         && fpr.getRole().equals(removeFilmPersonRoleDto.getRole())
                         )
-                        .toList()
+                        .collect(Collectors.toCollection(ArrayList::new))
         );
 
         var updatedMovie = movieRepository.save(movie);
