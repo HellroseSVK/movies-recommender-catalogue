@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ class FilmPersonControllerTest {
         FilmPersonDto dto = FilmPersonDto.builder()
                 .id(UUID.randomUUID())
                 .name("John Doe")
-                .image("image.png")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1980, 1, 1))
                 .biography("Bio")
                 .build();
@@ -84,7 +85,7 @@ class FilmPersonControllerTest {
         FilmPersonDto dto = FilmPersonDto.builder()
                 .id(id)
                 .name("Jane Doe")
-                .image("jane.png")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1990, 2, 2))
                 .biography("Bio Jane")
                 .build();
@@ -118,14 +119,14 @@ class FilmPersonControllerTest {
         // Setup
         FilmPersonCreateDto createDto = FilmPersonCreateDto.builder()
                 .name("New Person")
-                .image("new.png")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(2000, 3, 3))
                 .biography("New biography")
                 .build();
         FilmPersonDto returnedDto = FilmPersonDto.builder()
                 .id(UUID.randomUUID())
                 .name("New Person")
-                .image("new.png")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(2000, 3, 3))
                 .biography("New biography")
                 .build();
@@ -145,7 +146,7 @@ class FilmPersonControllerTest {
     void createFilmPerson_MissingRequiredField_ReturnsBadRequest() throws Exception {
         // Setup: omit mandatory "name"
         FilmPersonCreateDto createDto = FilmPersonCreateDto.builder()
-                .image("new.png")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(2000, 3, 3))
                 .biography("New biography")
                 .build();
@@ -163,14 +164,14 @@ class FilmPersonControllerTest {
         UUID id = UUID.randomUUID();
         FilmPersonUpdateDto updateDto = FilmPersonUpdateDto.builder()
                 .name("Updated Name")
-                .image("updated.png")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1985, 5, 5))
                 .biography("Updated Bio")
                 .build();
         FilmPersonDto updatedDto = FilmPersonDto.builder()
                 .id(id)
                 .name("Updated Name")
-                .image("updated.png")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1985, 5, 5))
                 .biography("Updated Bio")
                 .build();

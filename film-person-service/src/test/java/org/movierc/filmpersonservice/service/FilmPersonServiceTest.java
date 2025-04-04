@@ -20,6 +20,7 @@ import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
 import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +55,12 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void getAllFilmPersons_ReturnsListOfDtos() {
+    void getAllFilmPersons_ReturnsListOfDtos() throws Exception {
         // Setup
         FilmPerson fp = FilmPerson.builder()
                 .id(UUID.randomUUID())
                 .name("John Doe")
-                .image("image.jpg")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1980, 1, 1))
                 .biography("Bio")
                 .movies(new ArrayList<>())
@@ -75,13 +76,13 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void getFilmPersonById_FilmPersonExists_ReturnsDto() {
+    void getFilmPersonById_FilmPersonExists_ReturnsDto() throws Exception {
         // Setup
         UUID id = UUID.randomUUID();
         FilmPerson fp = FilmPerson.builder()
                 .id(id)
                 .name("Jane Doe")
-                .image("jane.jpg")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1990, 2, 2))
                 .biography("Jane's bio")
                 .movies(new ArrayList<>())
@@ -108,11 +109,11 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void createFilmPerson_ValidDto_ReturnsCreatedDtoAndSendsEvent() {
+    void createFilmPerson_ValidDto_ReturnsCreatedDtoAndSendsEvent() throws Exception {
         // Setup
         FilmPersonCreateDto createDto = FilmPersonCreateDto.builder()
                 .name("Alice")
-                .image("alice.jpg")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1985, 3, 3))
                 .biography("Alice's bio")
                 .build();
@@ -137,13 +138,13 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void updateFilmPerson_FilmPersonExists_UpdatesAndReturnsDtoAndSendsEvent() {
+    void updateFilmPerson_FilmPersonExists_UpdatesAndReturnsDtoAndSendsEvent() throws Exception {
         // Setup
         UUID id = UUID.randomUUID();
         FilmPerson fp = FilmPerson.builder()
                 .id(id)
                 .name("Old Name")
-                .image("old.jpg")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1970, 1, 1))
                 .biography("Old bio")
                 .movies(new ArrayList<>())
@@ -153,7 +154,7 @@ class FilmPersonServiceTest {
 
         FilmPersonUpdateDto updateDto = FilmPersonUpdateDto.builder()
                 .name("New Name")
-                .image("new.jpg")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1980, 2, 2))
                 .biography("New bio")
                 .build();
@@ -177,13 +178,13 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void updateFilmPerson_FilmPersonDoesNotExist_ThrowsException() {
+    void updateFilmPerson_FilmPersonDoesNotExist_ThrowsException() throws Exception {
         // Setup
         UUID id = UUID.randomUUID();
         when(filmPersonRepository.findById(id)).thenReturn(Optional.empty());
         FilmPersonUpdateDto updateDto = FilmPersonUpdateDto.builder()
                 .name("Name")
-                .image("image.jpg")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.now())
                 .biography("bio")
                 .build();
@@ -193,13 +194,13 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void deleteFilmPerson_FilmPersonExists_DeletesAndSendsEvent() {
+    void deleteFilmPerson_FilmPersonExists_DeletesAndSendsEvent() throws Exception {
         // Setup
         UUID id = UUID.randomUUID();
         FilmPerson fp = FilmPerson.builder()
                 .id(id)
                 .name("Bob")
-                .image("bob.jpg")
+                .image(new URL("http://image.png"))
                 .dateOfBirth(LocalDate.of(1965, 4, 4))
                 .biography("Bob's bio")
                 .movies(new ArrayList<>())

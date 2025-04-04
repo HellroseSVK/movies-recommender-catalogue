@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class FilmPersonDto {
     @NotBlank
     private String name;
     @Schema(example = "http://example.com/image1.jpg")
-    private String image;
+    private URL image;
     private LocalDate dateOfBirth;
     private String biography;
     @NotNull

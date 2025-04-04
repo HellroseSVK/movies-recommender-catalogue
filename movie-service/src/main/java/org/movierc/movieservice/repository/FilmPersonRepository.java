@@ -3,6 +3,7 @@ package org.movierc.movieservice.repository;
 import org.movierc.movieservice.entity.FilmPerson;
 import org.springframework.stereotype.Repository;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,6 @@ import java.util.UUID;
 @Repository
 public class FilmPersonRepository {
     private final List<FilmPerson> filmPersons = new ArrayList<>();
-
-    {
-        filmPersons.add(new FilmPerson(UUID.fromString("894061B7-4D80-4537-891A-18F008515D5B"), "John Doe", "image", LocalDate.now(), "biography"));
-    }
 
     public Optional<FilmPerson> findById(UUID id) {
         return filmPersons.stream().filter(fp -> fp.getId().equals(id)).findFirst();
