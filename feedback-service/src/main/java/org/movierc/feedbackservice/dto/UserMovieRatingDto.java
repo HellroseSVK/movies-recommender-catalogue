@@ -24,6 +24,7 @@ public class UserMovieRatingDto {
     @Valid
     @NotNull
     private MovieDto movie;
+    @NotNull
     private List<@Valid RatingDetailDto> ratingDetails;
     @Schema(example = "This movie was amazing!")
     private String comment;

@@ -1,5 +1,6 @@
 package org.movierc.filmpersonservice.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 public class FilmPersonUpdateDto {
     @NotBlank
     private String name;
+    @Schema(example = "http://example.com/image1.jpg")
     private String image;
     private LocalDate dateOfBirth;
     private String biography;

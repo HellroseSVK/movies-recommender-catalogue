@@ -1,5 +1,6 @@
 package org.movierc.filmpersonservice.entity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,6 @@ public class FilmPerson {
     private String image;
     private LocalDate dateOfBirth;
     private String biography;
-
+    @NotNull
     private List<FilmPersonMovieAssignment> movies;
 }
