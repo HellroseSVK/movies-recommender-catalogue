@@ -38,3 +38,4 @@ test:
         - movie-service/target/surefire-reports/
         - recommendation-service/target/surefire-reports/
         - user-service/target/surefire-reports/
+      expire_in: 1 week
