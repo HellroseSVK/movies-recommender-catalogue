@@ -369,11 +369,6 @@ class MovieServiceTest {
         dto.setFilmPersonId(filmPersonId);
         dto.setRole(FilmPersonRole.ACTOR);
 
-        Field field = movieMapper.getClass().getDeclaredField("filmPersonInMovieRoleMapper");
-        field.setAccessible(true);
-        field.set(movieMapper, Mappers.getMapper(MovieMapper.FilmPersonInMovieRoleMapper.class));
-        field.setAccessible(false);
-        
         // Act
         MovieDto result = movieService.assignFilmPerson(movieId, dto);
         
@@ -450,11 +445,6 @@ class MovieServiceTest {
         dto.setFilmPersonId(filmPersonId);
         dto.setRole(FilmPersonRole.ACTOR);
 
-        Field field = movieMapper.getClass().getDeclaredField("filmPersonInMovieRoleMapper");
-        field.setAccessible(true);
-        field.set(movieMapper, Mappers.getMapper(MovieMapper.FilmPersonInMovieRoleMapper.class));
-        field.setAccessible(false);
-        
         // Act
         MovieDto result = movieService.removeFilmPerson(movieId, dto);
         
