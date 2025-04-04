@@ -1,5 +1,6 @@
 package org.movierc.userservice.rabbit;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.movierc.events.user.UserCreatedEvent;
@@ -11,6 +12,7 @@ import org.movierc.events.EventUtil;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.util.UUID;
@@ -26,10 +28,18 @@ public class UserEventProducerTest {
     private UserEventProducer producer;
 
     @Mock
+    private TopicExchange topicExchange;
+
+    @Mock
     private RabbitTemplate rabbitTemplate;
 
+    @BeforeEach
+    public void setUp() {
+        when(topicExchange.getName()).thenReturn("topicExchange");
+    }
+
     @Test
-    public void sendUserCreatedEvent_ValidEvent_SendsEventSuccessfully() {
+    public void sendUserCreatedEvent_ValidEvent_SendsEventSuccessfully() throws Exception {
         // Setup
         UserCreatedEvent event = UserCreatedEvent.builder()
                 .id(UUID.randomUUID())
@@ -38,11 +48,10 @@ public class UserEventProducerTest {
                 .build();
         String expectedQueue = EventUtil.forService(UserEvents.USER_CREATED_QUEUE, RabbitConfig.SERVICE_ID);
 
-        // Act
         producer.sendUserCreatedEvent(event);
 
         // Verify
-        verify(rabbitTemplate, times(1)).convertAndSend(expectedQueue, event);
+        verify(rabbitTemplate, times(1)).convertAndSend("topicExchange", expectedQueue, event);
     }
 
     @Test
@@ -55,12 +64,12 @@ public class UserEventProducerTest {
                 .build();
         String expectedQueue = EventUtil.forService(UserEvents.USER_CREATED_QUEUE, RabbitConfig.SERVICE_ID);
         RuntimeException exception = new RuntimeException("Send error");
-        doThrow(exception).when(rabbitTemplate).convertAndSend(expectedQueue, event);
+        doThrow(exception).when(rabbitTemplate).convertAndSend("topicExchange", expectedQueue, event);
 
         // Act & Verify
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> producer.sendUserCreatedEvent(event));
         assertEquals("Send error", thrown.getMessage());
-        verify(rabbitTemplate, times(1)).convertAndSend(expectedQueue, event);
+        verify(rabbitTemplate, times(1)).convertAndSend("topicExchange", expectedQueue, event);
     }
 
     @Test
@@ -77,7 +86,7 @@ public class UserEventProducerTest {
         producer.sendUserUpdatedEvent(event);
 
         // Verify
-        verify(rabbitTemplate, times(1)).convertAndSend(expectedQueue, event);
+        verify(rabbitTemplate, times(1)).convertAndSend("topicExchange", expectedQueue, event);
     }
 
     @Test
@@ -90,12 +99,12 @@ public class UserEventProducerTest {
                 .build();
         String expectedQueue = EventUtil.forService(UserEvents.USER_UPDATED_QUEUE, RabbitConfig.SERVICE_ID);
         RuntimeException exception = new RuntimeException("Send error");
-        doThrow(exception).when(rabbitTemplate).convertAndSend(expectedQueue, event);
+        doThrow(exception).when(rabbitTemplate).convertAndSend("topicExchange", expectedQueue, event);
 
         // Act & Verify
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> producer.sendUserUpdatedEvent(event));
         assertEquals("Send error", thrown.getMessage());
-        verify(rabbitTemplate, times(1)).convertAndSend(expectedQueue, event);
+        verify(rabbitTemplate, times(1)).convertAndSend("topicExchange", expectedQueue, event);
     }
 
     @Test
@@ -111,7 +120,7 @@ public class UserEventProducerTest {
         producer.sendUserDeletedEvent(event);
 
         // Verify
-        verify(rabbitTemplate, times(1)).convertAndSend(expectedQueue, event);
+        verify(rabbitTemplate, times(1)).convertAndSend("topicExchange", expectedQueue, event);
     }
 
     @Test
@@ -123,11 +132,11 @@ public class UserEventProducerTest {
                 .build();
         String expectedQueue = EventUtil.forService(UserEvents.USER_DELETED_QUEUE, RabbitConfig.SERVICE_ID);
         RuntimeException exception = new RuntimeException("Send error");
-        doThrow(exception).when(rabbitTemplate).convertAndSend(expectedQueue, event);
+        doThrow(exception).when(rabbitTemplate).convertAndSend("topicExchange", expectedQueue, event);
 
         // Act & Verify
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> producer.sendUserDeletedEvent(event));
         assertEquals("Send error", thrown.getMessage());
-        verify(rabbitTemplate, times(1)).convertAndSend(expectedQueue, event);
+        verify(rabbitTemplate, times(1)).convertAndSend("topicExchange", expectedQueue, event);
     }
 }

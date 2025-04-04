@@ -13,6 +13,7 @@ import org.movierc.movieservice.entity.FilmPerson;
 import org.movierc.movieservice.mapper.FilmPersonCreatedEventMapper;
 import org.movierc.movieservice.repository.FilmPersonRepository;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -84,13 +85,13 @@ class FilmPersonEventConsumerTest {
     }
 
     @Test
-    void handleFilmPersonUpdatedEvent_ExistingEvent_UpdatesAndSaves() {
+    void handleFilmPersonUpdatedEvent_ExistingEvent_UpdatesAndSaves() throws Exception {
         // Setup
         UUID eventId = UUID.randomUUID();
         FilmPersonUpdatedEvent updatedEvent = new FilmPersonUpdatedEvent();
         updatedEvent.setId(eventId);
         updatedEvent.setName("Jane Doe");
-        updatedEvent.setImage("new-image");
+        updatedEvent.setImage(new URL("http://example.com/new-image"));
         updatedEvent.setDateOfBirth(LocalDate.of(1990, 1, 1));
         updatedEvent.setBiography("Updated biography");
 
@@ -98,7 +99,7 @@ class FilmPersonEventConsumerTest {
         FilmPerson existingFilmPerson = new FilmPerson();
         existingFilmPerson.setId(eventId);
         existingFilmPerson.setName("John Doe");
-        existingFilmPerson.setImage("old-image");
+        existingFilmPerson.setImage(new URL("http://example.com/old-image"));
         existingFilmPerson.setDateOfBirth(LocalDate.of(1980, 1, 1));
         existingFilmPerson.setBiography("Old biography");
 
@@ -111,7 +112,7 @@ class FilmPersonEventConsumerTest {
         verify(filmPersonRepository).save(existingFilmPerson);
         // Optionally verify that fields were updated
         assertEquals("Jane Doe", existingFilmPerson.getName());
-        assertEquals("new-image", existingFilmPerson.getImage());
+        assertEquals(new URL("http://example.com/new-image"), existingFilmPerson.getImage());
         assertEquals(LocalDate.of(1990, 1, 1), existingFilmPerson.getDateOfBirth());
         assertEquals("Updated biography", existingFilmPerson.getBiography());
     }
