@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.movierc.events.movie.MovieCreatedEvent;
 import org.movierc.events.movie.MovieFilmPersonRole;
-import org.movierc.events.movie.MovieFilmPersonRolesAddedEvent;
-import org.movierc.events.movie.MovieFilmPersonRolesRemovedEvent;
+import org.movierc.events.movie.MovieFilmPersonRoleAddedEvent;
+import org.movierc.events.movie.MovieFilmPersonRoleRemovedEvent;
 import org.movierc.events.movie.MovieUpdatedEvent;
 import org.movierc.filmpersonservice.entity.FilmPerson;
 import org.movierc.filmpersonservice.entity.FilmPersonMovieAssignment;
@@ -219,19 +219,19 @@ public class MovieEventConsumerTest {
     }
 
     @Test
-    void handleMovieFilmPersonRolesAddedEvent_FilmPersonExists_AssignmentAdded() {
+    void handleMovieFilmPersonRoleAddedEvent_FilmPersonExists_AssignmentAdded() {
         // Setup
         UUID movieId = UUID.randomUUID();
         UUID filmPersonId = UUID.randomUUID();
-        MovieFilmPersonRolesAddedEvent event = MovieFilmPersonRolesAddedEvent.builder()
-                .addedMovieFilmPersonRoles(new ArrayList<>())
-                .build();
+
         MovieFilmPersonRole role = MovieFilmPersonRole.builder()
                 .movieId(movieId)
                 .filmPersonId(filmPersonId)
                 .role(null)
                 .build();
-        event.getAddedMovieFilmPersonRoles().add(role);
+        MovieFilmPersonRoleAddedEvent event = MovieFilmPersonRoleAddedEvent.builder()
+                .addedMovieFilmPersonRole(role)
+                .build();
 
         FilmPerson filmPerson = new FilmPerson();
         filmPerson.setId(filmPersonId);
@@ -239,7 +239,7 @@ public class MovieEventConsumerTest {
         when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.of(filmPerson));
 
         // Act
-        consumer.handleMovieFilmPersonRolesAddedEvent(event);
+        consumer.handleMovieFilmPersonRoleAddedEvent(event);
 
         // Verify
         verify(filmPersonRepository, times(1)).save(filmPerson);
@@ -250,20 +250,20 @@ public class MovieEventConsumerTest {
     void handleMovieFilmPersonRolesAddedEvent_FilmPersonNotExists_NoAssignmentAdded() {
         // Setup
         UUID filmPersonId = UUID.randomUUID();
-        MovieFilmPersonRolesAddedEvent event = MovieFilmPersonRolesAddedEvent.builder()
-                .addedMovieFilmPersonRoles(new ArrayList<>())
-                .build();
+
         MovieFilmPersonRole role = MovieFilmPersonRole.builder()
                 .movieId(UUID.randomUUID())
                 .filmPersonId(filmPersonId)
                 .role(null)
                 .build();
-        event.getAddedMovieFilmPersonRoles().add(role);
+        MovieFilmPersonRoleAddedEvent event = MovieFilmPersonRoleAddedEvent.builder()
+                .addedMovieFilmPersonRole(role)
+                .build();
 
         when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.empty());
 
         // Act
-        consumer.handleMovieFilmPersonRolesAddedEvent(event);
+        consumer.handleMovieFilmPersonRoleAddedEvent(event);
 
         // Verify
         verify(filmPersonRepository, never()).save(any());
@@ -274,16 +274,16 @@ public class MovieEventConsumerTest {
         // Setup
         UUID movieId = UUID.randomUUID();
         UUID filmPersonId = UUID.randomUUID();
-        MovieFilmPersonRolesRemovedEvent event = MovieFilmPersonRolesRemovedEvent.builder()
-                .removedMovieFilmPersonRoles(new ArrayList<>())
-                .build();
         MovieFilmPersonRole role = MovieFilmPersonRole.builder()
                 // Note: based on consumer code, removal is done by comparing film person id with assignment movieId.
                 .movieId(movieId)
                 .filmPersonId(filmPersonId)
                 .role(null)
                 .build();
-        event.getRemovedMovieFilmPersonRoles().add(role);
+        MovieFilmPersonRoleRemovedEvent event = MovieFilmPersonRoleRemovedEvent.builder()
+                .removedMovieFilmPersonRole(role)
+                .build();
+
 
         // Create film person with an assignment whose getMovieId equals role.filmPersonId (matches removal condition)
         FilmPerson filmPerson = new FilmPerson();
@@ -294,7 +294,7 @@ public class MovieEventConsumerTest {
         when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.of(filmPerson));
 
         // Act
-        consumer.handleMovieFilmPersonRolesRemovedEvent(event);
+        consumer.handleMovieFilmPersonRoleRemovedEvent(event);
 
         // Verify
         verify(filmPersonRepository, times(1)).save(filmPerson);
@@ -305,20 +305,20 @@ public class MovieEventConsumerTest {
     void handleMovieFilmPersonRolesRemovedEvent_FilmPersonNotExists_NoAssignmentRemoved() {
         // Setup
         UUID filmPersonId = UUID.randomUUID();
-        MovieFilmPersonRolesRemovedEvent event = MovieFilmPersonRolesRemovedEvent.builder()
-                .removedMovieFilmPersonRoles(new ArrayList<>())
-                .build();
+
         MovieFilmPersonRole role = MovieFilmPersonRole.builder()
                 .movieId(UUID.randomUUID())
                 .filmPersonId(filmPersonId)
                 .role(null)
                 .build();
-        event.getRemovedMovieFilmPersonRoles().add(role);
+        MovieFilmPersonRoleRemovedEvent event = MovieFilmPersonRoleRemovedEvent.builder()
+                .removedMovieFilmPersonRole(role)
+                .build();
 
         when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.empty());
 
         // Act
-        consumer.handleMovieFilmPersonRolesRemovedEvent(event);
+        consumer.handleMovieFilmPersonRoleRemovedEvent(event);
 
         // Verify
         verify(filmPersonRepository, never()).save(any());

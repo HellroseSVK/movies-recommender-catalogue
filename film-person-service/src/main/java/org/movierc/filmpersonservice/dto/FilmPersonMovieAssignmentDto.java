@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.movierc.shared.enm.FilmPersonRole;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,7 +17,7 @@ import org.movierc.shared.enm.FilmPersonRole;
 public class FilmPersonMovieAssignmentDto {
     @NotNull
     @Valid
-    private MovieDto movie;
+    private UUID movieId;
     @NotNull
     private FilmPersonRole role;
 }

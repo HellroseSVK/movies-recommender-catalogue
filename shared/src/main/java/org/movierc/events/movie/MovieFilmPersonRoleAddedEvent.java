@@ -7,13 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MovieFilmPersonRolesAddedEvent implements Serializable {
-    private List<MovieFilmPersonRole> addedMovieFilmPersonRoles;
+public class MovieFilmPersonRoleAddedEvent implements Serializable {
+    private MovieFilmPersonRole addedMovieFilmPersonRole;
 }

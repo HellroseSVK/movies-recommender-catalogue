@@ -61,29 +61,29 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue movieFilmPersonRolesAddedQueue() {
-        return new Queue(EventUtil.forService(MovieEvents.MOVIE_FILM_PERSON_ROLES_ADDED, SERVICE_ID), true);
+    public Queue movieFilmPersonRoleAddedQueue() {
+        return new Queue(EventUtil.forService(MovieEvents.MOVIE_FILM_PERSON_ROLE_ADDED, SERVICE_ID), true);
     }
 
     @Bean
-    public Binding movieFilmPersonRolesAddedBinding(Queue movieFilmPersonRolesAddedQueue, TopicExchange topicExchange) {
+    public Binding movieFilmPersonRoleAddedBinding(Queue movieFilmPersonRoleAddedQueue, TopicExchange topicExchange) {
         return BindingBuilder
-                .bind(movieFilmPersonRolesAddedQueue)
+                .bind(movieFilmPersonRoleAddedQueue)
                 .to(topicExchange)
-                .with(EventUtil.all(MovieEvents.MOVIE_FILM_PERSON_ROLES_ADDED));
+                .with(EventUtil.all(MovieEvents.MOVIE_FILM_PERSON_ROLE_ADDED));
     }
 
     @Bean
-    public Queue movieFilmPersonRolesRemovedQueue() {
-        return new Queue(EventUtil.forService(MovieEvents.MOVIE_FILM_PERSON_ROLES_REMOVED, SERVICE_ID), true);
+    public Queue movieFilmPersonRoleRemovedQueue() {
+        return new Queue(EventUtil.forService(MovieEvents.MOVIE_FILM_PERSON_ROLE_REMOVED, SERVICE_ID), true);
     }
 
     @Bean
-    public Binding movieFilmPersonRolesRemovedBinding(Queue movieFilmPersonRolesRemovedQueue, TopicExchange topicExchange) {
+    public Binding movieFilmPersonRoleRemovedBinding(Queue movieFilmPersonRoleRemovedQueue, TopicExchange topicExchange) {
         return BindingBuilder
-                .bind(movieFilmPersonRolesRemovedQueue)
+                .bind(movieFilmPersonRoleRemovedQueue)
                 .to(topicExchange)
-                .with(EventUtil.all(MovieEvents.MOVIE_FILM_PERSON_ROLES_REMOVED));
+                .with(EventUtil.all(MovieEvents.MOVIE_FILM_PERSON_ROLE_REMOVED));
     }
 
     @Bean
