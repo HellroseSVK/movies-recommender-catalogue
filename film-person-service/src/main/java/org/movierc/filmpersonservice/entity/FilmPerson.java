@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,7 @@ import java.util.UUID;
 public class FilmPerson {
     private UUID id;
     private String name;
-    private String image;
+    private URL image;
     private LocalDate dateOfBirth;
     private String biography;
     @NotNull

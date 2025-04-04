@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +20,6 @@ public class MovieUpdatedEvent implements Serializable {
     private UUID id;
     private String title;
     private String description;
-    private List<String> images;
+    private List<URL> images;
     private List<MovieGenre> genres;
 }
