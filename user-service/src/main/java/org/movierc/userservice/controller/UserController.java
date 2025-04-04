@@ -33,7 +33,7 @@ public class UserController {
     @Operation(summary = "Get user by ID", description = "Retrieve a specific user by their ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User found"),
-        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "text/plain"))
+        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json"))
     })
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
@@ -43,7 +43,7 @@ public class UserController {
     @Operation(summary = "Create new user", description = "Create a new user with the provided information.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User created successfully", content = @Content(schema = @Schema(implementation = UserDto.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "text/plain"))
+        @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "application/problem+json"))
     })
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserCreateDto userCreateDto) {
@@ -53,7 +53,7 @@ public class UserController {
     @Operation(summary = "Delete user", description = "Delete a user by their ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "User deleted successfully"),
-        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "text/plain"))
+        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json"))
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
@@ -64,8 +64,8 @@ public class UserController {
     @Operation(summary = "Update user", description = "Update an existing user with new information.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "text/plain")),
-        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "text/plain"))
+        @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "application/problem+json")),
+        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json"))
     })
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable UUID id, @RequestBody @Valid UserUpdateDto userUpdateDto) {

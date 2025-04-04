@@ -42,7 +42,7 @@ public class GenreController {
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
@@ -64,7 +64,7 @@ public class GenreController {
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
@@ -86,12 +86,12 @@ public class GenreController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Genre not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )

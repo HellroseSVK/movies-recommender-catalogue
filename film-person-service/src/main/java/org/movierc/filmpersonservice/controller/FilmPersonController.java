@@ -33,7 +33,7 @@ public class FilmPersonController {
     @Operation(summary = "Get all film persons", description = "Returns a list of film persons.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
     @GetMapping
     public ResponseEntity<List<FilmPersonDto>> getAllFilmPersons() {
@@ -43,9 +43,9 @@ public class FilmPersonController {
     @Operation(summary = "Get film person by id", description = "Returns a single film person by id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval"),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
     public ResponseEntity<FilmPersonDto> getFilmPersonById(@PathVariable UUID id) {
@@ -55,8 +55,8 @@ public class FilmPersonController {
     @Operation(summary = "Create film person", description = "Creates a new film person.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Film person created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
     @PostMapping
     public ResponseEntity<FilmPersonDto> createFilmPerson(@RequestBody @Valid FilmPersonCreateDto filmPersonCreateDto) {
@@ -67,9 +67,9 @@ public class FilmPersonController {
     @Operation(summary = "Update film person", description = "Updates an existing film person by id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Film person updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
     public ResponseEntity<FilmPersonDto> updateFilmPerson(@PathVariable UUID id, @RequestBody @Valid FilmPersonUpdateDto filmPersonUpdateDto) {
@@ -79,9 +79,9 @@ public class FilmPersonController {
     @Operation(summary = "Delete film person", description = "Deletes an existing film person by id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Film person deleted successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "text/plain")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFilmPerson(@PathVariable UUID id) {

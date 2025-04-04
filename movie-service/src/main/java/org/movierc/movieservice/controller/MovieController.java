@@ -67,12 +67,12 @@ public class MovieController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Movie not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
@@ -94,12 +94,12 @@ public class MovieController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
@@ -124,17 +124,17 @@ public class MovieController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Movie not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
@@ -159,12 +159,12 @@ public class MovieController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Movie not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )

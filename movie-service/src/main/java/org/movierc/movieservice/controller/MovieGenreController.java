@@ -36,12 +36,12 @@ public class MovieGenreController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Movie or genre not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
@@ -63,12 +63,12 @@ public class MovieGenreController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Movie or genre not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )

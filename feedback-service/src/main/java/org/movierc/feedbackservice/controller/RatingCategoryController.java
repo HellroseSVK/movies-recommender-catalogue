@@ -33,7 +33,7 @@ public class RatingCategoryController {
     @ApiResponses(
             value = {
                      @ApiResponse(responseCode = "200", description = "Rating categories retrieved successfully"),
-                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<List<RatingCategoryDto>> getAllRatingCategories() {
@@ -48,8 +48,8 @@ public class RatingCategoryController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Rating category retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "Rating category not found", content = @Content(mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "404", description = "Rating category not found", content = @Content(mediaType = "application/problem+json")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<RatingCategoryDto> getRatingCategoryById(@PathVariable UUID id) {
@@ -64,7 +64,7 @@ public class RatingCategoryController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Rating category created successfully"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<RatingCategoryDto> createRatingCategory(@RequestBody RatingCategoryDto ratingCategoryDto) {

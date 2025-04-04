@@ -39,7 +39,7 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "User movie ratings retrieved successfully"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<List<UserMovieRatingDto>> getAllRatings() {
@@ -55,7 +55,7 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "User movie ratings retrieved successfully"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<List<UserMovieRatingDto>> getRatingsByUserId(@PathVariable UUID userId) {
@@ -71,7 +71,7 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "User movie ratings retrieved successfully"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<List<UserMovieRatingDto>> getRatingsByMovieId(@PathVariable UUID movieId) {
@@ -87,8 +87,8 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "User movie rating retrieved successfully"),
-                    @ApiResponse(responseCode = "404", description = "User movie rating not found", content = @Content(mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "404", description = "User movie rating not found", content = @Content(mediaType = "application/problem+json")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<UserMovieRatingDto> getRatingById(@PathVariable UUID id) {
@@ -104,8 +104,8 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "201", description = "User movie rating created successfully"),
-                    @ApiResponse(responseCode = "404", description = "User or movie not found", content = @Content(mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "404", description = "User or movie not found", content = @Content(mediaType = "application/problem+json")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<UserMovieRatingDto> createRating(@RequestBody @Valid UserMovieRatingCreateDto userMovieRatingCreateDto) {
@@ -122,8 +122,8 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "User movie rating updated successfully"),
-                    @ApiResponse(responseCode = "404", description = "User or movie or user movie rating not found", content = @Content(mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "404", description = "User or movie or user movie rating not found", content = @Content(mediaType = "application/problem+json")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<UserMovieRatingDto> updateRating(@PathVariable UUID id, @RequestBody UserMovieRatingUpdateDto userMovieRatingUpdateDto) {
@@ -140,8 +140,8 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "204", description = "User movie rating deleted successfully"),
-                    @ApiResponse(responseCode = "404", description = "User movie rating not found", content = @Content(mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
+                    @ApiResponse(responseCode = "404", description = "User movie rating not found", content = @Content(mediaType = "application/problem+json")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<Void> deleteRating(@PathVariable UUID id) {
