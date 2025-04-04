@@ -23,3 +23,19 @@ test:
         - mvn $MAVEN_CLI_OPTS test
     dependencies:
         - build
+    artifacts:
+      when: always
+      reports:
+        junit: # GitLab understands this format
+          - feedback-service/target/surefire-reports/*.xml
+          - film-person-service/target/surefire-reports/*.xml
+          - movie-service/target/surefire-reports/*.xml
+          - recommendation-service/target/surefire-reports/*.xml
+          - user-service/target/surefire-reports/*.xml
+      paths:
+        - feedback-service/target/surefire-reports/
+        - film-person-service/target/surefire-reports/
+        - movie-service/target/surefire-reports/
+        - recommendation-service/target/surefire-reports/
+        - user-service/target/surefire-reports/
+      expire_in: 1 week
