@@ -28,11 +28,37 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue filmPersonUpdatedQueue() {
+        return new Queue(EventUtil.forService(FilmPersonEvents.FILM_PERSON_UPDATED_QUEUE, SERVICE_ID), true);
+    }
+
+    @Bean
+    public Queue filmPersonDeletedQueue() {
+        return new Queue(EventUtil.forService(FilmPersonEvents.FILM_PERSON_DELETED_QUEUE, SERVICE_ID), true);
+    }
+
+    @Bean
     public Binding filmPersonCreatedBinding(Queue filmPersonCreatedQueue, TopicExchange topicExchange) {
         return BindingBuilder
                 .bind(filmPersonCreatedQueue)
                 .to(topicExchange)
                 .with(EventUtil.all(FilmPersonEvents.FILM_PERSON_CREATED_QUEUE));
+    }
+
+    @Bean
+    public Binding filmPersonUpdatedBinding(Queue filmPersonUpdatedQueue, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(filmPersonUpdatedQueue)
+                .to(topicExchange)
+                .with(EventUtil.all(FilmPersonEvents.FILM_PERSON_UPDATED_QUEUE));
+    }
+
+    @Bean
+    public Binding filmPersonDeletedBinding(Queue filmPersonDeletedQueue, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(filmPersonDeletedQueue)
+                .to(topicExchange)
+                .with(EventUtil.all(FilmPersonEvents.FILM_PERSON_DELETED_QUEUE));
     }
 
     @Bean

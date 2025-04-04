@@ -32,4 +32,7 @@ public class FilmPersonRepository {
         return filmPerson;
     }
 
+    public void deleteById(UUID id) {
+        filmPersons.removeIf(fp -> fp.getId().equals(id));
+    }
 }
