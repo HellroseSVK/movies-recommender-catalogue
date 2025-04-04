@@ -40,17 +40,17 @@ public class FilmPersonController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Movie or film person not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "409",
                             description = "Film person already assigned to movie in the same role",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
@@ -72,12 +72,12 @@ public class FilmPersonController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Movie or filmPerson not found",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/problem+json")
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(mediaType = "text/plain")
+                            content = @Content(mediaType = "application/json")
                     ),
             }
     )
