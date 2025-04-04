@@ -55,6 +55,7 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "User movie ratings retrieved successfully"),
+                    @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json")),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
@@ -71,6 +72,7 @@ public class UserMovieRatingController {
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "User movie ratings retrieved successfully"),
+                    @ApiResponse(responseCode = "404", description = "Movie not found", content = @Content(mediaType = "application/problem+json")),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )

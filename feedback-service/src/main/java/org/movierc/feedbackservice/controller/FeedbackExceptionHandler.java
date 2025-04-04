@@ -1,6 +1,9 @@
 package org.movierc.feedbackservice.controller;
 
+import org.movierc.feedbackservice.exception.MovieNotFoundException;
+import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
 import org.movierc.feedbackservice.exception.UserMovieRatingNotFoundException;
+import org.movierc.feedbackservice.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +20,7 @@ public class FeedbackExceptionHandler {
         return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
     }
     
-    @ExceptionHandler(org.movierc.feedbackservice.exception.UserNotFoundException.class)
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> handleUserNotFound(org.movierc.feedbackservice.exception.UserNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         pd.setTitle("User Not Found Error");
@@ -25,10 +28,18 @@ public class FeedbackExceptionHandler {
         return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
     }
     
-    @ExceptionHandler(org.movierc.feedbackservice.exception.MovieNotFoundException.class)
+    @ExceptionHandler(MovieNotFoundException.class)
     public ResponseEntity<?> handleMovieNotFound(org.movierc.feedbackservice.exception.MovieNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         pd.setTitle("Movie Not Found Error");
+        pd.setDetail(ex.getMessage());
+        return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RatingCategoryNotFoundException.class)
+    public ResponseEntity<?> handleRatingCategoryNotFound(RatingCategoryNotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        pd.setTitle("Rating Category Not Found Error");
         pd.setDetail(ex.getMessage());
         return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
     }
