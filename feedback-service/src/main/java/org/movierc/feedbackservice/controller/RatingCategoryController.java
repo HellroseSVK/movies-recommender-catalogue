@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.movierc.feedbackservice.dto.RatingCategoryCreateDto;
 import org.movierc.feedbackservice.dto.RatingCategoryDto;
 import org.movierc.feedbackservice.facade.RatingCategoryFacade;
 import org.springframework.http.HttpStatus;
@@ -67,8 +68,8 @@ public class RatingCategoryController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
-    public ResponseEntity<RatingCategoryDto> createRatingCategory(@RequestBody RatingCategoryDto ratingCategoryDto) {
-        RatingCategoryDto createdCategory = ratingCategoryFacade.createRatingCategory(ratingCategoryDto);
+    public ResponseEntity<RatingCategoryDto> createRatingCategory(@RequestBody RatingCategoryCreateDto ratingCategoryCreateDto) {
+        RatingCategoryDto createdCategory = ratingCategoryFacade.createRatingCategory(ratingCategoryCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 }

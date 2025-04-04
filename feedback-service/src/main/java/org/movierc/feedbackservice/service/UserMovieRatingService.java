@@ -9,6 +9,7 @@ import org.movierc.feedbackservice.exception.UserNotFoundException;
 import org.movierc.feedbackservice.mapper.MovieRatingMapper;
 import org.movierc.feedbackservice.mapper.RatingDetailDtoMapper;
 import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
+import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.repository.MovieRepository;
 import org.movierc.feedbackservice.repository.UserMovieRatingRepository;
 import org.movierc.feedbackservice.repository.UserRepository;
@@ -27,6 +28,7 @@ public class UserMovieRatingService {
     private final MovieRatingMapper movieRatingMapper;
     private final UserMovieRatingCreateDtoMapper userMovieRatingCreateDtoMapper;
     private final RatingDetailDtoMapper ratingDetailDtoMapper;
+    private final UserMovieRatingEventProducer userMovieRatingEventProducer;
 
     public List<UserMovieRatingDto> getAllRatings() {
         return userMovieRatingRepository.findAll().stream()
@@ -66,6 +68,10 @@ public class UserMovieRatingService {
 
         var savedUserMovieRating = userMovieRatingRepository.save(userMovieRating);
 
+        userMovieRatingEventProducer.sendMovieRatingCreatedEvent(
+                movieRatingMapper.userMovieRatingToMovieRatingCreatedEvent(savedUserMovieRating)
+        );
+
         return movieRatingMapper.userMovieRatingTouserMovieRatingDto(savedUserMovieRating);
     }
 
@@ -88,13 +94,21 @@ public class UserMovieRatingService {
 
         var updatedUserMovieRating = userMovieRatingRepository.save(userMovieRating);
 
+        userMovieRatingEventProducer.sendMovieRatingUpdatedEvent(
+                movieRatingMapper.userMovieRatingToMovieRatingUpdatedEvent(updatedUserMovieRating)
+        );
+
         return movieRatingMapper.userMovieRatingTouserMovieRatingDto(updatedUserMovieRating);
     }
 
     public void deleteRating(UUID id) {
-        userMovieRatingRepository.findById(id)
+        var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
 
         userMovieRatingRepository.deleteById(id);
+
+        userMovieRatingEventProducer.sendMovieRatingDeletedEvent(
+                movieRatingMapper.userMovieRatingToMovieRatingDeletedEvent(userMovieRating)
+        );
     }
 }

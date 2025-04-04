@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.Range;
 public class RatingDetailCreateDto {
     @NotNull
     @Valid
-    private RatingCategoryDto category;
+    private RatingCategoryCreateDto category;
     @Range(min = 0, max = 100)
     private int rating;
 }

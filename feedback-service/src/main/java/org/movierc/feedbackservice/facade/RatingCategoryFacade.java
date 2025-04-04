@@ -1,6 +1,7 @@
 package org.movierc.feedbackservice.facade;
 
 import lombok.AllArgsConstructor;
+import org.movierc.feedbackservice.dto.RatingCategoryCreateDto;
 import org.movierc.feedbackservice.dto.RatingCategoryDto;
 import org.movierc.feedbackservice.service.RatingCategoryService;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class RatingCategoryFacade {
         return ratingCategoryService.getRatingCategoryById(id);
     }
 
-    public RatingCategoryDto createRatingCategory(RatingCategoryDto ratingCategoryDto) {
-        return ratingCategoryService.createRatingCategory(ratingCategoryDto);
+    public RatingCategoryDto createRatingCategory(RatingCategoryCreateDto ratingCategoryCreateDto) {
+        return ratingCategoryService.createRatingCategory(ratingCategoryCreateDto);
     }
 }
