@@ -21,7 +21,7 @@ public class FeedbackExceptionHandler {
     }
     
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> handleUserNotFound(org.movierc.feedbackservice.exception.UserNotFoundException ex) {
+    public ResponseEntity<?> handleUserNotFound(UserNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         pd.setTitle("User Not Found Error");
         pd.setDetail(ex.getMessage());
@@ -29,7 +29,7 @@ public class FeedbackExceptionHandler {
     }
     
     @ExceptionHandler(MovieNotFoundException.class)
-    public ResponseEntity<?> handleMovieNotFound(org.movierc.feedbackservice.exception.MovieNotFoundException ex) {
+    public ResponseEntity<?> handleMovieNotFound(MovieNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         pd.setTitle("Movie Not Found Error");
         pd.setDetail(ex.getMessage());

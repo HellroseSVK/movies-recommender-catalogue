@@ -75,6 +75,7 @@ class UserMovieRatingServiceTest {
         UserMovieRating entity = new UserMovieRating();
         UserMovieRatingDto dto = new UserMovieRatingDto();
         when(userMovieRatingRepository.findByUserId(userId)).thenReturn(List.of(entity));
+        when(userRepository.existsById(userId)).thenReturn(true);
         when(movieRatingMapper.userMovieRatingTouserMovieRatingDto(entity)).thenReturn(dto);
 
         List<UserMovieRatingDto> result = userMovieRatingService.getRatingsByUserId(userId);
@@ -88,6 +89,7 @@ class UserMovieRatingServiceTest {
         UUID movieId = UUID.randomUUID();
         UserMovieRating entity = new UserMovieRating();
         UserMovieRatingDto dto = new UserMovieRatingDto();
+        when(movieRepository.existsById(movieId)).thenReturn(true);
         when(userMovieRatingRepository.findByMovieId(movieId)).thenReturn(List.of(entity));
         when(movieRatingMapper.userMovieRatingTouserMovieRatingDto(entity)).thenReturn(dto);
 

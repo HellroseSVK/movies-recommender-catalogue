@@ -64,7 +64,7 @@ public class RatingCategoryController {
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Rating category created successfully"),
+                    @ApiResponse(responseCode = "201", description = "Rating category created successfully"),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
