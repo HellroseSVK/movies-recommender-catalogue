@@ -1,11 +1,6 @@
 spring:
   application:
     name: movie-service
-  artemis:
-    broker-url: "${ACTIVEMQ_BROKER_URL:tcp://localhost:61616}"
-    user: "${ACTIVEMQ_USER:artemis}"
-    password: "${ACTIVEMQ_PASS:artemis}"
-    mode: native
   rabbitmq:
     host: "${RABBIT_BROKER_HOST:localhost}"
     port: "${RABBIT_BROKER_PORT:5672}"

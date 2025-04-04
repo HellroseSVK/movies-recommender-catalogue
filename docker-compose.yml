@@ -49,19 +49,6 @@ services:
       - ./config/recommendation/external-app.properties:/app/etc/application.properties
     env_file: ./etc/dev.env
 
-#  artemis:
-#    image: apache/activemq-artemis:latest
-#    container_name: artemis-broker
-#    environment:
-#      - ARTEMIS_USERNAME=artemis
-#      - ARTEMIS_PASSWORD=artemis
-#      - DISABLE_SECURITY=true
-#    ports:
-#      - "61616:61616"  # JMS port
-#      - "8161:8161"    # Web console
-#    volumes:
-#      - artemis-data:/var/lib/artemis/data
-
   rabbitmq:
     image: rabbitmq:3-management
     container_name: local-rabbitmq
@@ -72,5 +59,3 @@ services:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: rabbit
 
-#volumes:
-#  artemis-data:
