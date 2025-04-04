@@ -1,8 +1,8 @@
 package org.movierc.feedbackservice.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
@@ -41,20 +41,8 @@ class UserMovieRatingServiceTest {
     @Mock private RatingDetailDtoMapper ratingDetailDtoMapper;
     @Mock private UserMovieRatingEventProducer userMovieRatingEventProducer;
 
+    @InjectMocks
     private UserMovieRatingService userMovieRatingService;
-
-    @BeforeEach
-    void setUp() {
-        userMovieRatingService = new UserMovieRatingService(
-            userMovieRatingRepository,
-            userRepository,
-            movieRepository,
-            movieRatingMapper,
-            userMovieRatingCreateDtoMapper,
-            ratingDetailDtoMapper,
-            userMovieRatingEventProducer
-        );
-    }
 
     @Test
     void getAllRatings_ReturnsRatingList() {
@@ -134,7 +122,7 @@ class UserMovieRatingServiceTest {
             .comment("Great movie!")
             .build();
 
-        UserMovieRating entity = new UserMovieRating();
+        UserMovieRating entity = UserMovieRating.builder().ratingDetails(Collections.emptyList()).build();
         UserMovieRatingDto dto = new UserMovieRatingDto();
         User user = new User();
         Movie movie = new Movie();

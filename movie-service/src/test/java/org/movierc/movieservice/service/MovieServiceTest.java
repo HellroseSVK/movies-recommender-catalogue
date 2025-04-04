@@ -24,6 +24,7 @@ import org.movierc.movieservice.mapper.GenreMapper;
 import org.movierc.movieservice.mapper.MovieCreateDtoMapper;
 import org.movierc.movieservice.mapper.MovieMapper;
 import org.movierc.movieservice.rabbit.MovieEventProducer;
+import org.movierc.movieservice.rabbit.MovieFilmPersonRoleProducer;
 import org.movierc.movieservice.repository.FilmPersonRepository;
 import org.movierc.movieservice.repository.GenreRepository;
 import org.movierc.movieservice.repository.MovieRepository;
@@ -56,6 +57,9 @@ class MovieServiceTest {
     private GenreRepository genreRepository;
     @Mock
     private MovieEventProducer movieEventProducer;
+
+    @Mock
+    private MovieFilmPersonRoleProducer movieFilmPersonRoleProducer;
     
     private final MovieCreateDtoMapper movieCreateDtoMapper = Mappers.getMapper(MovieCreateDtoMapper.class);
     private final MovieMapper movieMapper = Mappers.getMapper(MovieMapper.class);
@@ -66,7 +70,7 @@ class MovieServiceTest {
     
     @BeforeEach
     void setUp() {
-        movieService = new MovieService(genreRepository, filmPersonRepository, movieRepository, movieEventProducer, movieMapper, movieCreateDtoMapper);
+        movieService = new MovieService(genreRepository, filmPersonRepository, movieRepository, movieEventProducer, movieFilmPersonRoleProducer, movieMapper, movieCreateDtoMapper);
     }
     
     @Test
@@ -374,7 +378,7 @@ class MovieServiceTest {
         
         // Verify
         assertTrue(result != null && result.getId().equals(movieId));
-        verify(movieEventProducer).sendMovieUpdatedEvent(any());
+        verify(movieFilmPersonRoleProducer).sendMovieFilmPersonRoleAddedEvent(any());
     }
     
     @Test
@@ -440,7 +444,8 @@ class MovieServiceTest {
         Movie movie = Movie.builder().id(movieId).title("Movie").filmPersonRoles(List.of(role)).build();
         when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
         when(movieRepository.save(any(Movie.class))).thenAnswer(invocation -> invocation.<Movie>getArgument(0));
-        
+        when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.of(filmPerson));
+
         RemoveFilmPersonRoleDto dto = new RemoveFilmPersonRoleDto();
         dto.setFilmPersonId(filmPersonId);
         dto.setRole(FilmPersonRole.ACTOR);
@@ -449,9 +454,9 @@ class MovieServiceTest {
         MovieDto result = movieService.removeFilmPerson(movieId, dto);
         
         // Verify - expect removal so filmPersonRoles list is empty
-        assertTrue(result.getFilmPersonRoles().size() == 1);
+        assertEquals(1, result.getFilmPersonRoles().size());
         assertEquals(FilmPersonRole.ACTOR, result.getFilmPersonRoles().get(0).getRole());
-        verify(movieEventProducer).sendMovieUpdatedEvent(any());
+        verify(movieFilmPersonRoleProducer).sendMovieFilmPersonRoleRemovedEvent(any());
     }
     
     @Test

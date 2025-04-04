@@ -2,8 +2,8 @@ package org.movierc.filmpersonservice.rabbit;
 
 import lombok.AllArgsConstructor;
 import org.movierc.events.movie.MovieCreatedEvent;
-import org.movierc.events.movie.MovieFilmPersonRolesAddedEvent;
-import org.movierc.events.movie.MovieFilmPersonRolesRemovedEvent;
+import org.movierc.events.movie.MovieFilmPersonRoleAddedEvent;
+import org.movierc.events.movie.MovieFilmPersonRoleRemovedEvent;
 import org.movierc.events.movie.MovieUpdatedEvent;
 import org.movierc.filmpersonservice.mapper.FilmPersonMovieAssignmentMapper;
 import org.movierc.filmpersonservice.mapper.MovieEventMapper;
@@ -67,25 +67,25 @@ public class MovieEventConsumer {
         logger.info("Received Movie Deleted: {}", event);
     }
 
-    @RabbitListener(queues = "#{movieFilmPersonRolesRemovedQueue.getName()}")
-    public void handleMovieFilmPersonRolesAddedEvent(@Payload MovieFilmPersonRolesAddedEvent event) {
-        event.getAddedMovieFilmPersonRoles().forEach(movieFilmPersonRole ->
-                filmPersonRepository.findById(movieFilmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
-            filmPerson.getMovies().add(filmPersonMovieAssignmentMapper.movieFilmPersonRoleToFilmPersonMovieAssignment(movieFilmPersonRole));
-            filmPersonRepository.save(filmPerson);
-        }));
+    @RabbitListener(queues = "#{movieFilmPersonRoleRemovedQueue.getName()}")
+    public void handleMovieFilmPersonRoleAddedEvent(@Payload MovieFilmPersonRoleAddedEvent event) {
+        var movieFilmPersonRole = event.getAddedMovieFilmPersonRole();
+        filmPersonRepository.findById(movieFilmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
+                    filmPerson.getMovies().add(filmPersonMovieAssignmentMapper.movieFilmPersonRoleToFilmPersonMovieAssignment(movieFilmPersonRole));
+                    filmPersonRepository.save(filmPerson);
+                });
 
-        logger.info("Received Movie FilmPersonRolesAdded: {}", event);
+        logger.info("Received Movie FilmPersonRoleAdded: {}", event);
     }
 
-    @RabbitListener(queues = "#{movieFilmPersonRolesRemovedQueue.getName()}")
-    public void handleMovieFilmPersonRolesRemovedEvent(@Payload MovieFilmPersonRolesRemovedEvent event) {
-        event.getRemovedMovieFilmPersonRoles().forEach(movieFilmPersonRole ->
-                filmPersonRepository.findById(movieFilmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
-            filmPerson.getMovies().removeIf(m -> m.getMovieId().equals(movieFilmPersonRole.getMovieId()));
-            filmPersonRepository.save(filmPerson);
-        }));
+    @RabbitListener(queues = "#{movieFilmPersonRoleRemovedQueue.getName()}")
+    public void handleMovieFilmPersonRoleRemovedEvent(@Payload MovieFilmPersonRoleRemovedEvent event) {
+        var movieFilmPersonRole = event.getRemovedMovieFilmPersonRole();
+        filmPersonRepository.findById(movieFilmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
+                    filmPerson.getMovies().removeIf(m -> m.getMovieId().equals(movieFilmPersonRole.getMovieId()));
+                    filmPersonRepository.save(filmPerson);
+                });
 
-        logger.info("Received Movie FilmPersonRolesRemoved: {}", event);
+        logger.info("Received Movie FilmPersonRoleRemoved: {}", event);
     }
 }

@@ -5,6 +5,7 @@ import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
 import org.movierc.feedbackservice.exception.MovieNotFoundException;
+import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
 import org.movierc.feedbackservice.exception.UserMovieRatingNotFoundException;
 import org.movierc.feedbackservice.exception.UserNotFoundException;
 import org.movierc.feedbackservice.mapper.MovieRatingMapper;
@@ -12,6 +13,7 @@ import org.movierc.feedbackservice.mapper.RatingDetailDtoMapper;
 import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
 import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.repository.MovieRepository;
+import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 import org.movierc.feedbackservice.repository.UserMovieRatingRepository;
 import org.movierc.feedbackservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class UserMovieRatingService {
     private final UserMovieRatingCreateDtoMapper userMovieRatingCreateDtoMapper;
     private final RatingDetailDtoMapper ratingDetailDtoMapper;
     private final UserMovieRatingEventProducer userMovieRatingEventProducer;
+    private final RatingCategoryRepository ratingCategoryRepository;
 
     public List<UserMovieRatingDto> getAllRatings() {
         return userMovieRatingRepository.findAll().stream()
@@ -72,7 +75,11 @@ public class UserMovieRatingService {
         );
         userMovieRating.setMovie(
                 movieRepository.findById(userMovieRatingCreateDto.getMovieId())
-                        .orElseThrow(() -> new UserMovieRatingNotFoundException(userMovieRatingCreateDto.getMovieId()))
+                        .orElseThrow(() -> new MovieNotFoundException(userMovieRatingCreateDto.getMovieId()))
+        );
+        userMovieRating.getRatingDetails().forEach(
+                ratingDetail -> ratingCategoryRepository.findById(ratingDetail.getRatingCategoryId())
+                        .orElseThrow(() -> new RatingCategoryNotFoundException(ratingDetail.getRatingCategoryId()))
         );
 
         var savedUserMovieRating = userMovieRatingRepository.save(userMovieRating);

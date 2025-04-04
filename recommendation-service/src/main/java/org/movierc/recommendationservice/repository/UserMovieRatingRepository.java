@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,11 +37,11 @@ public class UserMovieRatingRepository {
 
     public boolean existsByUserIdAndMovieId(UUID userId, UUID movieId) {
         return userMovieRatings.stream()
-                .anyMatch(r -> r.getUserId().equals(userId) && r.getMovieId().equals(movieId));
+                .anyMatch(r -> Objects.equals(r.getUserId(), userId) && Objects.equals(r.getMovieId(), movieId));
     }
 
     public void deleteByUserIdAndMovieId(UUID userId, UUID movieId) {
-        userMovieRatings.removeIf(r -> r.getUserId().equals(userId) && r.getMovieId().equals(movieId));
+        userMovieRatings.removeIf(r -> Objects.equals(r.getUserId(), userId) && Objects.equals(r.getMovieId(), movieId));
     }
 
     public UserMovieRating save(UserMovieRating userMovieRating) {

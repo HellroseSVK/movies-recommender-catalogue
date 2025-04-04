@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-    public static String SERVICE_ID = "feedback-service";
+    public static String SERVICE_ID = "recommendation-service";
 
     @Bean
     public TopicExchange topicExchange(String rabbitExchangeName) {
