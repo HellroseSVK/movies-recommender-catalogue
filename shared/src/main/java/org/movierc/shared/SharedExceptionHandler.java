@@ -30,7 +30,6 @@ public class SharedExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request
     ) {
         var pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        pd.setType(URI.create("about:blank"));
         pd.setTitle("Validation Failed");
         pd.setDetail("One or more fields are invalid.");
 
