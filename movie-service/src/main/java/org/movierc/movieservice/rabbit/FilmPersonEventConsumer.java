@@ -2,6 +2,8 @@ package org.movierc.movieservice.rabbit;
 
 import lombok.AllArgsConstructor;
 import org.movierc.events.filmPerson.FilmPersonCreatedEvent;
+import org.movierc.events.filmPerson.FilmPersonDeletedEvent;
+import org.movierc.events.filmPerson.FilmPersonUpdatedEvent;
 import org.movierc.movieservice.mapper.FilmPersonCreatedEventMapper;
 import org.movierc.movieservice.repository.FilmPersonRepository;
 import org.slf4j.Logger;
@@ -25,5 +27,33 @@ public class FilmPersonEventConsumer {
         }
 
         logger.info("Received Film Person Created: {}", event);
+    }
+
+    @RabbitListener(queues = "#{filmPersonUpdatedQueue.getName()}")
+    public void handleFilmPersonUpdatedEvent(@Payload FilmPersonUpdatedEvent event) {
+        var maybeFilmPerson = filmPersonRepository.findById(event.getId());
+
+        if (maybeFilmPerson.isEmpty()) {
+            logger.warn("Film Person with ID {} not found for update", event.getId());
+            return;
+        }
+
+        maybeFilmPerson.ifPresent(filmPerson -> {
+            filmPerson.setName(event.getName());
+            filmPerson.setImage(event.getImage());
+            filmPerson.setDateOfBirth(event.getDateOfBirth());
+            filmPerson.setBiography(event.getBiography());
+
+            filmPersonRepository.save(filmPerson);
+        });
+
+        logger.info("Received Film Person Updated: {}", event);
+    }
+
+    @RabbitListener(queues = "#{filmPersonDeletedQueue.getName()}")
+    public void handleFilmPersonDeletedEvent(@Payload FilmPersonDeletedEvent event) {
+        filmPersonRepository.deleteById(event.getId());
+
+        logger.info("Received Film Person Deleted: {}", event);
     }
 }
