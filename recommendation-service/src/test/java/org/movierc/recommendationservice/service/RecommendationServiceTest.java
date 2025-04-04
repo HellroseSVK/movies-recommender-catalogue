@@ -83,6 +83,7 @@ class RecommendationServiceTest {
         RatingDetail ratingDetail = new RatingDetail(categoryId, 80);
         UserMovieRating userMovieRating = new UserMovieRating(UUID.randomUUID(), movie.getId(), List.of(ratingDetail));
         RatingCategory ratingCategory = new RatingCategory(categoryId, "Test Category");
+        when(ratingCategoryRepository.existsById(categoryId)).thenReturn(true);
         when(movieRepository.findAll()).thenReturn(List.of(movie));
         when(userMovieRatingRepository.findByMovieId(movie.getId())).thenReturn(List.of(userMovieRating));
         when(ratingCategoryRepository.findById(categoryId)).thenReturn(Optional.of(ratingCategory));
@@ -111,6 +112,7 @@ class RecommendationServiceTest {
         RatingCategory ratingCategory = new RatingCategory(categoryId, "Test Category");
 
         when(movieRepository.findAll()).thenReturn(List.of(movie));
+        when(ratingCategoryRepository.existsById(categoryId)).thenReturn(true);
         when(userMovieRatingRepository.findByMovieId(movie.getId())).thenReturn(List.of(userMovieRating));
         when(ratingCategoryRepository.findById(categoryId)).thenReturn(Optional.of(ratingCategory));
         when(ratingCategoryMapper.ratingCategoryToRatingCategoryDto(any())).thenReturn(new RatingCategoryDto());
@@ -150,6 +152,7 @@ class RecommendationServiceTest {
         UUID categoryId = UUID.randomUUID();
         RatingDetail ratingDetail = new RatingDetail(categoryId, 80);
         UserMovieRating userMovieRating = new UserMovieRating(userId, UUID.randomUUID(), List.of(ratingDetail));
+        when(ratingCategoryRepository.existsById(categoryId)).thenReturn(true);
         when(userMovieRatingRepository.findByUserId(userId)).thenReturn(List.of(userMovieRating));
         when(movieRepository.findAll()).thenReturn(new ArrayList<>());
 
@@ -174,9 +177,11 @@ class RecommendationServiceTest {
 
         RatingCategory ratingCategory = new RatingCategory(ratingDetail.getRatingCategoryId(), "Test Category");
 
+
         when(userMovieRatingRepository.findByMovieId(movieId)).thenReturn(List.of(userMovieRatingOriginal));
         when(userMovieRatingRepository.findByMovieId(otherMovieId)).thenReturn(List.of(userMovieRatingOther));
         when(movieRepository.findAll()).thenReturn(List.of(movie1, movie2));
+        when(movieRepository.existsById(movieId)).thenReturn(true);
 
         when(ratingCategoryRepository.findById(ratingDetail.getRatingCategoryId()))
             .thenReturn(Optional.of(ratingCategory));

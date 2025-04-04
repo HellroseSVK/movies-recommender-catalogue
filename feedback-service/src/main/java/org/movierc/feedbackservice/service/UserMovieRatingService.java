@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
+import org.movierc.feedbackservice.exception.MovieNotFoundException;
 import org.movierc.feedbackservice.exception.UserMovieRatingNotFoundException;
 import org.movierc.feedbackservice.exception.UserNotFoundException;
 import org.movierc.feedbackservice.mapper.MovieRatingMapper;
@@ -37,12 +38,20 @@ public class UserMovieRatingService {
     }
 
     public List<UserMovieRatingDto> getRatingsByUserId(UUID userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(userId);
+        }
+
         return userMovieRatingRepository.findByUserId(userId).stream()
                 .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .collect(Collectors.toList());
     }
 
     public List<UserMovieRatingDto> getRatingsByMovieId(UUID movieId) {
+        if (!movieRepository.existsById(movieId)) {
+            throw new MovieNotFoundException(movieId);
+        }
+
         return userMovieRatingRepository.findByMovieId(movieId).stream()
                 .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .collect(Collectors.toList());

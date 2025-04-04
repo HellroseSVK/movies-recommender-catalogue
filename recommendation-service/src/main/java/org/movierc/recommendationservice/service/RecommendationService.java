@@ -8,6 +8,7 @@ import org.movierc.recommendationservice.entity.Movie;
 import org.movierc.recommendationservice.entity.RatingDetail;
 import org.movierc.recommendationservice.entity.UserMovieRating;
 import org.movierc.recommendationservice.exception.CategoryNotFoundException;
+import org.movierc.recommendationservice.exception.MovieNotFoundException;
 import org.movierc.recommendationservice.mapper.MovieMapper;
 import org.movierc.recommendationservice.mapper.RatingCategoryMapper;
 import org.movierc.recommendationservice.mapper.RatingDetailMapper;
@@ -75,6 +76,12 @@ public class RecommendationService {
     }
 
     public List<MovieDto> getRecommendationsByCategoriesAboveThreshold(List<UUID> categoryIds, int threshold) {
+        categoryIds.forEach(categoryId -> {
+            if (!ratingCategoryRepository.existsById(categoryId)) {
+                throw new CategoryNotFoundException(categoryId);
+            }
+        });
+
         return movieRepository.findAll().stream()
                 .map(movie -> {
                     var userRatings = userMovieRatingRepository.findByMovieId(movie.getId());
@@ -96,6 +103,12 @@ public class RecommendationService {
 
     public List<MovieDto> getRecommendationsByCategoriesWeighted(List<GetRecommendationByCategoriesWeightedDto> categoryWeights) {
         var categoryIds = categoryWeights.stream().map(GetRecommendationByCategoriesWeightedDto::getCategoryId).toList();
+
+        categoryIds.forEach(categoryId -> {
+            if (!ratingCategoryRepository.existsById(categoryId)) {
+                throw new CategoryNotFoundException(categoryId);
+            }
+        });
 
         return movieRepository.findAll().stream()
                 .map(movie -> {
@@ -154,6 +167,10 @@ public class RecommendationService {
     }
 
     public List<MovieDto> getRecommendationsByMovieId(UUID movieId) {
+        if (!movieRepository.existsById(movieId)) {
+            throw new MovieNotFoundException(movieId);
+        }
+
         var userIds = userMovieRatingRepository.findByMovieId(movieId).stream()
                 .map(UserMovieRating::getUserId)
                 .toList();
