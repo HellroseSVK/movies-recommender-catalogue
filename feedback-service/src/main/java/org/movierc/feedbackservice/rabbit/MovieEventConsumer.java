@@ -2,6 +2,8 @@ package org.movierc.feedbackservice.rabbit;
 
 import lombok.AllArgsConstructor;
 import org.movierc.events.movie.MovieCreatedEvent;
+import org.movierc.events.movie.MovieDeletedEvent;
+import org.movierc.events.movie.MovieUpdatedEvent;
 import org.movierc.feedbackservice.mapper.MovieEventMapper;
 import org.movierc.feedbackservice.repository.MovieRepository;
 import org.slf4j.Logger;
@@ -29,16 +31,16 @@ public class MovieEventConsumer {
     }
 
     @RabbitListener(queues = "#{movieUpdatedQueue.getName()}")
-    public void handleMovieUpdatedEvent(@Payload MovieCreatedEvent event) {
+    public void handleMovieUpdatedEvent(@Payload MovieUpdatedEvent event) {
         if (movieRepository.existsById(event.getId())) {
-            movieRepository.save(movieEventMapper.movieCreatedEventToMovie(event));
+            movieRepository.save(movieEventMapper.movieUpdatedEventToMovie(event));
         }
 
         logger.info("Received Movie Updated: {}", event);
     }
 
     @RabbitListener(queues = "#{movieDeletedQueue.getName()}")
-    public void handleMovieDeletedEvent(@Payload MovieCreatedEvent event) {
+    public void handleMovieDeletedEvent(@Payload MovieDeletedEvent event) {
         if (movieRepository.existsById(event.getId())) {
             movieRepository.deleteById(event.getId());
         }

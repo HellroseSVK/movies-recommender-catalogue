@@ -22,7 +22,7 @@ public class UserMovieRatingCreateDto {
     @NotNull
     private UUID movieId;
     @NotNull
-    private List<@Valid RatingDetailDto> ratingDetails;
+    private List<@Valid RatingDetailCreateDto> ratingDetails;
     @Schema(example = "This movie was amazing!")
     private String comment;
 }
