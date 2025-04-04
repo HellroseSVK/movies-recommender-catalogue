@@ -1,7 +1,6 @@
 package org.movierc.userservice.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -11,15 +10,12 @@ import lombok.NoArgsConstructor;
 import org.movierc.shared.enm.UserRole;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateDto {
-    @Valid
-    private UUID id;
     @NotBlank
     @Schema(example = "superman")
     private String username;
