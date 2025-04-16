@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateDto {
-    @NotBlank
+    @NotBlank(message = "Username cannot be blank")
     @Schema(example = "superman")
     private String username;
     @NotBlank

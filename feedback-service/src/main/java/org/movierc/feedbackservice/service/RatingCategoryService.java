@@ -3,6 +3,7 @@ package org.movierc.feedbackservice.service;
 import lombok.AllArgsConstructor;
 import org.movierc.feedbackservice.dto.RatingCategoryCreateDto;
 import org.movierc.feedbackservice.dto.RatingCategoryDto;
+import org.movierc.feedbackservice.entity.RatingCategory;
 import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
 import org.movierc.feedbackservice.mapper.RatingCategoryCreateDtoMapper;
 import org.movierc.feedbackservice.mapper.RatingCategoryMapper;
@@ -19,29 +20,20 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class RatingCategoryService {
     private final RatingCategoryRepository ratingCategoryRepository;
-    private final RatingCategoryMapper ratingCategoryMapper;
-    private final RatingCategoryCreateDtoMapper ratingCategoryCreateDtoMapper;
     private final RatingCategoryEventProducer ratingCategoryEventProducer;
 
-    public List<RatingCategoryDto> getAllRatingCategories() {
-        return ratingCategoryRepository.findAll().stream()
-                .map(ratingCategoryMapper::ratingCategoryToRatingCategoryDto)
-                .collect(Collectors.toList());
+    public List<RatingCategory> getAllRatingCategories() {
+        return ratingCategoryRepository.findAll();
     }
 
-    public RatingCategoryDto getRatingCategoryById(UUID id) {
+    public RatingCategory getRatingCategoryById(UUID id) {
         return ratingCategoryRepository.findById(id)
-                .map(ratingCategoryMapper::ratingCategoryToRatingCategoryDto)
                 .orElseThrow(() -> new RatingCategoryNotFoundException(id));
     }
 
-    public RatingCategoryDto createRatingCategory(RatingCategoryCreateDto ratingCategoryCreateDto) {
-        var ratingCategory = ratingCategoryCreateDtoMapper.ratingCategoryCreateDtoToRatingCategory(ratingCategoryCreateDto);
+    public RatingCategory createRatingCategory(RatingCategory ratingCategory) {
 
-        ratingCategoryEventProducer.sendRatingCategoryCreatedEvent(
-                ratingCategoryMapper.ratingCategoryToRatingCategoryCreatedEvent(ratingCategory)
-        );
 
-        return ratingCategoryMapper.ratingCategoryToRatingCategoryDto(ratingCategoryRepository.save(ratingCategory));
+        return ratingCategoryRepository.save(ratingCategory);
     }
 }
