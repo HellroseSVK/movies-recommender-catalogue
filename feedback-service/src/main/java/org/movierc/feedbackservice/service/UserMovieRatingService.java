@@ -94,14 +94,12 @@ public class UserMovieRatingService {
         return userMovieRatingRepository.save(userMovieRating);
     }
 
-    public void deleteRating(UUID id) {
+    public UserMovieRating deleteRating(UUID id) {
         var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
 
         userMovieRatingRepository.deleteById(id);
 
-        userMovieRatingEventProducer.sendMovieRatingDeletedEvent(
-                movieRatingMapper.userMovieRatingToMovieRatingDeletedEvent(userMovieRating)
-        );
+        return userMovieRating;
     }
 }

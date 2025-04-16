@@ -82,6 +82,10 @@ public class UserMovieRatingFacade {
     }
 
     public void deleteRating(UUID id) {
-        userMovieRatingService.deleteRating(id);
+        var userMovieRating = userMovieRatingService.deleteRating(id);
+
+        userMovieRatingEventProducer.sendMovieRatingDeletedEvent(
+                movieRatingMapper.userMovieRatingToMovieRatingDeletedEvent(userMovieRating)
+        );
     }
 }
