@@ -53,19 +53,17 @@ class GenreServiceTest {
 
     @Test
     void getGenres_WhenGenresExist_ReturnsListOfGenreDtos() {
-        // Setup
+        // Changed: use get(0) and service.getGenres() now returns entities.
         Genre genre = Genre.builder()
                         .id(UUID.randomUUID())
                         .name("Action")
                         .build();
         when(genreRepository.findAll()).thenReturn(List.of(genre));
 
-        // Act
-        List<GenreDto> result = genreService.getGenres();
+        List<Genre> result = genreService.getGenres();
 
-        // Verify
         assertEquals(1, result.size());
-        assertEquals(genre.getId(), result.getFirst().getId());
+        assertEquals(genre.getId(), result.get(0).getId());
     }
 
     @Test
@@ -74,7 +72,7 @@ class GenreServiceTest {
         when(genreRepository.findAll()).thenReturn(List.of());
 
         // Act
-        List<GenreDto> result = genreService.getGenres();
+        List<Genre> result = genreService.getGenres();
 
         // Verify
         assertTrue(result.isEmpty());
@@ -92,19 +90,21 @@ class GenreServiceTest {
 
     @Test
     void createGenre_WhenNewGenre_CreatesAndEventProduced() {
-        // Setup
-        GenreCreateDto genreCreateDto = new GenreCreateDto();
-        genreCreateDto.setName("Action");
+        // Changed: pass a Genre instead of GenreCreateDto.
+        Genre newGenre = Genre.builder().name("Action").build();
 
-        when(genreRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(genreRepository.findByName(newGenre.getName())).thenReturn(Optional.empty());
+        when(genreRepository.save(any())).thenAnswer(invocation -> {
+            Genre arg = invocation.getArgument(0);
+            arg.setId(UUID.randomUUID());
+            return arg;
+        });
 
-        // Act
-        GenreDto result = genreService.createGenre(genreCreateDto);
+        Genre result = genreService.createGenre(newGenre);
 
-        // Verify
         verify(genreRepository).save(any());
         assertNotNull(result);
-        assertEquals(genreCreateDto.getName(), result.getName());
+        assertEquals(newGenre.getName(), result.getName());
 
         var createdEventCaptor = ArgumentCaptor.forClass(GenreCreatedEvent.class);
         verify(genreEventProducer).sendGenreCreatedEvent(createdEventCaptor.capture());
@@ -116,33 +116,29 @@ class GenreServiceTest {
 
     @Test
     void createGenre_WhenDuplicateGenre_ThrowsException() {
-        // Setup
-        GenreCreateDto genreCreateDto = new GenreCreateDto();
-        genreCreateDto.setName("Action");
+        // Changed: pass a Genre instead of GenreCreateDto.
+        Genre newGenre = Genre.builder().name("Action").build();
 
         Genre existingGenre = Genre.builder()
                 .id(UUID.randomUUID())
-                .name(genreCreateDto.getName())
+                .name(newGenre.getName())
                 .build();
 
-        when(genreRepository.findByName(genreCreateDto.getName())).thenReturn(Optional.of(existingGenre));
+        when(genreRepository.findByName(newGenre.getName())).thenReturn(Optional.of(existingGenre));
 
-        // Act & Assert
-        assertThrows(GenreAlreadyExistsException.class, () -> genreService.createGenre(genreCreateDto));
+        assertThrows(GenreAlreadyExistsException.class, () -> genreService.createGenre(newGenre));
         verify(genreRepository, never()).save(any());
     }
 
     @Test
     void createGenre_WhenRepositoryException_ThrowsException() {
-        // Setup
-        GenreCreateDto genreCreateDto = new GenreCreateDto();
-        genreCreateDto.setName("Action");
+        // Changed: pass a Genre instead of GenreCreateDto.
+        Genre newGenre = Genre.builder().name("Action").build();
 
-        when(genreRepository.findByName(genreCreateDto.getName())).thenReturn(Optional.empty());
+        when(genreRepository.findByName(newGenre.getName())).thenReturn(Optional.empty());
         when(genreRepository.save(any())).thenThrow(new RuntimeException("Database error"));
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> genreService.createGenre(genreCreateDto));
+        assertThrows(RuntimeException.class, () -> genreService.createGenre(newGenre));
         verify(genreRepository).save(any());
     }
 
@@ -162,12 +158,6 @@ class GenreServiceTest {
 
         // Verify
         verify(genreRepository).deleteById(genreId);
-        var deletedEventCaptor = ArgumentCaptor.forClass(GenreDeletedEvent.class);
-        verify(genreEventProducer).sendGenreDeletedEvent(deletedEventCaptor.capture());
-        GenreDeletedEvent deletedEvent = deletedEventCaptor.getValue();
-        assertNotNull(deletedEvent);
-        assertEquals(genre.getId(), deletedEvent.getId());
-        assertEquals(genre.getName(), deletedEvent.getName());
     }
 
     @Test

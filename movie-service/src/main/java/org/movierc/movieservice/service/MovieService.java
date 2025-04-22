@@ -1,14 +1,6 @@
 package org.movierc.movieservice.service;
 
 import lombok.AllArgsConstructor;
-import org.movierc.events.movie.MovieFilmPersonRole;
-import org.movierc.events.movie.MovieFilmPersonRoleAddedEvent;
-import org.movierc.events.movie.MovieFilmPersonRoleRemovedEvent;
-import org.movierc.movieservice.dto.AssignFilmPersonRoleDto;
-import org.movierc.movieservice.dto.MovieCreateDto;
-import org.movierc.movieservice.dto.MovieDto;
-import org.movierc.movieservice.dto.MovieUpdateDto;
-import org.movierc.movieservice.dto.RemoveFilmPersonRoleDto;
 import org.movierc.movieservice.entity.FilmPersonInMovieRole;
 import org.movierc.movieservice.entity.Genre;
 import org.movierc.movieservice.entity.Movie;
@@ -16,17 +8,16 @@ import org.movierc.movieservice.exception.FilmPersonNotFoundException;
 import org.movierc.movieservice.exception.FilmPersonWithThisRoleIsAlreadyAssigned;
 import org.movierc.movieservice.exception.GenreNotFoundException;
 import org.movierc.movieservice.exception.MovieNotFoundException;
-import org.movierc.movieservice.mapper.MovieCreateDtoMapper;
-import org.movierc.movieservice.mapper.MovieMapper;
-import org.movierc.movieservice.rabbit.MovieEventProducer;
-import org.movierc.movieservice.rabbit.MovieFilmPersonRoleProducer;
 import org.movierc.movieservice.repository.FilmPersonRepository;
 import org.movierc.movieservice.repository.GenreRepository;
 import org.movierc.movieservice.repository.MovieRepository;
+import org.movierc.shared.enm.FilmPersonRole;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,53 +27,42 @@ public class MovieService {
     private final GenreRepository genreRepository;
     private final FilmPersonRepository filmPersonRepository;
     private final MovieRepository movieRepository;
-    private final MovieEventProducer movieEventProducer;
-    private final MovieFilmPersonRoleProducer movieFilmPersonRoleProducer;
-    private final MovieMapper movieMapper;
-    private final MovieCreateDtoMapper movieCreateDtoMapper;
 
-    public List<MovieDto> getAllMovies() {
-        return movieRepository.findAll().stream()
-                .map(movieMapper::movieToMovieDto)
-                .collect(Collectors.toCollection(ArrayList::new));
+    public List<Movie> getAllMovies() {
+        return movieRepository.findAll().stream().toList();
     }
 
-    public MovieDto getMovieById(UUID id) {
+    public Movie getMovieById(UUID id) {
         return movieRepository.findById(id)
-                .map(movieMapper::movieToMovieDto)
                 .orElseThrow(() -> new MovieNotFoundException(id));
     }
 
-    public MovieDto createMovie(MovieCreateDto movieCreateDto) {
-        Movie movie = movieCreateDtoMapper.movieCreateDtoToMovie(movieCreateDto);
+    public Movie createMovie(
+            Movie movie,
+            List<UUID> genreIds,
+            Map<UUID, FilmPersonRole> filmPersonRoles
+    ) {
+        movie.setGenres(findGenres(genreIds));
+        setFilmPersons(movie, filmPersonRoles);
 
-        movie.setGenres(findGenres(movieCreateDto.getGenres()));
-        setFilmPersons(movie, movieCreateDto);
+        movieRepository.save(movie);
 
-        Movie savedMovie = movieRepository.save(movie);
-
-        movieEventProducer.sendMovieCreatedEvent(movieMapper.movieToMovieCreatedEvent(savedMovie));
-
-        return movieMapper.movieToMovieDto(savedMovie);
+        return movieRepository.save(movie);
     }
 
 
-    public MovieDto updateMovie(UUID id, MovieUpdateDto movieUpdateDto) {
+    public Movie updateMovie(UUID id, String title, String description, List<URL> images) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
 
-        movie.setTitle(movieUpdateDto.getTitle());
-        movie.setDescription(movieUpdateDto.getDescription());
-        movie.setImages(movieUpdateDto.getImages());
+        movie.setTitle(title);
+        movie.setDescription(description);
+        movie.setImages(images);
 
-        Movie updatedMovie = movieRepository.save(movie);
-
-        movieEventProducer.sendMovieUpdatedEvent(movieMapper.movieToMovieUpdatedEvent(updatedMovie));
-
-        return movieMapper.movieToMovieDto(updatedMovie);
+        return movieRepository.save(movie);
     }
 
-    public void deleteMovie(UUID id) {
+    public Movie deleteMovie(UUID id) {
         var movie = movieRepository.findById(id);
         if (movie.isEmpty()) {
             throw new MovieNotFoundException(id);
@@ -90,7 +70,7 @@ public class MovieService {
 
         movieRepository.deleteById(id);
 
-        movieEventProducer.sendMovieDeletedEvent(movieMapper.movieToMovieDeletedEvent(movie.get()));
+        return movie.get();
     }
 
     private List<Genre> findGenres(List<UUID> genreIds) {
@@ -102,16 +82,16 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
-    private void setFilmPersons(Movie movie, MovieCreateDto movieCreateDto) {
-        var resolvedFilmPersonRoles = movieCreateDto
-                .getFilmPersonRoles()
+    private void setFilmPersons(Movie movie, Map<UUID, FilmPersonRole> filmPersonToRole) {
+        var resolvedFilmPersonRoles = filmPersonToRole
+                .entrySet()
                 .stream()
                 .map(filmPersonRole ->
                         new FilmPersonInMovieRole(
                                 movie,
-                                filmPersonRepository.findById(filmPersonRole.getFilmPersonId())
-                                        .orElseThrow(() -> new FilmPersonNotFoundException(filmPersonRole.getFilmPersonId())),
-                                filmPersonRole.getRole()
+                                filmPersonRepository.findById(filmPersonRole.getKey())
+                                        .orElseThrow(() -> new FilmPersonNotFoundException(filmPersonRole.getKey())),
+                                filmPersonRole.getValue()
                         )
                 )
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -119,7 +99,7 @@ public class MovieService {
         movie.setFilmPersonRoles(resolvedFilmPersonRoles);
     }
 
-    public MovieDto assignGenre(UUID movieId, UUID genreId) {
+    public Movie assignGenre(UUID movieId, UUID genreId) {
         var maybeMovie = movieRepository.findById(movieId);
         if (maybeMovie.isEmpty()) {
             throw new MovieNotFoundException(movieId);
@@ -134,12 +114,10 @@ public class MovieService {
 
         movie.getGenres().add(genre);
 
-        var updatedMovie = movieRepository.save(movie);
-        movieEventProducer.sendMovieUpdatedEvent(movieMapper.movieToMovieUpdatedEvent(updatedMovie));
-        return movieMapper.movieToMovieDto(updatedMovie);
+        return movieRepository.save(movie);
     }
 
-    public MovieDto removeGenre(UUID movieId, UUID genreId) {
+    public Movie removeGenre(UUID movieId, UUID genreId) {
         var maybeMovie = movieRepository.findById(movieId);
         if (maybeMovie.isEmpty()) {
             throw new MovieNotFoundException(movieId);
@@ -153,21 +131,19 @@ public class MovieService {
                         .collect(Collectors.toCollection(ArrayList::new))
         );
 
-        var updatedMovie = movieRepository.save(movie);
-        movieEventProducer.sendMovieUpdatedEvent(movieMapper.movieToMovieUpdatedEvent(updatedMovie));
-        return movieMapper.movieToMovieDto(updatedMovie);
+        return movieRepository.save(movie);
     }
 
-    public MovieDto assignFilmPerson(UUID movieId, AssignFilmPersonRoleDto assignFilmPersonRoleDto) {
+    public Movie assignFilmPerson(UUID movieId, UUID personId, FilmPersonRole filmPersonRole) {
         var maybeMovie = movieRepository.findById(movieId);
         if (maybeMovie.isEmpty()) {
             throw new MovieNotFoundException(movieId);
         }
         var movie = maybeMovie.get();
 
-        var maybeFilmPerson = filmPersonRepository.findById(assignFilmPersonRoleDto.getFilmPersonId());
+        var maybeFilmPerson = filmPersonRepository.findById(personId);
         if (maybeFilmPerson.isEmpty()) {
-            throw new FilmPersonNotFoundException(assignFilmPersonRoleDto.getFilmPersonId());
+            throw new FilmPersonNotFoundException(personId);
         }
         var filmPerson = maybeFilmPerson.get();
 
@@ -176,40 +152,32 @@ public class MovieService {
                         fpr.getFilmPerson()
                                 .getId()
                                 .equals(filmPerson.getId())
-                                && fpr.getRole().equals(assignFilmPersonRoleDto.getRole())
+                                && fpr.getRole().equals(filmPersonRole)
                 );
         if (isAlreadyAssigned) {
-            throw new FilmPersonWithThisRoleIsAlreadyAssigned(filmPerson, assignFilmPersonRoleDto.getRole());
+            throw new FilmPersonWithThisRoleIsAlreadyAssigned(filmPerson, filmPersonRole);
         }
 
         movie.getFilmPersonRoles().add(new FilmPersonInMovieRole(
                 movie,
                 filmPerson,
-                assignFilmPersonRoleDto.getRole()
+                filmPersonRole
         ));
 
-        var updatedMovie = movieRepository.save(movie);
-        movieFilmPersonRoleProducer.sendMovieFilmPersonRoleAddedEvent(
-                new MovieFilmPersonRoleAddedEvent(MovieFilmPersonRole.builder()
-                        .filmPersonId(filmPerson.getId())
-                        .role(assignFilmPersonRoleDto.getRole())
-                        .movieId(movieId).build())
-        );
-        return movieMapper.movieToMovieDto(updatedMovie);
+        return movieRepository.save(movie);
     }
 
-    public MovieDto removeFilmPerson(UUID movieId, RemoveFilmPersonRoleDto removeFilmPersonRoleDto) {
+    public Movie removeFilmPerson(UUID movieId, UUID personId, FilmPersonRole filmPersonRole) {
         var maybeMovie = movieRepository.findById(movieId);
         if (maybeMovie.isEmpty()) {
             throw new MovieNotFoundException(movieId);
         }
         var movie = maybeMovie.get();
 
-        var maybeFilmPerson = filmPersonRepository.findById(removeFilmPersonRoleDto.getFilmPersonId());
+        var maybeFilmPerson = filmPersonRepository.findById(personId);
         if (maybeFilmPerson.isEmpty()) {
-            throw new FilmPersonNotFoundException(removeFilmPersonRoleDto.getFilmPersonId());
+            throw new FilmPersonNotFoundException(personId);
         }
-        var filmPerson = maybeFilmPerson.get();
 
         movie.setFilmPersonRoles(
                 movie.getFilmPersonRoles()
@@ -217,19 +185,12 @@ public class MovieService {
                         .filter(fpr ->
                                 fpr.getFilmPerson()
                                         .getId()
-                                        .equals(removeFilmPersonRoleDto.getFilmPersonId())
-                                        && fpr.getRole().equals(removeFilmPersonRoleDto.getRole())
+                                        .equals(personId)
+                                        && fpr.getRole().equals(filmPersonRole)
                         )
                         .collect(Collectors.toCollection(ArrayList::new))
         );
 
-        var updatedMovie = movieRepository.save(movie);
-        movieFilmPersonRoleProducer.sendMovieFilmPersonRoleRemovedEvent(
-                new MovieFilmPersonRoleRemovedEvent(MovieFilmPersonRole.builder()
-                        .filmPersonId(filmPerson.getId())
-                        .role(removeFilmPersonRoleDto.getRole())
-                        .movieId(movieId).build())
-        );
-        return movieMapper.movieToMovieDto(updatedMovie);
+        return movieRepository.save(movie);
     }
 }
