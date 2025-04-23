@@ -22,14 +22,14 @@ public interface MovieRepository extends JpaRepository<Movie, UUID> {
      * @return a list of movies that meet the criteria
      */
     @Query(
-            value = "SELECT m, AVG(rd.rating) as rating " +
+            value = "SELECT m " +
                     "FROM Movie m " +
                     "INNER JOIN UserMovieRating umr ON m = umr.movie " +
                     "INNER JOIN RatingDetail rd ON umr = rd.userMovieRating " +
-                    "WHERE rd.ratingCategory.id IN :ratingIds " +
+                    "WHERE rd.ratingCategory.id IN :categoryIds " +
                     "GROUP BY m.id " +
-                    "HAVING rating > :threshold " +
-                    "ORDER BY rating DESC"
+                    "HAVING AVG(rd.rating) > :threshold " +
+                    "ORDER BY AVG(rd.rating) DESC"
     )
     List<Movie> findRecommendationsByCategoriesAboveThreshold(Set<UUID> categoryIds, int threshold, Pageable pageable);
 
@@ -47,7 +47,7 @@ public interface MovieRepository extends JpaRepository<Movie, UUID> {
                     "INNER JOIN UserMovieRating ot_umr ON my_umr.userId = ot_umr.userId " +
                     "INNER JOIN Movie ot_m ON ot_umr.movie = ot_m " +
                     "INNER JOIN RatingDetail rd ON rd.userMovieRating = ot_umr " +
-                    "WHERE ot_m != my_m " +
+                    "WHERE  my_m.id = :movieId AND ot_m != my_m " +
                     "GROUP BY ot_m.id " +
                     "ORDER BY rating DESC"
     )
@@ -61,10 +61,11 @@ public interface MovieRepository extends JpaRepository<Movie, UUID> {
      * @return a list of average movie ratings
      */
     @Query(
-            "SELECT NEW org.movierc.recommendationservice.entity.AverageMovieRating(m.id, rd.ratingCategory.id, rd.ratingCategory.name, (SUM(rd.rating) / COUNT(rd.rating)))" +
-                    " FROM Movie m, UserMovieRating umr" +
-                    " JOIN umr.ratingDetails rd" +
-                    " WHERE m.id IN :movieIds AND m = umr.movie" +
+            "SELECT NEW org.movierc.recommendationservice.entity.AverageMovieRating(m.id, rd.ratingCategory.id, rd.ratingCategory.name, AVG(rd.rating))" +
+                    " FROM Movie m" +
+                    " INNER JOIN UserMovieRating umr ON m = umr.movie" +
+                    " INNER JOIN RatingDetail rd ON umr = rd.userMovieRating" +
+                    " WHERE m.id IN :movieIds" +
                     " GROUP BY m.id, rd.ratingCategory.id"
     )
     List<AverageMovieRating> findAverageMovieRatingsByMovieIdIn(Set<UUID> movieIds, Pageable pageable);
