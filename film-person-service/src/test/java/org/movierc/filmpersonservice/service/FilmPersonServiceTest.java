@@ -4,20 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.movierc.events.filmPerson.FilmPersonCreatedEvent;
-import org.movierc.events.filmPerson.FilmPersonDeletedEvent;
-import org.movierc.events.filmPerson.FilmPersonUpdatedEvent;
-import org.movierc.filmpersonservice.dto.FilmPersonCreateDto;
-import org.movierc.filmpersonservice.dto.FilmPersonDto;
 import org.movierc.filmpersonservice.dto.FilmPersonUpdateDto;
 import org.movierc.filmpersonservice.entity.FilmPerson;
 import org.movierc.filmpersonservice.exception.FilmPersonNotFoundException;
-import org.movierc.filmpersonservice.mapper.FilmPersonCreateDtoMapper;
 import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
-import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
 
 import java.net.URL;
@@ -40,18 +32,13 @@ class FilmPersonServiceTest {
     @Mock
     private FilmPersonRepository filmPersonRepository;
 
-    @Mock
-    private FilmPersonEventProducer filmPersonEventProducer;
-
     private final FilmPersonMapper filmPersonMapper = Mappers.getMapper(FilmPersonMapper.class);
-
-    private final FilmPersonCreateDtoMapper filmPersonCreateDtoMapper = Mappers.getMapper(FilmPersonCreateDtoMapper.class);
 
     private FilmPersonService filmPersonService;
 
     @BeforeEach
     void setUp() {
-        filmPersonService = new FilmPersonService(filmPersonRepository, filmPersonEventProducer, filmPersonMapper, filmPersonCreateDtoMapper);
+        filmPersonService = new FilmPersonService(filmPersonRepository, filmPersonMapper);
     }
 
     @Test
@@ -68,7 +55,7 @@ class FilmPersonServiceTest {
         when(filmPersonRepository.findAll()).thenReturn(List.of(fp));
 
         // Act
-        List<FilmPersonDto> result = filmPersonService.getAllFilmPersons();
+        List<FilmPerson> result = filmPersonService.getAllFilmPersons();
 
         // Verify
         assertEquals(1, result.size());
@@ -90,7 +77,7 @@ class FilmPersonServiceTest {
         when(filmPersonRepository.findById(id)).thenReturn(Optional.of(fp));
 
         // Act
-        FilmPersonDto result = filmPersonService.getFilmPersonById(id);
+        FilmPerson result = filmPersonService.getFilmPersonById(id);
 
         // Verify
         assertNotNull(result);
@@ -109,58 +96,58 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void createFilmPerson_ValidDto_ReturnsCreatedDtoAndSendsEvent() throws Exception {
+    void createFilmPerson_ValidDto_ReturnsCreatedDto() throws Exception {
         // Setup
-        FilmPersonCreateDto createDto = FilmPersonCreateDto.builder()
-                .name("Alice")
-                .image(new URL("http://image.png"))
-                .dateOfBirth(LocalDate.of(1985, 3, 3))
-                .biography("Alice's bio")
-                .build();
-        // When save is called, return the same film person argument.
-        when(filmPersonRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        FilmPerson createDto = FilmPerson.builder()
+            .name("Alice")
+            .image(new URL("http://image.png"))
+            .dateOfBirth(LocalDate.of(1985, 3, 3))
+            .biography("Alice's bio")
+            .build();
+        FilmPerson savedFilmPerson = FilmPerson.builder()
+            .id(UUID.randomUUID()) // Ensure the ID is set
+            .name("Alice")
+            .image(new URL("http://image.png"))
+            .dateOfBirth(LocalDate.of(1985, 3, 3))
+            .biography("Alice's bio")
+            .build();
+
+        // Mock repository behavior
+        when(filmPersonRepository.save(any())).thenReturn(savedFilmPerson);
 
         // Act
-        FilmPersonDto result = filmPersonService.createFilmPerson(createDto);
+        FilmPerson result = filmPersonService.createFilmPerson(createDto);
 
-        // Verify repository and event producer
+        // Verify repository interaction
         verify(filmPersonRepository).save(any());
-        assertNotNull(result.getId());
+        assertNotNull(result.getId()); // Ensure the ID is not null
         assertEquals(createDto.getName(), result.getName());
-
-        var createdEventCaptor = ArgumentCaptor.forClass(FilmPersonCreatedEvent.class);
-        verify(filmPersonEventProducer).sendFilmPersonCreatedEvent(createdEventCaptor.capture());
-        assertEquals(createdEventCaptor.getValue().getId(), result.getId());
-        assertEquals(createdEventCaptor.getValue().getName(), result.getName());
-        assertEquals(createdEventCaptor.getValue().getImage(), result.getImage());
-        assertEquals(createdEventCaptor.getValue().getBiography(), result.getBiography());
-        assertEquals(createdEventCaptor.getValue().getDateOfBirth(), result.getDateOfBirth());
     }
 
     @Test
-    void updateFilmPerson_FilmPersonExists_UpdatesAndReturnsDtoAndSendsEvent() throws Exception {
+    void updateFilmPerson_FilmPersonExists_UpdatesAndReturnsDto() throws Exception {
         // Setup
         UUID id = UUID.randomUUID();
         FilmPerson fp = FilmPerson.builder()
-                .id(id)
-                .name("Old Name")
-                .image(new URL("http://image.png"))
-                .dateOfBirth(LocalDate.of(1970, 1, 1))
-                .biography("Old bio")
-                .movies(new ArrayList<>())
-                .build();
+            .id(id)
+            .name("Old Name")
+            .image(new URL("http://image.png"))
+            .dateOfBirth(LocalDate.of(1970, 1, 1))
+            .biography("Old bio")
+            .movies(new ArrayList<>())
+            .build();
         when(filmPersonRepository.findById(id)).thenReturn(Optional.of(fp));
         when(filmPersonRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         FilmPersonUpdateDto updateDto = FilmPersonUpdateDto.builder()
-                .name("New Name")
-                .image(new URL("http://image.png"))
-                .dateOfBirth(LocalDate.of(1980, 2, 2))
-                .biography("New bio")
-                .build();
+            .name("New Name")
+            .image(new URL("http://image.png"))
+            .dateOfBirth(LocalDate.of(1980, 2, 2))
+            .biography("New bio")
+            .build();
 
         // Act
-        FilmPersonDto result = filmPersonService.updateFilmPerson(id, updateDto);
+        FilmPerson result = filmPersonService.updateFilmPerson(id, updateDto);
 
         // Verify updates
         assertEquals(updateDto.getName(), result.getName());
@@ -168,13 +155,9 @@ class FilmPersonServiceTest {
         assertEquals(updateDto.getBiography(), result.getBiography());
         assertEquals(updateDto.getDateOfBirth(), result.getDateOfBirth());
 
-        // Verify event producer call
-        var updatedEventCaptor = ArgumentCaptor.forClass(FilmPersonUpdatedEvent.class);
-        verify(filmPersonEventProducer).sendFilmPersonUpdatedEvent(updatedEventCaptor.capture());
-        assertEquals(updatedEventCaptor.getValue().getId(), id);
-        assertEquals(updatedEventCaptor.getValue().getName(), updateDto.getName());
-        assertEquals(updatedEventCaptor.getValue().getImage(), updateDto.getImage());
-        assertEquals(updatedEventCaptor.getValue().getBiography(), updateDto.getBiography());
+        // Verify repository interaction
+        verify(filmPersonRepository).findById(id);
+        verify(filmPersonRepository).save(fp);
     }
 
     @Test
@@ -194,29 +177,24 @@ class FilmPersonServiceTest {
     }
 
     @Test
-    void deleteFilmPerson_FilmPersonExists_DeletesAndSendsEvent() throws Exception {
+    void deleteFilmPerson_FilmPersonExists_DeletesFilmPerson() throws Exception {
         // Setup
         UUID id = UUID.randomUUID();
         FilmPerson fp = FilmPerson.builder()
-                .id(id)
-                .name("Bob")
-                .image(new URL("http://image.png"))
-                .dateOfBirth(LocalDate.of(1965, 4, 4))
-                .biography("Bob's bio")
-                .movies(new ArrayList<>())
-                .build();
+            .id(id)
+            .name("Bob")
+            .image(new URL("http://image.png"))
+            .dateOfBirth(LocalDate.of(1965, 4, 4))
+            .biography("Bob's bio")
+            .movies(new ArrayList<>())
+            .build();
         when(filmPersonRepository.findById(id)).thenReturn(Optional.of(fp));
 
         // Act
         filmPersonService.deleteFilmPerson(id);
 
-        // Verify deletion and event producer call
+        // Verify deletion
         verify(filmPersonRepository).deleteById(id);
-
-        var deletedEventCaptor = ArgumentCaptor.forClass(FilmPersonDeletedEvent.class);
-        verify(filmPersonEventProducer).sendFilmPersonDeletedEvent(deletedEventCaptor.capture());
-        assertEquals(deletedEventCaptor.getValue().getId(), id);
-        assertEquals(deletedEventCaptor.getValue().getName(), fp.getName());
     }
 
     @Test

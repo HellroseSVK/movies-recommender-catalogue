@@ -16,7 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class FilmPersonService {
     private final FilmPersonRepository filmPersonRepository;
-    private final FilmPersonEventProducer filmPersonEventProducer;
     private final FilmPersonMapper filmPersonMapper;
 
     public List<FilmPerson> getAllFilmPersons() {
