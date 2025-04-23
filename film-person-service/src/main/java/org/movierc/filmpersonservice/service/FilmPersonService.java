@@ -1,11 +1,9 @@
 package org.movierc.filmpersonservice.service;
 
 import lombok.AllArgsConstructor;
-import org.movierc.filmpersonservice.dto.FilmPersonCreateDto;
-import org.movierc.filmpersonservice.dto.FilmPersonDto;
 import org.movierc.filmpersonservice.dto.FilmPersonUpdateDto;
+import org.movierc.filmpersonservice.entity.FilmPerson;
 import org.movierc.filmpersonservice.exception.FilmPersonNotFoundException;
-import org.movierc.filmpersonservice.mapper.FilmPersonCreateDtoMapper;
 import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
 import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -21,52 +18,32 @@ public class FilmPersonService {
     private final FilmPersonRepository filmPersonRepository;
     private final FilmPersonEventProducer filmPersonEventProducer;
     private final FilmPersonMapper filmPersonMapper;
-    private final FilmPersonCreateDtoMapper filmPersonCreateDtoMapper;
 
-    public List<FilmPersonDto> getAllFilmPersons() {
-        return filmPersonRepository.findAll().stream()
-                .map(filmPersonMapper::filmPersonToFilmPersonDto)
-                .collect(Collectors.toList());
+    public List<FilmPerson> getAllFilmPersons() {
+        return filmPersonRepository.findAll();
     }
 
-    public FilmPersonDto getFilmPersonById(UUID id) {
-        return filmPersonRepository.findById(id)
-                .map(filmPersonMapper::filmPersonToFilmPersonDto)
-                .orElseThrow(() -> new FilmPersonNotFoundException(id));
+    public FilmPerson getFilmPersonById(UUID id) {
+        return filmPersonRepository.findById(id).orElseThrow(() -> new FilmPersonNotFoundException(id));
     }
 
-    public FilmPersonDto createFilmPerson(FilmPersonCreateDto filmPersonCreateDto) {
-        var filmPerson = filmPersonCreateDtoMapper.filmPersonCreateDtoToMovie(filmPersonCreateDto);
-
-        var savedFilmPerson = filmPersonRepository.save(filmPerson);
-
-        filmPersonEventProducer.sendFilmPersonCreatedEvent(filmPersonMapper.filmPersonToFilmPersonCreatedEvent(savedFilmPerson));
-
-        return filmPersonMapper.filmPersonToFilmPersonDto(savedFilmPerson);
+    public FilmPerson createFilmPerson(FilmPerson filmPerson) {
+        return filmPersonRepository.save(filmPerson);
     }
 
-    public FilmPersonDto updateFilmPerson(UUID id, FilmPersonUpdateDto filmPersonUpdateDto) {
+    public FilmPerson updateFilmPerson(UUID id, FilmPersonUpdateDto filmPersonUpdateDto) {
         var filmPerson = filmPersonRepository.findById(id)
-                .orElseThrow(() -> new FilmPersonNotFoundException(id));
+            .orElseThrow(() -> new FilmPersonNotFoundException(id));
 
-        filmPerson.setName(filmPersonUpdateDto.getName());
-        filmPerson.setImage(filmPersonUpdateDto.getImage());
-        filmPerson.setDateOfBirth(filmPersonUpdateDto.getDateOfBirth());
-        filmPerson.setBiography(filmPersonUpdateDto.getBiography());
-
-        var savedFilmPerson = filmPersonRepository.save(filmPerson);
-
-        filmPersonEventProducer.sendFilmPersonUpdatedEvent(filmPersonMapper.filmPersonToFilmPersonUpdatedEvent(filmPerson));
-
-        return filmPersonMapper.filmPersonToFilmPersonDto(savedFilmPerson);
+        filmPersonMapper.updateFilmPerson(filmPersonUpdateDto, filmPerson);
+        return filmPersonRepository.save(filmPerson);
     }
 
-    public void deleteFilmPerson(UUID id) {
+    public FilmPerson deleteFilmPerson(UUID id) {
         var filmPerson = filmPersonRepository.findById(id)
-                .orElseThrow(() -> new FilmPersonNotFoundException(id));
+            .orElseThrow(() -> new FilmPersonNotFoundException(id));
 
         filmPersonRepository.deleteById(id);
-
-        filmPersonEventProducer.sendFilmPersonDeletedEvent(filmPersonMapper.filmPersonToFilmPersonDeletedEvent(filmPerson));
+        return filmPerson;
     }
 }
