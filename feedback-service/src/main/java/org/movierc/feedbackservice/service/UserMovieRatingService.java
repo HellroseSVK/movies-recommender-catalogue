@@ -2,19 +2,12 @@ package org.movierc.feedbackservice.service;
 
 import lombok.AllArgsConstructor;
 import org.movierc.feedbackservice.dto.RatingDetailCreateDto;
-import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
-import org.movierc.feedbackservice.dto.UserMovieRatingDto;
-import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
 import org.movierc.feedbackservice.entity.RatingDetail;
 import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.movierc.feedbackservice.exception.MovieNotFoundException;
 import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
 import org.movierc.feedbackservice.exception.UserMovieRatingNotFoundException;
 import org.movierc.feedbackservice.exception.UserNotFoundException;
-import org.movierc.feedbackservice.mapper.MovieRatingMapper;
-import org.movierc.feedbackservice.mapper.RatingDetailDtoMapper;
-import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
-import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.repository.MovieRepository;
 import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 import org.movierc.feedbackservice.repository.UserMovieRatingRepository;
@@ -23,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -58,7 +50,7 @@ public class UserMovieRatingService {
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
     }
 
-    public UserMovieRating createRating(UserMovieRating userMovieRating, UUID userId, UUID movieId, List<RatingDetailCreateDto> ratingDetails) {
+    public UserMovieRating createRating(UserMovieRating userMovieRating, UUID userId, UUID movieId) {
         userMovieRating.setUser(
                 userRepository.findById(userId)
                         .orElseThrow(() -> new UserNotFoundException(userId))
@@ -67,7 +59,7 @@ public class UserMovieRatingService {
                 movieRepository.findById(movieId)
                         .orElseThrow(() -> new MovieNotFoundException(movieId))
         );
-        ratingDetails.forEach(
+        userMovieRating.getRatingDetails().forEach(
                 ratingDetail -> ratingCategoryRepository.findById(ratingDetail.getRatingCategoryId())
                         .orElseThrow(() -> new RatingCategoryNotFoundException(ratingDetail.getRatingCategoryId()))
         );

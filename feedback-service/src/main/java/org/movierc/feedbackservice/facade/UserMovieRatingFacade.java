@@ -5,7 +5,7 @@ import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
 import org.movierc.feedbackservice.mapper.MovieRatingMapper;
-import org.movierc.feedbackservice.mapper.RatingDetailDtoMapper;
+import org.movierc.feedbackservice.mapper.RatingDetailMapper;
 import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
 import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.service.UserMovieRatingService;
@@ -22,7 +22,7 @@ public class UserMovieRatingFacade {
 
     private final MovieRatingMapper movieRatingMapper;
     private final UserMovieRatingCreateDtoMapper userMovieRatingCreateDtoMapper;
-    private final RatingDetailDtoMapper ratingDetailDtoMapper;
+    private final RatingDetailMapper ratingDetailMapper;
 
     private final UserMovieRatingEventProducer userMovieRatingEventProducer;
 
@@ -49,12 +49,14 @@ public class UserMovieRatingFacade {
     }
 
     public UserMovieRatingDto createRating(UserMovieRatingCreateDto userMovieRatingCreateDto) {
+        var dto = userMovieRatingCreateDtoMapper.userMovieRatingCreateDtoToUserMovieRating(userMovieRatingCreateDto);
+        dto.setRatingDetails(userMovieRatingCreateDto.getRatingDetails().stream().map(ratingDetailMapper::ratingDetailCreateDtoToRatingDetail).toList());
+
         var userMovieRating = userMovieRatingService.createRating(
-                userMovieRatingCreateDtoMapper.userMovieRatingCreateDtoToUserMovieRating(userMovieRatingCreateDto),
+                dto,
                 userMovieRatingCreateDto.getUserId(),
-                userMovieRatingCreateDto.getMovieId(),
-                userMovieRatingCreateDto.getRatingDetails()
-        ));
+                userMovieRatingCreateDto.getMovieId()
+        );
 
         userMovieRatingEventProducer.sendMovieRatingCreatedEvent(
                 movieRatingMapper.userMovieRatingToMovieRatingCreatedEvent(userMovieRating)
@@ -69,7 +71,7 @@ public class UserMovieRatingFacade {
                 userMovieRatingUpdateDto.getUserId(),
                 userMovieRatingUpdateDto.getMovieId(),
                 userMovieRatingUpdateDto.getRatingDetails().stream()
-                        .map(ratingDetailDtoMapper::ratingDetailDtoToRatingDetail)
+                        .map(ratingDetailMapper::ratingDetailDtoToRatingDetail)
                         .collect(Collectors.toList()),
                 userMovieRatingUpdateDto.getComment()
         );

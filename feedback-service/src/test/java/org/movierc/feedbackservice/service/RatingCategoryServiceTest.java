@@ -3,13 +3,8 @@ package org.movierc.feedbackservice.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
-import org.movierc.feedbackservice.dto.RatingCategoryCreateDto;
-import org.movierc.feedbackservice.dto.RatingCategoryDto;
 import org.movierc.feedbackservice.entity.RatingCategory;
 import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
-import org.movierc.feedbackservice.mapper.RatingCategoryCreateDtoMapper;
-import org.movierc.feedbackservice.mapper.RatingCategoryMapper;
 import org.movierc.feedbackservice.rabbit.RatingCategoryEventProducer;
 import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 import org.mockito.Mock;
@@ -34,21 +29,13 @@ class RatingCategoryServiceTest {
     @Mock
     private RatingCategoryRepository ratingCategoryRepository;
 
-    @Mock
-    private RatingCategoryEventProducer ratingCategoryEventProducer;
-
-    private final RatingCategoryCreateDtoMapper ratingCategoryCreateDtoMapper = Mappers.getMapper(RatingCategoryCreateDtoMapper.class);
-    private final RatingCategoryMapper ratingCategoryMapper = Mappers.getMapper(RatingCategoryMapper.class);
 
     private RatingCategoryService ratingCategoryService;
 
     @BeforeEach
     void setUp() {
         ratingCategoryService = new RatingCategoryService(
-            ratingCategoryRepository,
-            ratingCategoryMapper,
-            ratingCategoryCreateDtoMapper,
-            ratingCategoryEventProducer
+            ratingCategoryRepository
         );
     }
 
@@ -61,7 +48,7 @@ class RatingCategoryServiceTest {
 
         when(ratingCategoryRepository.findAll()).thenReturn(List.of(entity));
 
-        List<RatingCategoryDto> result = ratingCategoryService.getAllRatingCategories();
+        List<RatingCategory> result = ratingCategoryService.getAllRatingCategories();
 
         assertEquals(1, result.size());
         assertEquals("Acting", result.getFirst().getName());
@@ -78,7 +65,7 @@ class RatingCategoryServiceTest {
 
         when(ratingCategoryRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        RatingCategoryDto result = ratingCategoryService.getRatingCategoryById(id);
+        RatingCategory result = ratingCategoryService.getRatingCategoryById(id);
 
         assertNotNull(result);
         assertEquals(id, result.getId());
@@ -102,20 +89,15 @@ class RatingCategoryServiceTest {
 
     @Test
     void createRatingCategory_ValidInput_ReturnsDto() {
-        RatingCategoryCreateDto createDto = RatingCategoryCreateDto.builder()
-            .name("Visuals")
-            .build();
 
-        RatingCategory entity = ratingCategoryCreateDtoMapper.ratingCategoryCreateDtoToRatingCategory(createDto);
-        entity.setId(UUID.randomUUID());
+        RatingCategory entity = RatingCategory.builder().name("Visuals").id(UUID.randomUUID()).build();
 
         when(ratingCategoryRepository.save(any(RatingCategory.class))).thenReturn(entity);
 
-        RatingCategoryDto result = ratingCategoryService.createRatingCategory(createDto);
+        RatingCategory result = ratingCategoryService.createRatingCategory(entity);
 
         assertNotNull(result);
         assertEquals("Visuals", result.getName());
         verify(ratingCategoryRepository, times(1)).save(any(RatingCategory.class));
-        verify(ratingCategoryEventProducer, times(1)).sendRatingCategoryCreatedEvent(any());
     }
 }

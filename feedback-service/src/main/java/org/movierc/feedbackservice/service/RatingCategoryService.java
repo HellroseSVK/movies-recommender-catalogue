@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class RatingCategoryService {
     private final RatingCategoryRepository ratingCategoryRepository;
-    private final RatingCategoryEventProducer ratingCategoryEventProducer;
 
     public List<RatingCategory> getAllRatingCategories() {
         return ratingCategoryRepository.findAll();
@@ -32,8 +31,6 @@ public class RatingCategoryService {
     }
 
     public RatingCategory createRatingCategory(RatingCategory ratingCategory) {
-
-
         return ratingCategoryRepository.save(ratingCategory);
     }
 }

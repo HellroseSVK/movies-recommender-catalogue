@@ -2,12 +2,20 @@ package org.movierc.feedbackservice.facade;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
+import org.movierc.feedbackservice.entity.UserMovieRating;
+import org.movierc.feedbackservice.mapper.MovieMapper;
+import org.movierc.feedbackservice.mapper.MovieRatingMapper;
+import org.movierc.feedbackservice.mapper.RatingDetailMapper;
+import org.movierc.feedbackservice.mapper.UserMapper;
+import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
+import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.service.UserMovieRatingService;
 
 import java.util.Collections;
@@ -16,110 +24,175 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserMovieRatingFacadeTest {
 
-    @Mock
-    private UserMovieRatingService userMovieRatingService;
+    @Mock private UserMovieRatingService userMovieRatingService;
+    @Mock private UserMovieRatingEventProducer userMovieRatingEventProducer;
 
     private UserMovieRatingFacade userMovieRatingFacade;
 
+    private final MovieRatingMapper movieRatingMapper = Mappers.getMapper(MovieRatingMapper.class);
+    private final RatingDetailMapper ratingDetailMapper = Mappers.getMapper(RatingDetailMapper.class);
+    private final UserMovieRatingCreateDtoMapper userMovieRatingCreateDtoMapper = Mappers.getMapper(UserMovieRatingCreateDtoMapper.class);
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    private final MovieMapper movieMapper = Mappers.getMapper(MovieMapper.class);
+
     @BeforeEach
-    void setUp() {
-        userMovieRatingFacade = new UserMovieRatingFacade(userMovieRatingService);
+    void setUp() throws Exception {
+        userMovieRatingFacade = new UserMovieRatingFacade(
+            userMovieRatingService,
+            movieRatingMapper,
+            userMovieRatingCreateDtoMapper,
+            ratingDetailMapper,
+            userMovieRatingEventProducer
+        );
+
+      var field = movieRatingMapper.getClass().getDeclaredField("userMapper");
+      field.setAccessible(true);
+      field.set(movieRatingMapper, userMapper);
+      field.setAccessible(false);
+      field = movieRatingMapper.getClass().getDeclaredField("movieMapper");
+      field.setAccessible(true);
+      field.set(movieRatingMapper, movieMapper);
+      field.setAccessible(false);
     }
 
     @Test
     void getAllRatings_ReturnsList() {
-        UserMovieRatingDto dto = new UserMovieRatingDto();
-        when(userMovieRatingService.getAllRatings()).thenReturn(List.of(dto));
+        UserMovieRating entity = new UserMovieRating();
+        entity.setComment("Great movie!");
+        when(userMovieRatingService.getAllRatings()).thenReturn(List.of(entity));
 
         List<UserMovieRatingDto> result = userMovieRatingFacade.getAllRatings();
 
         assertEquals(1, result.size());
+        assertEquals("Great movie!", result.get(0).getComment());
         verify(userMovieRatingService).getAllRatings();
     }
 
     @Test
     void getRatingsByUserId_ReturnsList() {
         UUID userId = UUID.randomUUID();
-        when(userMovieRatingService.getRatingsByUserId(userId)).thenReturn(Collections.singletonList(new UserMovieRatingDto()));
+        UserMovieRating entity = new UserMovieRating();
+        entity.setComment("User-specific rating");
+        when(userMovieRatingService.getRatingsByUserId(userId)).thenReturn(List.of(entity));
 
         List<UserMovieRatingDto> result = userMovieRatingFacade.getRatingsByUserId(userId);
 
         assertEquals(1, result.size());
+        assertEquals("User-specific rating", result.get(0).getComment());
         verify(userMovieRatingService).getRatingsByUserId(userId);
     }
 
     @Test
     void getRatingsByMovieId_ReturnsList() {
         UUID movieId = UUID.randomUUID();
-        when(userMovieRatingService.getRatingsByMovieId(movieId)).thenReturn(Collections.singletonList(new UserMovieRatingDto()));
+        UserMovieRating entity = new UserMovieRating();
+        entity.setComment("Movie-specific rating");
+        when(userMovieRatingService.getRatingsByMovieId(movieId)).thenReturn(List.of(entity));
 
         List<UserMovieRatingDto> result = userMovieRatingFacade.getRatingsByMovieId(movieId);
 
         assertEquals(1, result.size());
+        assertEquals("Movie-specific rating", result.get(0).getComment());
         verify(userMovieRatingService).getRatingsByMovieId(movieId);
     }
 
     @Test
     void getRatingById_ReturnsDto() {
         UUID ratingId = UUID.randomUUID();
-        UserMovieRatingDto dto = new UserMovieRatingDto();
-        when(userMovieRatingService.getRatingById(ratingId)).thenReturn(dto);
+        UserMovieRating entity = new UserMovieRating();
+        entity.setComment("Specific rating");
+        when(userMovieRatingService.getRatingById(ratingId)).thenReturn(entity);
 
         UserMovieRatingDto result = userMovieRatingFacade.getRatingById(ratingId);
 
         assertNotNull(result);
+        assertEquals("Specific rating", result.getComment());
         verify(userMovieRatingService).getRatingById(ratingId);
     }
 
     @Test
-    void createRating_ReturnsCreatedDto() {
+    void createRating_ReturnsMappedDto() {
+        UUID userId = UUID.randomUUID();
+        UUID movieId = UUID.randomUUID();
         UserMovieRatingCreateDto createDto = UserMovieRatingCreateDto.builder()
-            .userId(UUID.randomUUID())
-            .movieId(UUID.randomUUID())
+            .userId(userId)
+            .movieId(movieId)
             .ratingDetails(Collections.emptyList())
-            .comment("Great movie!")
+            .comment("New rating")
             .build();
 
-        UserMovieRatingDto dto = new UserMovieRatingDto();
-        when(userMovieRatingService.createRating(createDto)).thenReturn(dto);
+        UserMovieRating entity = new UserMovieRating();
+        entity.setComment("New rating");
+        when(userMovieRatingService.createRating(
+                any(), any(), any()
+        )).thenReturn(entity);
 
         UserMovieRatingDto result = userMovieRatingFacade.createRating(createDto);
 
         assertNotNull(result);
-        verify(userMovieRatingService).createRating(createDto);
+        assertEquals("New rating", result.getComment());
+        verify(userMovieRatingService).createRating(
+            argThat(e -> e.getComment().equals("New rating")),
+            eq(userId),
+            eq(movieId)
+        );
+        verify(userMovieRatingEventProducer).sendMovieRatingCreatedEvent(any());
     }
 
     @Test
-    void updateRating_ReturnsUpdatedDto() {
+    void updateRating_ReturnsMappedDto() {
         UUID ratingId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID movieId = UUID.randomUUID();
         UserMovieRatingUpdateDto updateDto = UserMovieRatingUpdateDto.builder()
-            .userId(UUID.randomUUID())
-            .movieId(UUID.randomUUID())
+            .userId(userId)
+            .movieId(movieId)
             .ratingDetails(Collections.emptyList())
-            .comment("Updated comment")
+            .comment("Updated rating")
             .build();
 
-        UserMovieRatingDto dto = new UserMovieRatingDto();
-        when(userMovieRatingService.updateRating(ratingId, updateDto)).thenReturn(dto);
+        UserMovieRating entity = new UserMovieRating();
+        entity.setComment("Updated rating");
+        when(userMovieRatingService.updateRating(
+                eq(ratingId),
+                eq(userId),
+                eq(movieId),
+                eq(Collections.emptyList()),
+                eq("Updated rating")
+        )).thenReturn(entity);
 
         UserMovieRatingDto result = userMovieRatingFacade.updateRating(ratingId, updateDto);
 
         assertNotNull(result);
-        verify(userMovieRatingService).updateRating(ratingId, updateDto);
+        assertEquals("Updated rating", result.getComment());
+        verify(userMovieRatingService).updateRating(
+            eq(ratingId),
+            eq(userId),
+            eq(movieId),
+            eq(Collections.emptyList()),
+            eq("Updated rating")
+        );
+        verify(userMovieRatingEventProducer).sendMovieRatingUpdatedEvent(any());
     }
 
     @Test
-    void deleteRating_CallsService() {
+    void deleteRating_CallsServiceAndSendsEvent() {
         UUID ratingId = UUID.randomUUID();
+        UserMovieRating entity = new UserMovieRating();
+        when(userMovieRatingService.deleteRating(ratingId)).thenReturn(entity);
 
         userMovieRatingFacade.deleteRating(ratingId);
 
         verify(userMovieRatingService).deleteRating(ratingId);
+        verify(userMovieRatingEventProducer).sendMovieRatingDeletedEvent(any());
     }
 }
