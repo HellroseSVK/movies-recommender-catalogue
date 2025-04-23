@@ -12,9 +12,15 @@ import org.movierc.recommendationservice.entity.Movie;
 import org.movierc.recommendationservice.mapper.MovieEventMapper;
 import org.movierc.recommendationservice.repository.MovieRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MovieEventConsumerTest {
@@ -37,13 +43,13 @@ class MovieEventConsumerTest {
         // Setup
         UUID movieId = UUID.randomUUID();
         MovieCreatedEvent event = MovieCreatedEvent.builder()
-            .id(movieId)
-            .title("Test Movie")
-            .build();
+                .id(movieId)
+                .title("Test Movie")
+                .build();
         Movie movie = Movie.builder()
-            .id(movieId)
-            .title("Test Movie")
-            .build();
+                .id(movieId)
+                .title("Test Movie")
+                .build();
 
         when(movieRepository.existsById(movieId)).thenReturn(false);
         when(movieEventMapper.movieCreatedEventToMovie(event)).thenReturn(movie);
@@ -60,9 +66,9 @@ class MovieEventConsumerTest {
         // Setup
         UUID movieId = UUID.randomUUID();
         MovieCreatedEvent event = MovieCreatedEvent.builder()
-            .id(movieId)
-            .title("Test Movie")
-            .build();
+                .id(movieId)
+                .title("Test Movie")
+                .build();
 
         when(movieRepository.existsById(movieId)).thenReturn(true);
 
@@ -78,22 +84,24 @@ class MovieEventConsumerTest {
         // Setup
         UUID movieId = UUID.randomUUID();
         MovieUpdatedEvent event = MovieUpdatedEvent.builder()
-            .id(movieId)
-            .title("Updated Movie")
-            .build();
-        Movie movie = Movie.builder()
-            .id(movieId)
-            .title("Updated Movie")
-            .build();
+                .id(movieId)
+                .title("Updated Movie")
+                .build();
+        Movie originalMovie = Movie.builder()
+                .id(movieId)
+                .title("Original Movie")
+                .build();
 
-        when(movieRepository.existsById(movieId)).thenReturn(true);
-        when(movieEventMapper.movieUpdatedEventToMovie(event)).thenReturn(movie);
+        when(movieRepository.findById(movieId)).thenReturn(Optional.of(originalMovie));
 
         // Act
         movieEventConsumer.handleMovieUpdatedEvent(event);
 
         // Verify
-        verify(movieRepository, times(1)).save(movie);
+        verify(movieRepository, times(1))
+                .save(argThat(
+                        m -> m.getId().equals(movieId) && m.getTitle().equals("Updated Movie"))
+                );
     }
 
     @Test
@@ -101,11 +109,11 @@ class MovieEventConsumerTest {
         // Setup
         UUID movieId = UUID.randomUUID();
         MovieUpdatedEvent event = MovieUpdatedEvent.builder()
-            .id(movieId)
-            .title("Updated Movie")
-            .build();
+                .id(movieId)
+                .title("Updated Movie")
+                .build();
 
-        when(movieRepository.existsById(movieId)).thenReturn(false);
+        when(movieRepository.findById(movieId)).thenReturn(Optional.empty());
 
         // Act
         movieEventConsumer.handleMovieUpdatedEvent(event);
@@ -119,8 +127,8 @@ class MovieEventConsumerTest {
         // Setup
         UUID movieId = UUID.randomUUID();
         MovieDeletedEvent event = MovieDeletedEvent.builder()
-            .id(movieId)
-            .build();
+                .id(movieId)
+                .build();
 
         when(movieRepository.existsById(movieId)).thenReturn(true);
 
@@ -136,8 +144,8 @@ class MovieEventConsumerTest {
         // Setup
         UUID movieId = UUID.randomUUID();
         MovieDeletedEvent event = MovieDeletedEvent.builder()
-            .id(movieId)
-            .build();
+                .id(movieId)
+                .build();
 
         when(movieRepository.existsById(movieId)).thenReturn(false);
 

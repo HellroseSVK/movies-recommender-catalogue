@@ -3,16 +3,19 @@ package org.movierc.recommendationservice.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.movierc.events.rating.MovieRatingCreatedEvent;
-import org.movierc.events.rating.MovieRatingDeletedEvent;
-import org.movierc.events.rating.MovieRatingUpdatedEvent;
+import org.movierc.recommendationservice.entity.Movie;
 import org.movierc.recommendationservice.entity.UserMovieRating;
 
-@Mapper
+import java.util.UUID;
+
+@Mapper(
+        imports = {UUID.class}
+)
 public interface UserMovieRatingMapper {
-    UserMovieRating userMovieRatingCreatedEventToUserMovieRating(MovieRatingCreatedEvent userMovieRatingCreatedEvent);
-
-    @Mapping(target = "ratingDetails", source = "newRatingDetails")
-    UserMovieRating userMovieRatingUpdatedEventToUserMovieRating(MovieRatingUpdatedEvent userMovieRatingUpdatedEvent);
-
-    UserMovieRating userMovieRatingDeletedEventToUserMovieRating(MovieRatingDeletedEvent userMovieRatingDeletedEvent);
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    @Mapping(target = "ratingDetails", ignore = true)
+    UserMovieRating userMovieRatingCreatedEventToUserMovieRating(
+            MovieRatingCreatedEvent userMovieRatingCreatedEvent,
+            Movie movie
+    );
 }

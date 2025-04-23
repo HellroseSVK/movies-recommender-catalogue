@@ -1,13 +1,16 @@
 package org.movierc.recommendationservice.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.movierc.events.movie.MovieCreatedEvent;
-import org.movierc.events.movie.MovieUpdatedEvent;
 import org.movierc.recommendationservice.entity.Movie;
 
-@Mapper
-public interface MovieEventMapper {
-    Movie movieCreatedEventToMovie(MovieCreatedEvent movieCreatedEvent);
+import java.util.ArrayList;
 
-    Movie movieUpdatedEventToMovie(MovieUpdatedEvent movieUpdatedEvent);
+@Mapper(
+        imports = {ArrayList.class}
+)
+public interface MovieEventMapper {
+    @Mapping(target = "userMovieRatings", expression = "java(new ArrayList<>())")
+    Movie movieCreatedEventToMovie(MovieCreatedEvent movieCreatedEvent);
 }

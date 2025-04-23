@@ -1,5 +1,6 @@
 package org.movierc.recommendationservice.rabbit;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.movierc.events.rating.RatingCategoryCreatedEvent;
 import org.movierc.recommendationservice.mapper.RatingCategoryMapper;
@@ -18,6 +19,7 @@ public class RatingCategoryEventConsumer {
     private final RatingCategoryMapper ratingCategoryMapper;
 
     @RabbitListener(queues = "#{ratingCategoryCreatedQueue.getName()}")
+    @Transactional
     public void handleRatingCategoryCreatedEvent(RatingCategoryCreatedEvent event) {
         if (!ratingCategoryRepository.existsById(event.getId())) {
             ratingCategoryRepository.save(ratingCategoryMapper.ratingCategoryCreatedEventToRatingCategory(event));
