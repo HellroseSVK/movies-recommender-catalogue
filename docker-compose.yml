@@ -6,7 +6,7 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - ./config/movie/external-app.properties:/app/etc/application.properties
+      - ./config/movie/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
   film-person-service:
@@ -16,7 +16,7 @@ services:
     ports:
       - "8082:8082"
     volumes:
-      - ./config/film-person/external-app.properties:/app/etc/application.properties
+      - ./config/film-person/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
   user-service:
@@ -26,7 +26,7 @@ services:
     ports:
       - "8083:8083"
     volumes:
-      - ./config/user/external-app.properties:/app/etc/application.properties
+      - ./config/user/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
   feedback-service:
@@ -36,7 +36,7 @@ services:
     ports:
       - "8084:8084"
     volumes:
-      - ./config/feedback/external-app.properties:/app/etc/application.properties
+      - ./config/feedback/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
   recommendation-service:
@@ -46,7 +46,7 @@ services:
     ports:
       - "8085:8085"
     volumes:
-      - ./config/recommendation/external-app.properties:/app/etc/application.properties
+      - ./config/recommendation/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
   rabbitmq:
