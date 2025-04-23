@@ -1,41 +1,38 @@
 package org.movierc.recommendationservice.facade;
 
 import lombok.AllArgsConstructor;
-import org.movierc.recommendationservice.dto.GetRecommendationByCategoriesWeightedDto;
 import org.movierc.recommendationservice.dto.MovieDto;
+import org.movierc.recommendationservice.mapper.MovieMapper;
 import org.movierc.recommendationservice.service.RecommendationService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class RecommendationFacade {
     private final RecommendationService recommendationService;
+    private final MovieMapper movieMapper;
 
-    public List<MovieDto> getRecommendations() {
-        return recommendationService.getRecommendations();
-    }
-
-    public List<MovieDto> getRecommendationsByCategoriesAboveThreshold(List<UUID> categoryIds, int threshold){
-        return recommendationService.getRecommendationsByCategoriesAboveThreshold(categoryIds, threshold);
-    }
-
-
-    public List<MovieDto> getRecommendationsByCategoriesWeighted(List<GetRecommendationByCategoriesWeightedDto> categoryWeights) {
-        return recommendationService.getRecommendationsByCategoriesWeighted(categoryWeights);
-    }
-
-    public List<MovieDto> getRecommendationsByRated(UUID userId) {
-        return recommendationService.getRecommendationsByRated(userId);
-    }
-
-    public List<MovieDto> getRecommendationsByRatedAllSimilarAboveThreshold(UUID userId, int threshold){
-        return recommendationService.getRecommendationsByRatedAllSimilarAboveThreshold(userId, threshold);
+    public List<MovieDto> getRecommendationsByCategoriesAboveThreshold(
+            Set<UUID> categoryIds,
+            int threshold
+    ) {
+        return recommendationService.getRecommendationsByCategoriesAboveThreshold(categoryIds, threshold)
+                .entrySet()
+                .stream()
+                .map(e -> movieMapper.movieToMovieDto(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
     }
 
     public List<MovieDto> getRecommendationsByMovieId(UUID movieId) {
-        return recommendationService.getRecommendationsByMovieId(movieId);
+        return recommendationService.getRecommendationsByMovieId(movieId)
+                .entrySet()
+                .stream()
+                .map(e -> movieMapper.movieToMovieDto(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
     }
 }

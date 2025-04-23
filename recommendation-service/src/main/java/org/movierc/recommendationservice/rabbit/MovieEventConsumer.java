@@ -1,5 +1,6 @@
 package org.movierc.recommendationservice.rabbit;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.movierc.events.movie.MovieCreatedEvent;
 import org.movierc.events.movie.MovieDeletedEvent;
@@ -22,6 +23,7 @@ public class MovieEventConsumer {
     private final MovieEventMapper movieEventMapper;
 
     @RabbitListener(queues = "#{movieCreatedQueue.getName()}")
+    @Transactional
     public void handleMovieCreatedEvent(@Payload MovieCreatedEvent event) {
         if (!movieRepository.existsById(event.getId())) {
             movieRepository.save(movieEventMapper.movieCreatedEventToMovie(event));
@@ -31,15 +33,23 @@ public class MovieEventConsumer {
     }
 
     @RabbitListener(queues = "#{movieUpdatedQueue.getName()}")
+    @Transactional
     public void handleMovieUpdatedEvent(@Payload MovieUpdatedEvent event) {
-        if (movieRepository.existsById(event.getId())) {
-            movieRepository.save(movieEventMapper.movieUpdatedEventToMovie(event));
+        var maybeMovie = movieRepository.findById(event.getId());
+
+        if (maybeMovie.isPresent()) {
+            var movie = maybeMovie.get();
+            movie.setTitle(event.getTitle());
+            movieRepository.save(movie);
+        } else {
+            logger.warn("Movie with ID {} not found for update", event.getId());
         }
 
         logger.info("Received Movie Updated: {}", event);
     }
 
     @RabbitListener(queues = "#{movieDeletedQueue.getName()}")
+    @Transactional
     public void handleMovieDeletedEvent(@Payload MovieDeletedEvent event) {
         if (movieRepository.existsById(event.getId())) {
             movieRepository.deleteById(event.getId());
