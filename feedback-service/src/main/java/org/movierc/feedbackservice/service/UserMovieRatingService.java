@@ -1,17 +1,13 @@
 package org.movierc.feedbackservice.service;
 
 import lombok.AllArgsConstructor;
-import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
-import org.movierc.feedbackservice.dto.UserMovieRatingDto;
-import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
+import org.movierc.feedbackservice.dto.RatingDetailCreateDto;
+import org.movierc.feedbackservice.entity.RatingDetail;
+import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.movierc.feedbackservice.exception.MovieNotFoundException;
 import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
 import org.movierc.feedbackservice.exception.UserMovieRatingNotFoundException;
 import org.movierc.feedbackservice.exception.UserNotFoundException;
-import org.movierc.feedbackservice.mapper.MovieRatingMapper;
-import org.movierc.feedbackservice.mapper.RatingDetailDtoMapper;
-import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
-import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.repository.MovieRepository;
 import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 import org.movierc.feedbackservice.repository.UserMovieRatingRepository;
@@ -20,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -28,103 +23,75 @@ public class UserMovieRatingService {
     private final UserMovieRatingRepository userMovieRatingRepository;
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
-    private final MovieRatingMapper movieRatingMapper;
-    private final UserMovieRatingCreateDtoMapper userMovieRatingCreateDtoMapper;
-    private final RatingDetailDtoMapper ratingDetailDtoMapper;
-    private final UserMovieRatingEventProducer userMovieRatingEventProducer;
     private final RatingCategoryRepository ratingCategoryRepository;
 
-    public List<UserMovieRatingDto> getAllRatings() {
-        return userMovieRatingRepository.findAll().stream()
-                .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
-                .collect(Collectors.toList());
+    public List<UserMovieRating> getAllRatings() {
+        return userMovieRatingRepository.findAll();
     }
 
-    public List<UserMovieRatingDto> getRatingsByUserId(UUID userId) {
+    public List<UserMovieRating> getRatingsByUserId(UUID userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 
-        return userMovieRatingRepository.findByUserId(userId).stream()
-                .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
-                .collect(Collectors.toList());
+        return userMovieRatingRepository.findByUserId(userId);
     }
 
-    public List<UserMovieRatingDto> getRatingsByMovieId(UUID movieId) {
+    public List<UserMovieRating> getRatingsByMovieId(UUID movieId) {
         if (!movieRepository.existsById(movieId)) {
             throw new MovieNotFoundException(movieId);
         }
 
-        return userMovieRatingRepository.findByMovieId(movieId).stream()
-                .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
-                .collect(Collectors.toList());
+        return userMovieRatingRepository.findByMovieId(movieId);
     }
 
-    public UserMovieRatingDto getRatingById(UUID id) {
+    public UserMovieRating getRatingById(UUID id) {
         return userMovieRatingRepository.findById(id)
-                .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
     }
 
-    public UserMovieRatingDto createRating(UserMovieRatingCreateDto userMovieRatingCreateDto) {
-        var userMovieRating = userMovieRatingCreateDtoMapper.userMovieRatingCreateDtoToUserMovieRating(userMovieRatingCreateDto);
-
+    public UserMovieRating createRating(UserMovieRating userMovieRating, UUID userId, UUID movieId) {
         userMovieRating.setUser(
-                userRepository.findById(userMovieRatingCreateDto.getUserId())
-                        .orElseThrow(() -> new UserNotFoundException(userMovieRatingCreateDto.getUserId()))
+                userRepository.findById(userId)
+                        .orElseThrow(() -> new UserNotFoundException(userId))
         );
         userMovieRating.setMovie(
-                movieRepository.findById(userMovieRatingCreateDto.getMovieId())
-                        .orElseThrow(() -> new MovieNotFoundException(userMovieRatingCreateDto.getMovieId()))
+                movieRepository.findById(movieId)
+                        .orElseThrow(() -> new MovieNotFoundException(movieId))
         );
         userMovieRating.getRatingDetails().forEach(
                 ratingDetail -> ratingCategoryRepository.findById(ratingDetail.getRatingCategoryId())
                         .orElseThrow(() -> new RatingCategoryNotFoundException(ratingDetail.getRatingCategoryId()))
         );
 
-        var savedUserMovieRating = userMovieRatingRepository.save(userMovieRating);
-
-        userMovieRatingEventProducer.sendMovieRatingCreatedEvent(
-                movieRatingMapper.userMovieRatingToMovieRatingCreatedEvent(savedUserMovieRating)
-        );
-
-        return movieRatingMapper.userMovieRatingTouserMovieRatingDto(savedUserMovieRating);
+        return userMovieRatingRepository.save(userMovieRating);
     }
 
-    public UserMovieRatingDto updateRating(UUID id, UserMovieRatingUpdateDto userMovieRatingUpdateDto) {
+    public UserMovieRating updateRating(UUID id, UUID userId, UUID movieId, List<RatingDetail> ratingDetails, String comment) {
         var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
 
         userMovieRating.setUser(
-                userRepository.findById(userMovieRatingUpdateDto.getUserId())
-                        .orElseThrow(() -> new UserNotFoundException(userMovieRatingUpdateDto.getUserId()))
+                userRepository.findById(userId)
+                        .orElseThrow(() -> new UserNotFoundException(userId))
         );
         userMovieRating.setMovie(
-                movieRepository.findById(userMovieRatingUpdateDto.getMovieId())
-                        .orElseThrow(() -> new UserMovieRatingNotFoundException(userMovieRatingUpdateDto.getMovieId()))
+                movieRepository.findById(movieId)
+                        .orElseThrow(() -> new UserMovieRatingNotFoundException(movieId))
         );
-        userMovieRating.setRatingDetails(userMovieRatingUpdateDto.getRatingDetails().stream().map(
-                ratingDetailDtoMapper::ratingDetailDtoToRatingDetail
-        ).collect(Collectors.toList()));
-        userMovieRating.setComment(userMovieRatingUpdateDto.getComment());
+        userMovieRating.setRatingDetails(ratingDetails);
+        userMovieRating.setComment(comment);
 
-        var updatedUserMovieRating = userMovieRatingRepository.save(userMovieRating);
 
-        userMovieRatingEventProducer.sendMovieRatingUpdatedEvent(
-                movieRatingMapper.userMovieRatingToMovieRatingUpdatedEvent(updatedUserMovieRating)
-        );
-
-        return movieRatingMapper.userMovieRatingTouserMovieRatingDto(updatedUserMovieRating);
+        return userMovieRatingRepository.save(userMovieRating);
     }
 
-    public void deleteRating(UUID id) {
+    public UserMovieRating deleteRating(UUID id) {
         var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
 
         userMovieRatingRepository.deleteById(id);
 
-        userMovieRatingEventProducer.sendMovieRatingDeletedEvent(
-                movieRatingMapper.userMovieRatingToMovieRatingDeletedEvent(userMovieRating)
-        );
+        return userMovieRating;
     }
 }
