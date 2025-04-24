@@ -45,6 +45,6 @@ public class UserMovieRating {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RatingDetail> ratingDetails;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Movie movie;
 }

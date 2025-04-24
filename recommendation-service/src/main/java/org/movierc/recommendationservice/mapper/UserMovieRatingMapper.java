@@ -12,7 +12,7 @@ import java.util.UUID;
         imports = {UUID.class}
 )
 public interface UserMovieRatingMapper {
-    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "ratingDetails", ignore = true)
     UserMovieRating userMovieRatingCreatedEventToUserMovieRating(
             MovieRatingCreatedEvent userMovieRatingCreatedEvent,

@@ -1,6 +1,5 @@
 package org.movierc.recommendationservice.service;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.movierc.recommendationservice.entity.AverageMovieRating;
 import org.movierc.recommendationservice.entity.Movie;
@@ -10,6 +9,7 @@ import org.movierc.recommendationservice.repository.MovieRepository;
 import org.movierc.recommendationservice.repository.RatingCategoryRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class RecommendationService {
     private final MovieRepository movieRepository;
     private final RatingCategoryRepository ratingCategoryRepository;
 
-    @Transactional
     public Map<Movie, List<AverageMovieRating>> getRecommendationsByCategoriesAboveThreshold(
             Set<UUID> categoryIds,
             int threshold
@@ -40,7 +40,6 @@ public class RecommendationService {
         return getAverageRatingsForMovies(similarMovies);
     }
 
-    @Transactional
     public Map<Movie, List<AverageMovieRating>> getRecommendationsByMovieId(UUID movieId) {
         if (!movieRepository.existsById(movieId)) {
             throw new MovieNotFoundException(movieId);
@@ -64,5 +63,4 @@ public class RecommendationService {
                                 .collect(Collectors.toList())
                 ));
     }
-
 }
