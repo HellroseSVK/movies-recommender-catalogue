@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.movierc.feedbackservice.artemis.UserMovieRatingEventArtemisProducer;
 import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
@@ -17,6 +18,7 @@ import org.movierc.feedbackservice.mapper.UserMapper;
 import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
 import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.service.UserMovieRatingService;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +37,7 @@ class UserMovieRatingFacadeTest {
 
     @Mock private UserMovieRatingService userMovieRatingService;
     @Mock private UserMovieRatingEventProducer userMovieRatingEventProducer;
+    @Mock private UserMovieRatingEventArtemisProducer userMovieRatingEventArtemisProducer;
 
     private UserMovieRatingFacade userMovieRatingFacade;
 
@@ -51,7 +54,8 @@ class UserMovieRatingFacadeTest {
             movieRatingMapper,
             userMovieRatingCreateDtoMapper,
             ratingDetailMapper,
-            userMovieRatingEventProducer
+            userMovieRatingEventProducer,
+            userMovieRatingEventArtemisProducer
         );
 
       var field = movieRatingMapper.getClass().getDeclaredField("userMapper");
@@ -146,6 +150,7 @@ class UserMovieRatingFacadeTest {
             eq(movieId)
         );
         verify(userMovieRatingEventProducer).sendMovieRatingCreatedEvent(any());
+        verify(userMovieRatingEventArtemisProducer).sendMovieRatingChangedEvent(any());
     }
 
     @Test
@@ -182,6 +187,7 @@ class UserMovieRatingFacadeTest {
             eq("Updated rating")
         );
         verify(userMovieRatingEventProducer).sendMovieRatingUpdatedEvent(any());
+        verify(userMovieRatingEventArtemisProducer).sendMovieRatingChangedEvent(any());
     }
 
     @Test
@@ -194,5 +200,6 @@ class UserMovieRatingFacadeTest {
 
         verify(userMovieRatingService).deleteRating(ratingId);
         verify(userMovieRatingEventProducer).sendMovieRatingDeletedEvent(any());
+        verify(userMovieRatingEventArtemisProducer).sendMovieRatingChangedEvent(any());
     }
 }

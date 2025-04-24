@@ -4,6 +4,11 @@ spring:
       enabled: true
   application:
     name: recommendation-service
+  artemis:
+    broker-url: "${ACTIVEMQ_BROKER_URL:tcp://localhost:61616}"
+    user: "${ACTIVEMQ_USER:artemis}"
+    password: "${ACTIVEMQ_PASS:artemis}"
+    mode: native
   rabbitmq:
     host: "${RABBIT_BROKER_HOST:localhost}"
     port: "${RABBIT_BROKER_PORT:5672}"
@@ -26,5 +31,8 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+batch:
+  size: 50 # Number of records to process in a single batch
+  timeout-ms: 500 # Timeout between messages for batch processing in milliseconds
 server:
   port: "${RECOMMENDATION_SERVICE_PORT:8085}"
