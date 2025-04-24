@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -38,6 +39,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Component
+@Profile("!without-artemis")
 public class BatchedRatingConsumer implements InitializingBean {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final int batchSize;

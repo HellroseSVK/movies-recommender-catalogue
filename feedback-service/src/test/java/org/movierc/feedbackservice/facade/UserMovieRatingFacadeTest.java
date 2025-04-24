@@ -18,6 +18,7 @@ import org.movierc.feedbackservice.mapper.UserMapper;
 import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
 import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.service.UserMovieRatingService;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Collections;
 import java.util.List;

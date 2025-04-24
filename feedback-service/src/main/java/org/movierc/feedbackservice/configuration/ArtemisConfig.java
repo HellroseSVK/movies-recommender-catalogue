@@ -6,8 +6,10 @@ import org.apache.activemq.artemis.api.core.client.ServerLocator;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile("!without-artemis")
 public class ArtemisConfig {
     @Bean(destroyMethod = "close")
     public ServerLocator serverLocator(ArtemisProperties props) throws Exception {
