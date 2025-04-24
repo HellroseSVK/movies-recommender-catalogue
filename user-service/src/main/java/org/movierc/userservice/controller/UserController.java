@@ -11,6 +11,7 @@ import org.movierc.userservice.dto.UserCreateDto;
 import org.movierc.userservice.dto.UserDto;
 import org.movierc.userservice.dto.UserUpdateDto;
 import org.movierc.userservice.facade.UserFacade;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,12 +50,12 @@ public class UserController {
 
     @Operation(summary = "Create new user", description = "Create a new user with the provided information.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User created successfully", content = @Content(schema = @Schema(implementation = UserDto.class))),
+            @ApiResponse(responseCode = "201", description = "User created successfully", content = @Content(schema = @Schema(implementation = UserDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "application/problem+json"))
     })
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserCreateDto userCreateDto) {
-        return ResponseEntity.ok(userFacade.createUser(userCreateDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userFacade.createUser(userCreateDto));
     }
 
     @Operation(summary = "Delete user", description = "Delete a user by their ID.")
