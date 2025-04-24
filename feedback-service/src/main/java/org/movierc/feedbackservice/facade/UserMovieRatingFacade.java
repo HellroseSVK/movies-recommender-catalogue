@@ -1,6 +1,7 @@
 package org.movierc.feedbackservice.facade;
 
 import lombok.AllArgsConstructor;
+import org.movierc.feedbackservice.artemis.UserMovieRatingEventArtemisProducer;
 import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
@@ -27,6 +28,7 @@ public class UserMovieRatingFacade {
     private final RatingDetailMapper ratingDetailMapper;
 
     private final UserMovieRatingEventProducer userMovieRatingEventProducer;
+    private final UserMovieRatingEventArtemisProducer userMovieRatingEventArtemisProducer;
 
     @Transactional(readOnly = true)
     public List<UserMovieRatingDto> getAllRatings() {
@@ -67,12 +69,15 @@ public class UserMovieRatingFacade {
         userMovieRatingEventProducer.sendMovieRatingCreatedEvent(
                 movieRatingMapper.userMovieRatingToMovieRatingCreatedEvent(userMovieRating)
         );
+        userMovieRatingEventArtemisProducer.sendMovieRatingChangedEvent(
+                movieRatingMapper.userMovieRatingToMovieRatingChangedEvent(userMovieRating)
+        );
 
         return movieRatingMapper.userMovieRatingTouserMovieRatingDto(userMovieRating);
     }
 
     public UserMovieRatingDto updateRating(UUID id, UserMovieRatingUpdateDto userMovieRatingUpdateDto) {
-        var userMovieRating =  userMovieRatingService.updateRating(
+        var userMovieRating = userMovieRatingService.updateRating(
                 id,
                 userMovieRatingUpdateDto.getUserId(),
                 userMovieRatingUpdateDto.getMovieId(),
@@ -85,6 +90,9 @@ public class UserMovieRatingFacade {
         userMovieRatingEventProducer.sendMovieRatingUpdatedEvent(
                 movieRatingMapper.userMovieRatingToMovieRatingUpdatedEvent(userMovieRating)
         );
+        userMovieRatingEventArtemisProducer.sendMovieRatingChangedEvent(
+                movieRatingMapper.userMovieRatingToMovieRatingChangedEvent(userMovieRating)
+        );
 
         return movieRatingMapper.userMovieRatingTouserMovieRatingDto(userMovieRating);
     }
@@ -94,6 +102,9 @@ public class UserMovieRatingFacade {
 
         userMovieRatingEventProducer.sendMovieRatingDeletedEvent(
                 movieRatingMapper.userMovieRatingToMovieRatingDeletedEvent(userMovieRating)
+        );
+        userMovieRatingEventArtemisProducer.sendMovieRatingChangedEvent(
+                movieRatingMapper.userMovieRatingToMovieRatingChangedEvent(userMovieRating)
         );
     }
 }
