@@ -26,10 +26,10 @@ public class FilmPersonDto {
     @NotBlank
     private String name;
     @Schema(example = "http://example.com/image1.jpg")
-    @NotBlank
+    @NotNull
     private URL image;
     @Schema(example = "1980-01-01")
-    @NotBlank
+    @NotNull
     private LocalDate dateOfBirth;
     @Schema(example = "John Doe is a famous actor known for his roles in various movies.")
     @NotBlank
