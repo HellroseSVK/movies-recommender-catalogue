@@ -9,7 +9,5 @@ import org.movierc.feedbackservice.entity.RatingCategory;
 public interface RatingCategoryMapper {
     RatingCategoryDto ratingCategoryToRatingCategoryDto(RatingCategory ratingCategory);
 
-    RatingCategory ratingCategoryDtoToRatingCategory(RatingCategoryDto ratingCategoryDto);
-
     RatingCategoryCreatedEvent ratingCategoryToRatingCategoryCreatedEvent(RatingCategory ratingCategory);
 }

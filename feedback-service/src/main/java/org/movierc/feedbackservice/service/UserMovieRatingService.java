@@ -1,7 +1,6 @@
 package org.movierc.feedbackservice.service;
 
 import lombok.AllArgsConstructor;
-import org.movierc.feedbackservice.dto.RatingDetailCreateDto;
 import org.movierc.feedbackservice.entity.RatingDetail;
 import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.movierc.feedbackservice.exception.MovieNotFoundException;
@@ -13,11 +12,13 @@ import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 import org.movierc.feedbackservice.repository.UserMovieRatingRepository;
 import org.movierc.feedbackservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class UserMovieRatingService {
     private final UserMovieRatingRepository userMovieRatingRepository;
@@ -25,10 +26,12 @@ public class UserMovieRatingService {
     private final MovieRepository movieRepository;
     private final RatingCategoryRepository ratingCategoryRepository;
 
+    @Transactional(readOnly = true)
     public List<UserMovieRating> getAllRatings() {
         return userMovieRatingRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<UserMovieRating> getRatingsByUserId(UUID userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
@@ -37,6 +40,7 @@ public class UserMovieRatingService {
         return userMovieRatingRepository.findByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
     public List<UserMovieRating> getRatingsByMovieId(UUID movieId) {
         if (!movieRepository.existsById(movieId)) {
             throw new MovieNotFoundException(movieId);
@@ -45,6 +49,7 @@ public class UserMovieRatingService {
         return userMovieRatingRepository.findByMovieId(movieId);
     }
 
+    @Transactional(readOnly = true)
     public UserMovieRating getRatingById(UUID id) {
         return userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));

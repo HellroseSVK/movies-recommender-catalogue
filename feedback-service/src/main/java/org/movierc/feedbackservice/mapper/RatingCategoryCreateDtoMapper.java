@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Mapper(imports = {UUID.class})
 public interface RatingCategoryCreateDtoMapper {
-    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    @Mapping(target = "id", ignore = true)
     RatingCategory ratingCategoryCreateDtoToRatingCategory(RatingCategoryCreateDto ratingCategory);
 }
