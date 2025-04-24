@@ -99,18 +99,18 @@ class FilmPersonServiceTest {
     void createFilmPerson_ValidDto_ReturnsCreatedDto() throws Exception {
         // Setup
         FilmPerson createDto = FilmPerson.builder()
-            .name("Alice")
-            .image(new URL("http://image.png"))
-            .dateOfBirth(LocalDate.of(1985, 3, 3))
-            .biography("Alice's bio")
-            .build();
+                .name("Alice")
+                .image(new URL("http://image.png"))
+                .dateOfBirth(LocalDate.of(1985, 3, 3))
+                .biography("Alice's bio")
+                .build();
         FilmPerson savedFilmPerson = FilmPerson.builder()
-            .id(UUID.randomUUID()) // Ensure the ID is set
-            .name("Alice")
-            .image(new URL("http://image.png"))
-            .dateOfBirth(LocalDate.of(1985, 3, 3))
-            .biography("Alice's bio")
-            .build();
+                .id(UUID.randomUUID()) // Ensure the ID is set
+                .name("Alice")
+                .image(new URL("http://image.png"))
+                .dateOfBirth(LocalDate.of(1985, 3, 3))
+                .biography("Alice's bio")
+                .build();
 
         // Mock repository behavior
         when(filmPersonRepository.save(any())).thenReturn(savedFilmPerson);
@@ -129,22 +129,22 @@ class FilmPersonServiceTest {
         // Setup
         UUID id = UUID.randomUUID();
         FilmPerson fp = FilmPerson.builder()
-            .id(id)
-            .name("Old Name")
-            .image(new URL("http://image.png"))
-            .dateOfBirth(LocalDate.of(1970, 1, 1))
-            .biography("Old bio")
-            .movies(new ArrayList<>())
-            .build();
+                .id(id)
+                .name("Old Name")
+                .image(new URL("http://image.png"))
+                .dateOfBirth(LocalDate.of(1970, 1, 1))
+                .biography("Old bio")
+                .movies(new ArrayList<>())
+                .build();
         when(filmPersonRepository.findById(id)).thenReturn(Optional.of(fp));
         when(filmPersonRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         FilmPersonUpdateDto updateDto = FilmPersonUpdateDto.builder()
-            .name("New Name")
-            .image(new URL("http://image.png"))
-            .dateOfBirth(LocalDate.of(1980, 2, 2))
-            .biography("New bio")
-            .build();
+                .name("New Name")
+                .image(new URL("http://image.png"))
+                .dateOfBirth(LocalDate.of(1980, 2, 2))
+                .biography("New bio")
+                .build();
 
         // Act
         FilmPerson result = filmPersonService.updateFilmPerson(id, updateDto);
@@ -181,13 +181,13 @@ class FilmPersonServiceTest {
         // Setup
         UUID id = UUID.randomUUID();
         FilmPerson fp = FilmPerson.builder()
-            .id(id)
-            .name("Bob")
-            .image(new URL("http://image.png"))
-            .dateOfBirth(LocalDate.of(1965, 4, 4))
-            .biography("Bob's bio")
-            .movies(new ArrayList<>())
-            .build();
+                .id(id)
+                .name("Bob")
+                .image(new URL("http://image.png"))
+                .dateOfBirth(LocalDate.of(1965, 4, 4))
+                .biography("Bob's bio")
+                .movies(new ArrayList<>())
+                .build();
         when(filmPersonRepository.findById(id)).thenReturn(Optional.of(fp));
 
         // Act

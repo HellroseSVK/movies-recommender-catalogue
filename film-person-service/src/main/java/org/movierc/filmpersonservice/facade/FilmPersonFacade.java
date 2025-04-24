@@ -24,8 +24,8 @@ public class FilmPersonFacade {
 
     public List<FilmPersonDto> getAllFilmPersons() {
         return filmPersonService.getAllFilmPersons().stream()
-            .map(filmPersonMapper::filmPersonToFilmPersonDto)
-            .collect(Collectors.toList());
+                .map(filmPersonMapper::filmPersonToFilmPersonDto)
+                .collect(Collectors.toList());
     }
 
     public FilmPersonDto getFilmPersonById(UUID id) {

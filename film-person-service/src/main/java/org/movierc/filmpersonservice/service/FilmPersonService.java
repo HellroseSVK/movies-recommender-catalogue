@@ -5,7 +5,6 @@ import org.movierc.filmpersonservice.dto.FilmPersonUpdateDto;
 import org.movierc.filmpersonservice.entity.FilmPerson;
 import org.movierc.filmpersonservice.exception.FilmPersonNotFoundException;
 import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
-import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +31,7 @@ public class FilmPersonService {
 
     public FilmPerson updateFilmPerson(UUID id, FilmPersonUpdateDto filmPersonUpdateDto) {
         var filmPerson = filmPersonRepository.findById(id)
-            .orElseThrow(() -> new FilmPersonNotFoundException(id));
+                .orElseThrow(() -> new FilmPersonNotFoundException(id));
 
         filmPersonMapper.updateFilmPerson(filmPersonUpdateDto, filmPerson);
         return filmPersonRepository.save(filmPerson);
@@ -40,7 +39,7 @@ public class FilmPersonService {
 
     public FilmPerson deleteFilmPerson(UUID id) {
         var filmPerson = filmPersonRepository.findById(id)
-            .orElseThrow(() -> new FilmPersonNotFoundException(id));
+                .orElseThrow(() -> new FilmPersonNotFoundException(id));
 
         filmPersonRepository.deleteById(id);
         return filmPerson;
