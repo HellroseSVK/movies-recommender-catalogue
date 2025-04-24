@@ -181,7 +181,7 @@ public class MovieEventConsumerTest {
         FilmPerson filmPerson = new FilmPerson();
         // Simulate an assignment that will be removed
         filmPerson.setMovies(new ArrayList<>());
-        var filmPersonMovieAssignment = new FilmPersonMovieAssignment(movieId, FilmPersonRole.ACTOR);
+        var filmPersonMovieAssignment = new FilmPersonMovieAssignment(UUID.randomUUID(), movieId, FilmPersonRole.ACTOR, filmPerson);
         filmPerson.getMovies().add(filmPersonMovieAssignment);
 
         when(movieRepository.existsById(movieId)).thenReturn(true);
@@ -289,7 +289,7 @@ public class MovieEventConsumerTest {
         FilmPerson filmPerson = new FilmPerson();
         filmPerson.setId(filmPersonId);
         filmPerson.setMovies(new ArrayList<>());
-        var filmPersonMovieAssignment = new FilmPersonMovieAssignment(movieId, FilmPersonRole.ACTOR);
+        var filmPersonMovieAssignment = new FilmPersonMovieAssignment(UUID.randomUUID(), movieId, FilmPersonRole.ACTOR, filmPerson);
         filmPerson.getMovies().add(filmPersonMovieAssignment);
         when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.of(filmPerson));
 
