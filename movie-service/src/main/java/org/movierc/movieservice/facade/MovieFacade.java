@@ -18,24 +18,30 @@ import org.movierc.movieservice.rabbit.MovieEventProducer;
 import org.movierc.movieservice.rabbit.MovieFilmPersonRoleProducer;
 import org.movierc.movieservice.service.MovieService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 @AllArgsConstructor
 public class MovieFacade {
     private final MovieService movieService;
+
     private final MovieEventProducer movieEventProducer;
-    private final MovieMapper movieMapper;
-    private final MovieCreateDtoMapper movieCreateDtoMapper;
     private final MovieFilmPersonRoleProducer movieFilmPersonRoleProducer;
 
+    private final MovieMapper movieMapper;
+    private final MovieCreateDtoMapper movieCreateDtoMapper;
+
+    @Transactional(readOnly = true)
     public List<MovieDto> getAllMovies() {
         return movieService.getAllMovies().stream().map(movieMapper::movieToMovieDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public MovieDto getMovieById(UUID id) {
         return movieMapper.movieToMovieDto(movieService.getMovieById(id));
     }

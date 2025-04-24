@@ -4,13 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.movierc.events.genre.GenreCreatedEvent;
-import org.movierc.events.genre.GenreDeletedEvent;
-import org.movierc.movieservice.dto.GenreCreateDto;
-import org.movierc.movieservice.dto.GenreDto;
 import org.movierc.movieservice.entity.Genre;
 import org.movierc.movieservice.exception.GenreAlreadyExistsException;
 import org.movierc.movieservice.exception.GenreNotFoundException;
@@ -48,7 +43,7 @@ class GenreServiceTest {
 
     @BeforeEach
     void setUp() {
-        genreService = new GenreService(genreRepository, genreEventProducer, genreCreateDtoMapper, genreMapper);
+        genreService = new GenreService(genreRepository);
     }
 
     @Test
@@ -63,7 +58,7 @@ class GenreServiceTest {
         List<Genre> result = genreService.getGenres();
 
         assertEquals(1, result.size());
-        assertEquals(genre.getId(), result.get(0).getId());
+        assertEquals(genre.getId(), result.getFirst().getId());
     }
 
     @Test
@@ -105,13 +100,6 @@ class GenreServiceTest {
         verify(genreRepository).save(any());
         assertNotNull(result);
         assertEquals(newGenre.getName(), result.getName());
-
-        var createdEventCaptor = ArgumentCaptor.forClass(GenreCreatedEvent.class);
-        verify(genreEventProducer).sendGenreCreatedEvent(createdEventCaptor.capture());
-        GenreCreatedEvent createdEvent = createdEventCaptor.getValue();
-        assertNotNull(createdEvent);
-        assertEquals(result.getId(), createdEvent.getId());
-        assertEquals(result.getName(), createdEvent.getName());
     }
 
     @Test

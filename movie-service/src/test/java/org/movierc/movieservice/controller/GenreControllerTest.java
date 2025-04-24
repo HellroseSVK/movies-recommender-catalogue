@@ -95,7 +95,7 @@ class GenreControllerTest {
     }
 
     @Test
-    void createGenre_FacadeThrowsError_ReturnsInternalError() throws Exception {
+    void createGenre_FacadeThrowsError_ReturnsInternalError() {
         // Setup
         GenreCreateDto createDto = GenreCreateDto.builder()
                 .name("Drama")

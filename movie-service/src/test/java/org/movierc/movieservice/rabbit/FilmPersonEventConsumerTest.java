@@ -79,9 +79,7 @@ class FilmPersonEventConsumerTest {
         when(filmPersonRepository.findById(eventId)).thenReturn(Optional.empty());
         doThrow(new RuntimeException("DB error")).when(filmPersonRepository).save(any());
         // Act & Verify
-        assertThrows(RuntimeException.class, () -> {
-            filmPersonEventConsumer.handleFilmPersonCreatedEvent(event);
-        });
+        assertThrows(RuntimeException.class, () -> filmPersonEventConsumer.handleFilmPersonCreatedEvent(event));
     }
 
     @Test

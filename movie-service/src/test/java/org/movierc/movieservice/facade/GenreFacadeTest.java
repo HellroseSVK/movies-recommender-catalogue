@@ -61,7 +61,7 @@ class GenreFacadeTest {
 
         // Verify
         assertEquals(1, result.size());
-        assertEquals("Comedy", result.get(0).getName());
+        assertEquals("Comedy", result.getFirst().getName());
         verify(genreService).getGenres();
     }
 
@@ -127,7 +127,7 @@ class GenreFacadeTest {
         // Verify
         verify(genreService).deleteGenre(genreId);
         // Capture and verify the event sent by the producer.
-        ArgumentCaptor varCaptor = ArgumentCaptor.forClass(Object.class);
+        ArgumentCaptor<Object> varCaptor = ArgumentCaptor.forClass(Object.class);
         verify(genreEventProducer).sendGenreDeletedEvent(argThat(event ->
                 event.getId().equals(genreId) && event.getName().equals("Sci-Fi")
         ));

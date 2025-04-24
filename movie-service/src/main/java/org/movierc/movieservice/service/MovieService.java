@@ -13,6 +13,7 @@ import org.movierc.movieservice.repository.GenreRepository;
 import org.movierc.movieservice.repository.MovieRepository;
 import org.movierc.shared.enm.FilmPersonRole;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 @AllArgsConstructor
 public class MovieService {
@@ -28,10 +30,12 @@ public class MovieService {
     private final FilmPersonRepository filmPersonRepository;
     private final MovieRepository movieRepository;
 
+    @Transactional(readOnly = true)
     public List<Movie> getAllMovies() {
         return movieRepository.findAll().stream().toList();
     }
 
+    @Transactional(readOnly = true)
     public Movie getMovieById(UUID id) {
         return movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
@@ -63,14 +67,12 @@ public class MovieService {
     }
 
     public Movie deleteMovie(UUID id) {
-        var movie = movieRepository.findById(id);
-        if (movie.isEmpty()) {
-            throw new MovieNotFoundException(id);
-        }
+        var movie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
 
         movieRepository.deleteById(id);
 
-        return movie.get();
+        return movie;
     }
 
     private List<Genre> findGenres(List<UUID> genreIds) {
@@ -88,6 +90,7 @@ public class MovieService {
                 .stream()
                 .map(filmPersonRole ->
                         new FilmPersonInMovieRole(
+                                UUID.randomUUID(),
                                 movie,
                                 filmPersonRepository.findById(filmPersonRole.getKey())
                                         .orElseThrow(() -> new FilmPersonNotFoundException(filmPersonRole.getKey())),
@@ -100,29 +103,19 @@ public class MovieService {
     }
 
     public Movie assignGenre(UUID movieId, UUID genreId) {
-        var maybeMovie = movieRepository.findById(movieId);
-        if (maybeMovie.isEmpty()) {
-            throw new MovieNotFoundException(movieId);
-        }
-        var movie = maybeMovie.get();
+        var movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new MovieNotFoundException(movieId));
 
-        var maybeGenre = genreRepository.findById(genreId);
-        if (maybeGenre.isEmpty()) {
-            throw new GenreNotFoundException(genreId);
-        }
-        var genre = maybeGenre.get();
+        var genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new GenreNotFoundException(genreId));
 
         movie.getGenres().add(genre);
 
         return movieRepository.save(movie);
     }
-
     public Movie removeGenre(UUID movieId, UUID genreId) {
-        var maybeMovie = movieRepository.findById(movieId);
-        if (maybeMovie.isEmpty()) {
-            throw new MovieNotFoundException(movieId);
-        }
-        var movie = maybeMovie.get();
+        var movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new MovieNotFoundException(movieId));
 
         movie.setGenres(
                 movie.getGenres()
@@ -135,17 +128,11 @@ public class MovieService {
     }
 
     public Movie assignFilmPerson(UUID movieId, UUID personId, FilmPersonRole filmPersonRole) {
-        var maybeMovie = movieRepository.findById(movieId);
-        if (maybeMovie.isEmpty()) {
-            throw new MovieNotFoundException(movieId);
-        }
-        var movie = maybeMovie.get();
+        var movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new MovieNotFoundException(movieId));
 
-        var maybeFilmPerson = filmPersonRepository.findById(personId);
-        if (maybeFilmPerson.isEmpty()) {
-            throw new FilmPersonNotFoundException(personId);
-        }
-        var filmPerson = maybeFilmPerson.get();
+        var filmPerson = filmPersonRepository.findById(personId)
+                .orElseThrow(() -> new FilmPersonNotFoundException(personId));
 
         var isAlreadyAssigned = movie.getFilmPersonRoles().stream()
                 .anyMatch(fpr ->
@@ -159,6 +146,7 @@ public class MovieService {
         }
 
         movie.getFilmPersonRoles().add(new FilmPersonInMovieRole(
+                UUID.randomUUID(),
                 movie,
                 filmPerson,
                 filmPersonRole
@@ -168,16 +156,11 @@ public class MovieService {
     }
 
     public Movie removeFilmPerson(UUID movieId, UUID personId, FilmPersonRole filmPersonRole) {
-        var maybeMovie = movieRepository.findById(movieId);
-        if (maybeMovie.isEmpty()) {
-            throw new MovieNotFoundException(movieId);
-        }
-        var movie = maybeMovie.get();
+        var movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new MovieNotFoundException(movieId));
 
-        var maybeFilmPerson = filmPersonRepository.findById(personId);
-        if (maybeFilmPerson.isEmpty()) {
-            throw new FilmPersonNotFoundException(personId);
-        }
+        filmPersonRepository.findById(personId)
+                .orElseThrow(() -> new FilmPersonNotFoundException(personId));
 
         movie.setFilmPersonRoles(
                 movie.getFilmPersonRoles()

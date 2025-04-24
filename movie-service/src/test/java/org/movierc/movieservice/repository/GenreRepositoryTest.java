@@ -1,0 +1,44 @@
+package org.movierc.movieservice.repository;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.movierc.movieservice.entity.Genre;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
+class GenreRepositoryTest {
+    @Autowired
+    private GenreRepository genreRepository;
+
+    @BeforeEach
+    void setUp() {
+        // Setup
+        Genre genre = new Genre();
+        genre.setName("Comedy");
+        genreRepository.save(genre);
+    }
+
+    @Test
+    void whenFindByName_thenReturnGenre() {
+        // Act
+        Optional<Genre> found = genreRepository.findByName("Comedy");
+
+        // Verify
+        assertTrue(found.isPresent());
+        assertEquals("Comedy", found.get().getName());
+    }
+
+    @Test
+    void whenFindByNameNotExists_thenReturnEmptyOptional() {
+        // Act
+        Optional<Genre> found = genreRepository.findByName("NonExistent");
+
+        // Verify
+        assertFalse(found.isPresent());
+    }
+}
