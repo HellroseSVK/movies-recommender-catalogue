@@ -7,20 +7,24 @@ import org.movierc.filmpersonservice.exception.FilmPersonNotFoundException;
 import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class FilmPersonService {
     private final FilmPersonRepository filmPersonRepository;
     private final FilmPersonMapper filmPersonMapper;
 
+    @Transactional(readOnly = true)
     public List<FilmPerson> getAllFilmPersons() {
         return filmPersonRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public FilmPerson getFilmPersonById(UUID id) {
         return filmPersonRepository.findById(id).orElseThrow(() -> new FilmPersonNotFoundException(id));
     }
