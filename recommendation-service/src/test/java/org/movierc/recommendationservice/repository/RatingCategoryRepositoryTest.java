@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 class RatingCategoryRepositoryTest {
@@ -28,12 +29,16 @@ class RatingCategoryRepositoryTest {
     @BeforeEach
     void setUp() {
         // Setup: persist two rating categories
-        category1 = new RatingCategory();
-        category1.setName("Plot");
+        category1 = RatingCategory.builder()
+                .id(UUID.randomUUID())
+                .name("Plot")
+                .build();
         entityManager.persist(category1);
 
-        category2 = new RatingCategory();
-        category2.setName("Cinematography");
+        category2 = RatingCategory.builder()
+                .id(UUID.randomUUID())
+                .name("Cinematography")
+                .build();
         entityManager.persist(category2);
 
         entityManager.flush();

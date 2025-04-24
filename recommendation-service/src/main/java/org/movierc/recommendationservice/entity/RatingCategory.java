@@ -1,9 +1,8 @@
 package org.movierc.recommendationservice.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -23,10 +22,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class RatingCategory {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String name;
 
-    @OneToMany(mappedBy = "ratingCategory", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ratingCategory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RatingDetail> ratingDetails;
 }
