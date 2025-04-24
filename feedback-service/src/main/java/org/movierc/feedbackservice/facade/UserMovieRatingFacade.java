@@ -10,12 +10,14 @@ import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
 import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.service.UserMovieRatingService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class UserMovieRatingFacade {
     private final UserMovieRatingService userMovieRatingService;
@@ -26,24 +28,28 @@ public class UserMovieRatingFacade {
 
     private final UserMovieRatingEventProducer userMovieRatingEventProducer;
 
+    @Transactional(readOnly = true)
     public List<UserMovieRatingDto> getAllRatings() {
         return userMovieRatingService.getAllRatings().stream()
                 .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<UserMovieRatingDto> getRatingsByUserId(UUID userId) {
         return userMovieRatingService.getRatingsByUserId(userId).stream()
                 .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<UserMovieRatingDto> getRatingsByMovieId(UUID movieId) {
         return userMovieRatingService.getRatingsByMovieId(movieId).stream()
                 .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public UserMovieRatingDto getRatingById(UUID id) {
         return movieRatingMapper.userMovieRatingTouserMovieRatingDto(userMovieRatingService.getRatingById(id));
     }

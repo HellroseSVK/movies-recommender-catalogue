@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @AllArgsConstructor
@@ -18,6 +19,7 @@ public class UserEventConsumer {
     private final UserEventMapper userEventMapper;
 
     @RabbitListener(queues = "#{userCreatedQueue.getName()}")
+    @Transactional
     public void handleUserCreatedEvent(org.movierc.events.user.UserCreatedEvent event) {
         if (!userRepository.existsById(event.getId())) {
             userRepository.save(userEventMapper.userCreatedEventToUser(event));
@@ -27,6 +29,7 @@ public class UserEventConsumer {
     }
 
     @RabbitListener(queues = "#{userUpdatedQueue.getName()}")
+    @Transactional
     public void handleUserUpdatedEvent(org.movierc.events.user.UserUpdatedEvent event) {
         if (userRepository.existsById(event.getId())) {
             userRepository.save(userEventMapper.userUpdatedEventToUser(event));
@@ -36,6 +39,7 @@ public class UserEventConsumer {
     }
 
     @RabbitListener(queues = "#{userDeletedQueue.getName()}")
+    @Transactional
     public void handleUserDeletedEvent(org.movierc.events.user.UserDeletedEvent event) {
         if (userRepository.existsById(event.getId())) {
             userRepository.deleteById(event.getId());
