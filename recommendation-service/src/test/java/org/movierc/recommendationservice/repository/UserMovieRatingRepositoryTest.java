@@ -11,7 +11,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 class UserMovieRatingRepositoryTest {
@@ -27,15 +29,17 @@ class UserMovieRatingRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        movie = new Movie();
-        movie.setTitle("Test Movie");
+        movie = Movie.builder()
+                .id(UUID.randomUUID())
+                .title("Test Movie")
+                .build();
         entityManager.persist(movie);
-        entityManager.flush();
 
         existingUserId = UUID.randomUUID();
-        UserMovieRating umr = new UserMovieRating();
-        umr.setUserId(existingUserId);
-        umr.setMovie(movie);
+        UserMovieRating umr = UserMovieRating.builder()
+                .userId(existingUserId)
+                .movie(movie)
+                .build();
         entityManager.persist(umr);
         entityManager.flush();
     }

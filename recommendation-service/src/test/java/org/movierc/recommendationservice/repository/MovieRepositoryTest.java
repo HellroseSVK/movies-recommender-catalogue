@@ -2,6 +2,11 @@ package org.movierc.recommendationservice.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.movierc.recommendationservice.entity.AverageMovieRating;
+import org.movierc.recommendationservice.entity.Movie;
+import org.movierc.recommendationservice.entity.RatingCategory;
+import org.movierc.recommendationservice.entity.RatingDetail;
+import org.movierc.recommendationservice.entity.UserMovieRating;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -13,14 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.movierc.recommendationservice.entity.AverageMovieRating;
-import org.movierc.recommendationservice.repository.MovieRepository;
-import org.movierc.recommendationservice.entity.Movie;
-import org.movierc.recommendationservice.entity.RatingCategory;
-import org.movierc.recommendationservice.entity.RatingDetail;
-import org.movierc.recommendationservice.entity.UserMovieRating;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 class MovieRepositoryTest {
@@ -35,15 +34,43 @@ class MovieRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        c1 = new RatingCategory(); c1.setName("Plot"); entityManager.persist(c1);
-        c2 = new RatingCategory(); c2.setName("Cinematography"); entityManager.persist(c2);
-        c3 = new RatingCategory(); c3.setName("Soundtrack"); entityManager.persist(c3);
+        c1 = RatingCategory.builder()
+                .id(UUID.randomUUID())
+                .name("Plot")
+                .build();
+        entityManager.persist(c1);
+        c2 = RatingCategory.builder()
+                .id(UUID.randomUUID())
+                .name("Cinematography")
+                .build();
+        entityManager.persist(c2);
+        c3 = RatingCategory.builder()
+                .id(UUID.randomUUID())
+                .name("Soundtrack")
+                .build();
+        entityManager.persist(c3);
         entityManager.flush();
 
-        m1 = new Movie(); m1.setTitle("The Shawshank Redemption"); entityManager.persist(m1);
-        m2 = new Movie(); m2.setTitle("The Godfather"); entityManager.persist(m2);
-        m3 = new Movie(); m3.setTitle("The Dark Knight"); entityManager.persist(m3);
-        m4 = new Movie(); m4.setTitle("Pulp Fiction"); entityManager.persist(m4);
+        m1 = Movie.builder()
+                .id(UUID.randomUUID())
+                .title("The Shawshank Redemption")
+                .build();
+        entityManager.persist(m1);
+        m2 = Movie.builder()
+                .id(UUID.randomUUID())
+                .title("The Godfather")
+                .build();
+        entityManager.persist(m2);
+        m3 = Movie.builder()
+                .id(UUID.randomUUID())
+                .title("The Dark Knight")
+                .build();
+        entityManager.persist(m3);
+        m4 = Movie.builder()
+                .id(UUID.randomUUID())
+                .title("Pulp Fiction")
+                .build();
+        entityManager.persist(m4);
         entityManager.flush();
 
         List<UUID> userIds = List.of(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
@@ -74,21 +101,33 @@ class MovieRepositoryTest {
                 Movie movie = movieEntry.getKey();
                 List<Integer> vals = movieEntry.getValue();
 
-                UserMovieRating umr = new UserMovieRating();
-                umr.setUserId(userId);
-                umr.setMovie(movie);
+                UserMovieRating umr = UserMovieRating.builder()
+                        .userId(userId)
+                        .movie(movie)
+                        .build();
                 entityManager.persist(umr);
-                entityManager.flush();
 
-                RatingDetail rd1 = new RatingDetail();
-                rd1.setRating(vals.get(0)); rd1.setRatingCategory(c1); rd1.setUserMovieRating(umr);
+                RatingDetail rd1 = RatingDetail.builder()
+                        .rating(vals.get(0))
+                        .ratingCategory(c1)
+                        .userMovieRating(umr)
+                        .build();
                 entityManager.persist(rd1);
-                RatingDetail rd2 = new RatingDetail();
-                rd2.setRating(vals.get(1)); rd2.setRatingCategory(c2); rd2.setUserMovieRating(umr);
+
+                RatingDetail rd2 = RatingDetail.builder()
+                        .rating(vals.get(1))
+                        .ratingCategory(c2)
+                        .userMovieRating(umr)
+                        .build();
                 entityManager.persist(rd2);
-                RatingDetail rd3 = new RatingDetail();
-                rd3.setRating(vals.get(2)); rd3.setRatingCategory(c3); rd3.setUserMovieRating(umr);
+
+                RatingDetail rd3 = RatingDetail.builder()
+                        .rating(vals.get(2))
+                        .ratingCategory(c3)
+                        .userMovieRating(umr)
+                        .build();
                 entityManager.persist(rd3);
+
                 entityManager.flush();
             }
         }
@@ -143,7 +182,7 @@ class MovieRepositoryTest {
         Map<UUID, Map<String, Double>> map = new HashMap<>();
         for (AverageMovieRating am : averages) {
             map.computeIfAbsent(am.movieId(), k -> new HashMap<>())
-               .put(am.ratingCategoryName(), am.averageRating());
+                    .put(am.ratingCategoryName(), am.averageRating());
         }
         assertTrue(map.containsKey(m1.getId()));
         assertTrue(map.containsKey(m2.getId()));
