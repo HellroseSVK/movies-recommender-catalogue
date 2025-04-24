@@ -14,7 +14,7 @@ import java.util.UUID;
     imports = {UUID.class, ArrayList.class, Collections.class, FilmPersonMovieAssignment.class}
 )
 public interface FilmPersonCreateDtoMapper {
-    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "movies", expression = "java(new ArrayList<>())")
     FilmPerson filmPersonCreateDtoToMovie(FilmPersonCreateDto movie);
 }
