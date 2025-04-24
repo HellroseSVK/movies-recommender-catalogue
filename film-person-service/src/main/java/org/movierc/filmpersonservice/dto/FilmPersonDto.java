@@ -22,10 +22,17 @@ public class FilmPersonDto {
     @NotNull
     private UUID id;
     @NotBlank
+    @Schema(example = "John Doe")
+    @NotBlank
     private String name;
     @Schema(example = "http://example.com/image1.jpg")
+    @NotNull
     private URL image;
+    @Schema(example = "1980-01-01")
+    @NotNull
     private LocalDate dateOfBirth;
+    @Schema(example = "John Doe is a famous actor known for his roles in various movies.")
+    @NotBlank
     private String biography;
     @NotNull
     private List<@Valid FilmPersonMovieAssignmentDto> movies;

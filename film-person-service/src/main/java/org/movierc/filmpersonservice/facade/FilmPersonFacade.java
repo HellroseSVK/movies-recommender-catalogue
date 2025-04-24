@@ -9,6 +9,7 @@ import org.movierc.filmpersonservice.mapper.FilmPersonMapper;
 import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.service.FilmPersonService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,18 +17,21 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class FilmPersonFacade {
     private final FilmPersonService filmPersonService;
     private final FilmPersonMapper filmPersonMapper;
     private final FilmPersonCreateDtoMapper filmPersonCreateDtoMapper;
     private final FilmPersonEventProducer filmPersonEventProducer;
 
+    @Transactional(readOnly = true)
     public List<FilmPersonDto> getAllFilmPersons() {
         return filmPersonService.getAllFilmPersons().stream()
                 .map(filmPersonMapper::filmPersonToFilmPersonDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public FilmPersonDto getFilmPersonById(UUID id) {
         return filmPersonMapper.filmPersonToFilmPersonDto(filmPersonService.getFilmPersonById(id));
     }
