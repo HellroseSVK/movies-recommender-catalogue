@@ -61,7 +61,7 @@ class MovieServiceTest {
         List<Movie> result = movieService.getAllMovies();
 
         assertEquals(1, result.size());
-        assertEquals(movie.getId(), result.get(0).getId());
+        assertEquals(movie.getId(), result.getFirst().getId());
     }
 
     @Test
@@ -124,7 +124,7 @@ class MovieServiceTest {
         assertNotNull(result);
         assertEquals(savedMovie.getTitle(), result.getTitle());
         assertEquals(1, result.getGenres().size());
-        assertEquals(genreId, result.getGenres().get(0).getId());
+        assertEquals(genreId, result.getGenres().getFirst().getId());
     }
 
     @Test
@@ -303,7 +303,7 @@ class MovieServiceTest {
         UUID movieId = UUID.randomUUID();
         UUID filmPersonId = UUID.randomUUID();
         FilmPerson filmPerson = FilmPerson.builder().id(filmPersonId).build();
-        FilmPersonInMovieRole existingRole = new FilmPersonInMovieRole(null, filmPerson, FilmPersonRole.ACTOR);
+        FilmPersonInMovieRole existingRole = new FilmPersonInMovieRole(UUID.randomUUID(), null, filmPerson, FilmPersonRole.ACTOR);
         Movie movie = Movie.builder().id(movieId).title("Movie").filmPersonRoles(new ArrayList<>(List.of(existingRole))).build();
         when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
         when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.of(filmPerson));
@@ -340,7 +340,7 @@ class MovieServiceTest {
         UUID movieId = UUID.randomUUID();
         UUID filmPersonId = UUID.randomUUID();
         FilmPerson filmPerson = FilmPerson.builder().id(filmPersonId).build();
-        FilmPersonInMovieRole role = new FilmPersonInMovieRole(null, filmPerson, FilmPersonRole.ACTOR);
+        FilmPersonInMovieRole role = new FilmPersonInMovieRole(UUID.randomUUID(), null, filmPerson, FilmPersonRole.ACTOR);
         Movie movie = Movie.builder().id(movieId).title("Movie").filmPersonRoles(new ArrayList<>(List.of(role))).build();
         when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
         when(filmPersonRepository.findById(filmPersonId)).thenReturn(Optional.of(filmPerson));
@@ -349,7 +349,7 @@ class MovieServiceTest {
         Movie result = movieService.removeFilmPerson(movieId, filmPersonId, FilmPersonRole.ACTOR);
 
         assertEquals(1, result.getFilmPersonRoles().size());
-        assertEquals(FilmPersonRole.ACTOR, result.getFilmPersonRoles().get(0).getRole());
+        assertEquals(FilmPersonRole.ACTOR, result.getFilmPersonRoles().getFirst().getRole());
     }
 
     @Test

@@ -19,6 +19,7 @@ public class GenreFacade {
     public final GenreService genreService;
 
     private final GenreEventProducer genreEventProducer;
+
     private final GenreCreateDtoMapper genreCreateDtoMapper;
     private final GenreMapper genreMapper;
 
@@ -27,9 +28,11 @@ public class GenreFacade {
     }
 
     public GenreDto createGenre(GenreCreateDto genreDto) {
-        var genre = genreCreateDtoMapper.genreCreateDtoToGenre(genreDto);
+        var savedGenre = genreService.createGenre(genreCreateDtoMapper.genreCreateDtoToGenre(genreDto));
 
-        return genreMapper.genreToGenreDto(genreService.createGenre(genre));
+        genreEventProducer.sendGenreCreatedEvent(genreMapper.genreToGenreCreatedEvent(savedGenre));
+
+        return genreMapper.genreToGenreDto(savedGenre);
     }
 
     public void deleteGenre(UUID id) {

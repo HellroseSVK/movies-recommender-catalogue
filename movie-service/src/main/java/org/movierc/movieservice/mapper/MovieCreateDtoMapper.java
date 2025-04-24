@@ -11,7 +11,6 @@ import java.util.UUID;
         imports = {UUID.class}
 )
 public interface MovieCreateDtoMapper {
-    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     @Mapping(target = "genres", ignore = true)
     @Mapping(target = "filmPersonRoles", ignore = true)
     Movie movieCreateDtoToMovie(MovieCreateDto movie);

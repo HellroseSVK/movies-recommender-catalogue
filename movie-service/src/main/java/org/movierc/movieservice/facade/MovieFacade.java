@@ -27,10 +27,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class MovieFacade {
     private final MovieService movieService;
+
     private final MovieEventProducer movieEventProducer;
+    private final MovieFilmPersonRoleProducer movieFilmPersonRoleProducer;
+
     private final MovieMapper movieMapper;
     private final MovieCreateDtoMapper movieCreateDtoMapper;
-    private final MovieFilmPersonRoleProducer movieFilmPersonRoleProducer;
 
     public List<MovieDto> getAllMovies() {
         return movieService.getAllMovies().stream().map(movieMapper::movieToMovieDto).collect(Collectors.toList());

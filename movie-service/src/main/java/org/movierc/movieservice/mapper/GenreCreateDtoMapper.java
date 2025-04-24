@@ -11,6 +11,6 @@ import java.util.UUID;
         imports = {UUID.class}
 )
 public interface GenreCreateDtoMapper {
-    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    @Mapping(target = "movies", expression = "java(new java.util.ArrayList<>())")
     Genre genreCreateDtoToGenre(GenreCreateDto genre);
 }

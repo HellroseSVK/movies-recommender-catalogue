@@ -8,7 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.movierc.events.movie.MovieFilmPersonRoleAddedEvent;
 import org.movierc.events.movie.MovieFilmPersonRoleRemovedEvent;
-import org.movierc.movieservice.dto.*;
+import org.movierc.movieservice.dto.AssignFilmPersonRoleDto;
+import org.movierc.movieservice.dto.MovieCreateDto;
+import org.movierc.movieservice.dto.MovieDto;
+import org.movierc.movieservice.dto.MovieUpdateDto;
+import org.movierc.movieservice.dto.RemoveFilmPersonRoleDto;
 import org.movierc.movieservice.entity.Movie;
 import org.movierc.movieservice.exception.MovieNotFoundException;
 import org.movierc.movieservice.mapper.MovieCreateDtoMapperImpl;
@@ -24,7 +28,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MovieFacadeTest {
@@ -42,13 +47,7 @@ class MovieFacadeTest {
 
     @BeforeEach
     void setUp() {
-        movieFacade = new MovieFacade(
-                movieService,
-                movieEventProducer,
-                new MovieMapperImpl(),
-                new MovieCreateDtoMapperImpl(),
-                movieFilmPersonRoleProducer
-        );
+        movieFacade = new MovieFacade(movieService, movieEventProducer, movieFilmPersonRoleProducer, new MovieMapperImpl(), new MovieCreateDtoMapperImpl());
     }
 
     @Test
@@ -62,7 +61,7 @@ class MovieFacadeTest {
 
         // Verify
         assertEquals(1, result.size());
-        assertEquals("Test Movie", result.get(0).getTitle());
+        assertEquals("Test Movie", result.getFirst().getTitle());
         verify(movieService).getAllMovies();
     }
 
@@ -109,16 +108,8 @@ class MovieFacadeTest {
     @Test
     void createMovie_ValidInput_ReturnsCreatedMovieDtoAndSendsEvent() {
         // Setup
-        MovieCreateDto createDto = MovieCreateDto
-                .builder()
-                .title("New Movie")
-                .filmPersonRoles(new ArrayList<>())
-                .build();
-        Movie movie = Movie.builder()
-                .id(UUID.randomUUID())
-                .title("New Movie")
-                .filmPersonRoles(new ArrayList<>())
-                .build();
+        MovieCreateDto createDto = MovieCreateDto.builder().title("New Movie").filmPersonRoles(new ArrayList<>()).build();
+        Movie movie = Movie.builder().id(UUID.randomUUID()).title("New Movie").filmPersonRoles(new ArrayList<>()).build();
         when(movieService.createMovie(any(), any(), any())).thenReturn(movie);
 
         // Act
@@ -139,8 +130,7 @@ class MovieFacadeTest {
         updateDto.setDescription("Updated Description");
         updateDto.setImages(List.of());
         Movie updatedMovie = Movie.builder().id(movieId).title("Updated Title").build();
-        when(movieService.updateMovie(movieId, updateDto.getTitle(), updateDto.getDescription(), updateDto.getImages()))
-                .thenReturn(updatedMovie);
+        when(movieService.updateMovie(movieId, updateDto.getTitle(), updateDto.getDescription(), updateDto.getImages())).thenReturn(updatedMovie);
 
         // Act
         MovieDto result = movieFacade.updateMovie(movieId, updateDto);
@@ -175,8 +165,7 @@ class MovieFacadeTest {
         assignDto.setFilmPersonId(filmPersonId);
         assignDto.setRole(FilmPersonRole.ACTOR);
         Movie movie = Movie.builder().id(movieId).title("Movie with Actor").build();
-        when(movieService.assignFilmPerson(movieId, assignDto.getFilmPersonId(), assignDto.getRole()))
-                .thenReturn(movie);
+        when(movieService.assignFilmPerson(movieId, assignDto.getFilmPersonId(), assignDto.getRole())).thenReturn(movie);
 
         // Act
         MovieDto result = movieFacade.assignFilmPerson(movieId, assignDto);
@@ -200,8 +189,7 @@ class MovieFacadeTest {
         removeDto.setFilmPersonId(filmPersonId);
         removeDto.setRole(FilmPersonRole.DIRECTOR);
         Movie movie = Movie.builder().id(movieId).title("Movie without Director").build();
-        when(movieService.removeFilmPerson(movieId, removeDto.getFilmPersonId(), removeDto.getRole()))
-                .thenReturn(movie);
+        when(movieService.removeFilmPerson(movieId, removeDto.getFilmPersonId(), removeDto.getRole())).thenReturn(movie);
 
         // Act
         MovieDto result = movieFacade.removeFilmPerson(movieId, removeDto);
