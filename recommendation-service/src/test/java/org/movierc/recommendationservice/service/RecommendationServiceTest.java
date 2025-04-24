@@ -38,7 +38,7 @@ class RecommendationServiceTest {
     }
 
     @Test
-    void getRecommendationsByCategoriesAboveThreshold_Success() {
+    void getRecommendationsByCategoriesAboveThreshold_HasAboveThreshold_ReturnsAboveThreshold() {
         UUID categoryId = UUID.randomUUID();
         int threshold = 10;
         Set<UUID> categoryIds = Set.of(categoryId);
@@ -63,7 +63,7 @@ class RecommendationServiceTest {
     }
 
     @Test
-    void getRecommendationsByCategoriesAboveThreshold_CategoryNotFound() {
+    void getRecommendationsByCategoriesAboveThreshold_CategoryNotFound_ThrowsException() {
         UUID categoryId = UUID.randomUUID();
         Set<UUID> categoryIds = Set.of(categoryId);
         when(ratingCategoryRepository.findByIdIn(categoryIds)).thenReturn(Collections.emptyList());
@@ -72,7 +72,7 @@ class RecommendationServiceTest {
     }
 
     @Test
-    void getRecommendationsByMovieId_Success() {
+    void getRecommendationsByMovieId_HasRatedBySameUser_ReturnsRatedBySameUser() {
         UUID movieId = UUID.randomUUID();
         when(movieRepository.existsById(movieId)).thenReturn(true);
         Movie movie = new Movie(movieId, "Movie Title", Collections.emptyList());
@@ -90,7 +90,7 @@ class RecommendationServiceTest {
     }
 
     @Test
-    void getRecommendationsByMovieId_MovieNotFound() {
+    void getRecommendationsByMovieId_MovieNotFound_ThrowsException() {
         UUID movieId = UUID.randomUUID();
         when(movieRepository.existsById(movieId)).thenReturn(false);
         assertThrows(MovieNotFoundException.class,
