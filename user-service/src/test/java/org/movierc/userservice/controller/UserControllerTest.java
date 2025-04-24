@@ -104,7 +104,7 @@ public class UserControllerTest {
         ResponseEntity<UserDto> response = userController.createUser(createDto);
 
         // Verify
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(expectedUser, response.getBody());
         verify(userFacade, times(1)).createUser(createDto);
     }
