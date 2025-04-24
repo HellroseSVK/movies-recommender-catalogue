@@ -7,6 +7,7 @@ import org.movierc.events.rating.MovieRatingDeletedEvent;
 import org.movierc.events.rating.MovieRatingUpdatedEvent;
 import org.movierc.recommendationservice.entity.RatingCategory;
 import org.movierc.recommendationservice.entity.RatingDetail;
+import org.movierc.recommendationservice.entity.UserMovieRating;
 import org.movierc.recommendationservice.exception.CategoryNotFoundException;
 import org.movierc.recommendationservice.exception.MovieNotFoundException;
 import org.movierc.recommendationservice.mapper.UserMovieRatingMapper;
@@ -41,7 +42,7 @@ public class UserMovieRatingEventConsumer {
             );
 
             var userMovieRating = userMovieRatingMapper.userMovieRatingCreatedEventToUserMovieRating(event, movie);
-            userMovieRating.setRatingDetails(convertRatingDetails(event.getRatingDetails()));
+            userMovieRating.setRatingDetails(convertRatingDetails(userMovieRating, event.getRatingDetails()));
             userMovieRatingRepository.save(userMovieRating);
         }
         logger.info("Received Movie Rating Created: {}", event);
@@ -54,7 +55,7 @@ public class UserMovieRatingEventConsumer {
         if (maybeUserMovieRating.isPresent()) {
             var userMovieRating = maybeUserMovieRating.get();
 
-            userMovieRating.setRatingDetails(convertRatingDetails(event.getNewRatingDetails()));
+            userMovieRating.setRatingDetails(convertRatingDetails(userMovieRating, event.getNewRatingDetails()));
 
             userMovieRatingRepository.save(userMovieRating);
         } else {
@@ -73,7 +74,7 @@ public class UserMovieRatingEventConsumer {
         logger.info("Received Movie Rating Deleted: {}", event);
     }
 
-    private List<RatingDetail> convertRatingDetails(List<org.movierc.events.rating.RatingDetail> originalRatingDetails) {
+    private List<RatingDetail> convertRatingDetails(UserMovieRating userMovieRating, List<org.movierc.events.rating.RatingDetail> originalRatingDetails) {
         var ratingCategoryIds = originalRatingDetails.stream().map(org.movierc.events.rating.RatingDetail::getRatingCategoryId).collect(Collectors.toSet());
 
         var ratingCategoryById = ratingCategoryRepository
@@ -90,6 +91,7 @@ public class UserMovieRatingEventConsumer {
                                         Optional.ofNullable(ratingCategoryById.get(ratingDetail.getRatingCategoryId()))
                                                 .orElseThrow(() -> new CategoryNotFoundException(ratingDetail.getRatingCategoryId()))
                                 )
+                                .userMovieRating(userMovieRating)
                                 .build()
                 )
                 .toList();

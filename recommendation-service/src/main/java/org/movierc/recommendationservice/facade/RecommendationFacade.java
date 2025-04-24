@@ -5,6 +5,7 @@ import org.movierc.recommendationservice.dto.MovieDto;
 import org.movierc.recommendationservice.mapper.MovieMapper;
 import org.movierc.recommendationservice.service.RecommendationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class RecommendationFacade {
     private final RecommendationService recommendationService;
     private final MovieMapper movieMapper;
