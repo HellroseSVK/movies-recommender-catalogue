@@ -3,20 +3,11 @@ package org.movierc.userservice.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
-import org.movierc.userservice.dto.UserCreateDto;
-import org.movierc.userservice.dto.UserDto;
-import org.movierc.userservice.dto.UserUpdateDto;
-import org.movierc.userservice.exception.UserAlreadyExistsException;
-import org.movierc.userservice.exception.UserNotFoundException;
-import org.movierc.userservice.mapper.UserCreateDtoMapper;
-import org.movierc.userservice.mapper.UserMapper;
-import org.movierc.userservice.entity.User;
-import org.movierc.userservice.rabbit.UserEventProducer;
-import org.movierc.userservice.repository.UserRepository;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.movierc.userservice.entity.User;
+import org.movierc.userservice.exception.UserNotFoundException;
+import org.movierc.userservice.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,21 +23,15 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private UserEventProducer userEventProducer;
-
-    private final UserCreateDtoMapper userCreateDtoMapper = Mappers.getMapper(UserCreateDtoMapper.class);
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-
     private UserService userService;
 
     @BeforeEach
     public void setUp() {
-        userService = new UserService(userRepository, userEventProducer, userCreateDtoMapper, userMapper);
+        userService = new UserService(userRepository);
     }
 
     @Test
-    public void getUsers_WhenUsersPresent_ReturnsUserDtoList() {
+    public void getUsers_WhenUsersPresent_ReturnsUserList() {
         // Setup
         User user1 = new User();
         user1.setId(UUID.randomUUID());
@@ -61,7 +46,7 @@ public class UserServiceTest {
         when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
 
         // Act
-        List<UserDto> result = userService.getUsers();
+        List<User> result = userService.getUsers();
 
         // Verify
         assertNotNull(result);
@@ -70,60 +55,31 @@ public class UserServiceTest {
     }
 
     @Test
-    public void createUser_WhenUserNotExists_ReturnsUserDto() {
+    public void createUser_WhenUserNotExists_ReturnsUser() {
         // Setup
-        UserCreateDto createDto = UserCreateDto.builder()
-                .username("newUser")
-                .password("secret")
-                .email("newUser@example.com")
-                .build();
-        when(userRepository.findByUsername(createDto.getUsername())).thenReturn(Optional.empty());
+        User userInput = new User();
+        userInput.setUsername("newUser");
+        userInput.setPassword("secret");
+        userInput.setEmail("newUser@example.com");
 
-        // Capture saved user to simulate repository save behavior
-        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         User savedUser = new User();
         savedUser.setId(UUID.randomUUID());
-        savedUser.setUsername(createDto.getUsername());
-        savedUser.setPassword(createDto.getPassword());
-        savedUser.setEmail(createDto.getEmail());
+        savedUser.setUsername("newUser");
+        savedUser.setPassword("secret");
+        savedUser.setEmail("newUser@example.com");
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         // Act
-        UserDto result = userService.createUser(createDto);
+        User result = userService.createUser(userInput);
 
-        // Verify
         assertNotNull(result);
         assertEquals(savedUser.getId(), result.getId());
         assertEquals(savedUser.getUsername(), result.getUsername());
-        verify(userRepository, times(1)).findByUsername(createDto.getUsername());
-        verify(userRepository, times(1)).save(captor.capture());
-        verify(userEventProducer, times(1)).sendUserCreatedEvent(any());
+        verify(userRepository, times(1)).save(userInput);
     }
 
     @Test
-    public void createUser_WhenUserExists_ThrowsUserAlreadyExistsException() {
-        // Setup
-        UserCreateDto createDto = UserCreateDto.builder()
-                .username("existingUser")
-                .password("secret")
-                .email("existing@example.com")
-                .build();
-        User existingUser = new User();
-        existingUser.setId(UUID.randomUUID());
-        existingUser.setUsername("existingUser");
-        when(userRepository.findByUsername(createDto.getUsername())).thenReturn(Optional.of(existingUser));
-
-        // Act & Verify
-        UserAlreadyExistsException exception = assertThrows(UserAlreadyExistsException.class,
-                () -> userService.createUser(createDto));
-        assertEquals("User with username " + existingUser.getUsername() + " already exists", exception.getMessage());
-        verify(userRepository, times(1)).findByUsername(createDto.getUsername());
-        verify(userRepository, never()).save(any(User.class));
-        verify(userEventProducer, never()).sendUserCreatedEvent(any());
-    }
-
-    @Test
-    public void getUserById_WhenUserExists_ReturnsUserDto() {
+    public void getUserById_WhenUserExists_ReturnsUser() {
         // Setup
         UUID userId = UUID.randomUUID();
         User user = new User();
@@ -134,7 +90,7 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // Act
-        UserDto result = userService.getUserById(userId);
+        User result = userService.getUserById(userId);
 
         // Verify
         assertNotNull(result);
@@ -149,63 +105,53 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act & Verify
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.getUserById(userId));
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userService.getUserById(userId));
         assertTrue(exception.getMessage().contains(userId.toString()));
         verify(userRepository, times(1)).findById(userId);
     }
 
     @Test
-    public void updateUser_WhenUserExists_ReturnsUpdatedUserDto() {
+    public void updateUser_WhenUserExists_ReturnsUpdatedUser() {
         // Setup
         UUID userId = UUID.randomUUID();
-        UserUpdateDto updateDto = UserUpdateDto.builder()
-                .username("updatedUser")
-                .password("newSecret")
-                .email("updated@example.com")
-                .build();
-        User user = new User();
-        user.setId(userId);
-        user.setUsername("oldUser");
-        user.setPassword("oldSecret");
-        user.setEmail("old@example.com");
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        User originalUser = new User();
+        originalUser.setId(userId);
+        originalUser.setUsername("oldUser");
+        originalUser.setPassword("oldPass");
+        originalUser.setEmail("old@example.com");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(originalUser));
 
         User updatedUser = new User();
         updatedUser.setId(userId);
-        updatedUser.setUsername(updateDto.getUsername());
-        updatedUser.setPassword(updateDto.getPassword());
-        updatedUser.setEmail(updateDto.getEmail());
+        updatedUser.setUsername("updatedUser");
+        updatedUser.setPassword("newPass");
+        updatedUser.setEmail("updated@example.com");
         when(userRepository.save(any(User.class))).thenReturn(updatedUser);
 
         // Act
-        UserDto result = userService.updateUser(userId, updateDto);
+        User result = userService.updateUser(userId, "updatedUser", "updated@example.com", "newPass");
 
         // Verify
         assertNotNull(result);
-        assertEquals(updateDto.getUsername(), result.getUsername());
-        assertEquals(updateDto.getEmail(), result.getEmail());
+        assertEquals("updatedUser", result.getUsername());
+        assertEquals("updated@example.com", result.getEmail());
         verify(userRepository, times(1)).findById(userId);
-        verify(userRepository, times(1)).save(user);
-        verify(userEventProducer, times(1)).sendUserUpdatedEvent(any());
+        verify(userRepository, times(1)).save(originalUser);
     }
 
     @Test
     public void updateUser_WhenUserDoesNotExist_ThrowsUserNotFoundException() {
         // Setup
         UUID userId = UUID.randomUUID();
-        UserUpdateDto updateDto = UserUpdateDto.builder()
-                .username("updatedUser")
-                .password("newSecret")
-                .email("updated@example.com")
-                .build();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act & Verify
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.updateUser(userId, updateDto));
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userService.updateUser(userId, "updatedUser", "updated@example.com", "newPass"));
         assertTrue(exception.getMessage().contains(userId.toString()));
         verify(userRepository, times(1)).findById(userId);
-        verify(userRepository, never()).save(any(User.class));
-        verify(userEventProducer, never()).sendUserUpdatedEvent(any());
     }
 
     @Test
@@ -216,15 +162,15 @@ public class UserServiceTest {
         user.setId(userId);
         user.setUsername("deleteMe");
         user.setEmail("delete@example.com");
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // Act
-        userService.deleteUser(userId);
+        User result = userService.deleteUser(userId);
 
-        // Verify
         verify(userRepository, times(1)).findById(userId);
-        verify(userRepository, times(1)).deleteById(user.getId());
-        verify(userEventProducer, times(1)).sendUserDeletedEvent(any());
+        verify(userRepository, times(1)).deleteById(userId);
+        assertEquals(user.getId(), result.getId());
     }
 
     @Test
@@ -234,10 +180,10 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act & Verify
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.deleteUser(userId));
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userService.deleteUser(userId));
         assertTrue(exception.getMessage().contains(userId.toString()));
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, never()).deleteById(any(UUID.class));
-        verify(userEventProducer, never()).sendUserDeletedEvent(any());
     }
 }

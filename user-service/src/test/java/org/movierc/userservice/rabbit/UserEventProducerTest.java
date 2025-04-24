@@ -3,15 +3,15 @@ package org.movierc.userservice.rabbit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.movierc.events.EventUtil;
 import org.movierc.events.user.UserCreatedEvent;
 import org.movierc.events.user.UserDeletedEvent;
 import org.movierc.events.user.UserEvents;
 import org.movierc.events.user.UserUpdatedEvent;
 import org.movierc.userservice.configuration.RabbitConfig;
-import org.movierc.events.EventUtil;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -39,7 +39,7 @@ public class UserEventProducerTest {
     }
 
     @Test
-    public void sendUserCreatedEvent_ValidEvent_SendsEventSuccessfully() throws Exception {
+    public void sendUserCreatedEvent_ValidEvent_SendsEventSuccessfully() {
         // Setup
         UserCreatedEvent event = UserCreatedEvent.builder()
                 .id(UUID.randomUUID())
