@@ -16,9 +16,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class FilmPersonCreateDto {
     @NotBlank
+    @Schema(example = "John Doe")
     private String name;
     @Schema(example = "http://example.com/image1.jpg")
+    @NotBlank
     private URL image;
+    @Schema(example = "1980-01-01")
+    @NotBlank
     private LocalDate dateOfBirth;
+    @Schema(example = "John Doe is a famous actor known for his roles in various movies.")
+    @NotBlank
     private String biography;
 }

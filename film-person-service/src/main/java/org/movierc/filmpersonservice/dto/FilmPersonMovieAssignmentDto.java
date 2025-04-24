@@ -1,5 +1,6 @@
 package org.movierc.filmpersonservice.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,5 +20,6 @@ public class FilmPersonMovieAssignmentDto {
     @Valid
     private UUID movieId;
     @NotNull
+    @Schema(example = "ACTOR")
     private FilmPersonRole role;
 }

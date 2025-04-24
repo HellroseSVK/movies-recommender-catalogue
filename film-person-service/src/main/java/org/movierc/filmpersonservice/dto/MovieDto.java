@@ -1,5 +1,6 @@
 package org.movierc.filmpersonservice.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,8 @@ import java.util.UUID;
 public class MovieDto {
     @NotNull
     private UUID id;
+    @NotBlank
+    @Schema(example = "Inception")
     @NotBlank
     private String title;
 }
