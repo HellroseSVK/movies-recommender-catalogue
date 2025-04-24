@@ -9,7 +9,9 @@ import org.movierc.movieservice.configuration.RabbitConfig;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 @AllArgsConstructor
 public class MovieFilmPersonRoleProducer {

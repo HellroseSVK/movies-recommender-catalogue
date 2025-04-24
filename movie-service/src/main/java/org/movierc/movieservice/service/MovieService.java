@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 @AllArgsConstructor
 public class MovieService {
@@ -29,18 +30,17 @@ public class MovieService {
     private final FilmPersonRepository filmPersonRepository;
     private final MovieRepository movieRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Movie> getAllMovies() {
         return movieRepository.findAll().stream().toList();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Movie getMovieById(UUID id) {
         return movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
     }
 
-    @Transactional
     public Movie createMovie(
             Movie movie,
             List<UUID> genreIds,
@@ -55,7 +55,6 @@ public class MovieService {
     }
 
 
-    @Transactional
     public Movie updateMovie(UUID id, String title, String description, List<URL> images) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
@@ -67,7 +66,6 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    @Transactional
     public Movie deleteMovie(UUID id) {
         var movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
@@ -104,7 +102,6 @@ public class MovieService {
         movie.setFilmPersonRoles(resolvedFilmPersonRoles);
     }
 
-    @Transactional
     public Movie assignGenre(UUID movieId, UUID genreId) {
         var movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new MovieNotFoundException(movieId));
@@ -116,7 +113,6 @@ public class MovieService {
 
         return movieRepository.save(movie);
     }
-    @Transactional
     public Movie removeGenre(UUID movieId, UUID genreId) {
         var movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new MovieNotFoundException(movieId));
@@ -131,7 +127,6 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    @Transactional
     public Movie assignFilmPerson(UUID movieId, UUID personId, FilmPersonRole filmPersonRole) {
         var movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new MovieNotFoundException(movieId));
@@ -160,7 +155,6 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    @Transactional
     public Movie removeFilmPerson(UUID movieId, UUID personId, FilmPersonRole filmPersonRole) {
         var movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new MovieNotFoundException(movieId));

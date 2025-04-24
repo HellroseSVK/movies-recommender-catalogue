@@ -11,17 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Transactional
 @Service
 @AllArgsConstructor
 public class GenreService {
     private final GenreRepository genreRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Genre> getGenres() {
         return genreRepository.findAll();
     }
 
-    @Transactional
     public Genre createGenre(Genre newGenre) {
         genreRepository.findByName(newGenre.getName())
                 .ifPresent((genre) -> {
@@ -31,7 +31,6 @@ public class GenreService {
         return genreRepository.save(newGenre);
     }
 
-    @Transactional
     public Genre deleteGenre(UUID id) {
         var maybeGenre = genreRepository.findById(id);
         if (maybeGenre.isEmpty()) {
