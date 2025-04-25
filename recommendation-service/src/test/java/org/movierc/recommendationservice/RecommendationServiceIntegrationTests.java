@@ -164,7 +164,7 @@ public class RecommendationServiceIntegrationTests {
                 .build();
         var dummyMovie3 = MovieCreatedEvent.builder()
                 .id(UUID.randomUUID())
-                .title("Dummy Movie2")
+                .title("Dummy Movie3")
                 .build();
         var userId = UUID.randomUUID();
 
