@@ -34,7 +34,7 @@ class RecommendationFacadeTest {
 
 
     @Test
-    void getRecommendationsByCategoriesAboveThreshold_ReturnsMovieDtoList() {
+    void getRecommendationsByCategoriesAboveThreshold_HasMovieAboveThreshold_ReturnsMovieDtoList() {
         UUID categoryId = UUID.randomUUID();
         int threshold = 5;
         UUID movieId = UUID.randomUUID();
@@ -60,7 +60,7 @@ class RecommendationFacadeTest {
     }
 
     @Test
-    void getRecommendationsByMovieId_ReturnsMovieDtoList() {
+    void getRecommendationsByMovieId_HasRatedWithSamePerson_ReturnsMovieDtoList() {
         UUID movieId = UUID.randomUUID();
         Movie movie = new Movie(movieId, "Test Movie", Collections.emptyList());
         AverageMovieRating avgRating = new AverageMovieRating(movieId, UUID.randomUUID(), "Category", 9.0);

@@ -38,7 +38,7 @@ class RecommendationControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void getRecommendationsByCategoriesAboveThreshold_ReturnsRecommendationList() throws Exception {
+    void getRecommendationsByCategoriesAboveThreshold_HasAboveThreshold_ReturnsRecommendationList() throws Exception {
         // Setup
         UUID categoryId = UUID.randomUUID();
         MovieDto dto = MovieDto.builder()
@@ -59,7 +59,7 @@ class RecommendationControllerTest {
     }
 
     @Test
-    void getRecommendationsByMovieId_ReturnsRecommendationList() throws Exception {
+    void getRecommendationsByMovieId_ExistsWithId_ReturnsRecommendationList() throws Exception {
         // Setup
         UUID movieId = UUID.randomUUID();
         MovieDto dto = MovieDto.builder()

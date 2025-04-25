@@ -134,7 +134,7 @@ class MovieRepositoryTest {
     }
 
     @Test
-    void findRecommendationsByCategoriesAboveThreshold_AllCategoriesAboveThreshold80() {
+    void findRecommendationsByCategoriesAboveThreshold_AllCategoriesAboveThreshold80_ReturnsAboveThreshold() {
         Set<UUID> categories = Set.of(c1.getId(), c2.getId(), c3.getId());
         var result = movieRepository.findRecommendationsByCategoriesAboveThreshold(categories, 80, PageRequest.of(0, 10));
         assertEquals(2, result.size());
@@ -143,7 +143,7 @@ class MovieRepositoryTest {
     }
 
     @Test
-    void findRecommendationsByCategoriesAboveThreshold_Threshold0Pagination() {
+    void findRecommendationsByCategoriesAboveThreshold_Threshold0Pagination_ReturnsAboveThreshold() {
         Set<UUID> categories = Set.of(c1.getId(), c2.getId(), c3.getId());
         var result = movieRepository.findRecommendationsByCategoriesAboveThreshold(categories, 0, PageRequest.of(0, 2));
         assertEquals(2, result.size());
@@ -152,13 +152,13 @@ class MovieRepositoryTest {
     }
 
     @Test
-    void findRecommendationsByCategoriesAboveThreshold_EmptyCategories() {
+    void findRecommendationsByCategoriesAboveThreshold_EmptyCategories_ReturnsNothing() {
         var result = movieRepository.findRecommendationsByCategoriesAboveThreshold(Set.of(), 0, PageRequest.of(0, 10));
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void findSimilarMovies_ForMovie1() {
+    void findSimilarMovies_ForMovie1_ReturnsSimilarMovies() {
         var result = movieRepository.findSimilarMovies(m1.getId(), PageRequest.of(0, 10));
         assertEquals(3, result.size());
         assertEquals(m3.getId(), result.get(0).getId());
@@ -167,7 +167,7 @@ class MovieRepositoryTest {
     }
 
     @Test
-    void findSimilarMovies_Pagination() {
+    void findSimilarMovies_Pagination_ReturnsSimilarMovies() {
         var result = movieRepository.findSimilarMovies(m1.getId(), PageRequest.of(0, 2));
         assertEquals(2, result.size());
         assertEquals(m3.getId(), result.get(0).getId());
@@ -175,7 +175,7 @@ class MovieRepositoryTest {
     }
 
     @Test
-    void findAverageMovieRatingsByMovieIdIn_ForMovies1And2() {
+    void findAverageMovieRatingsByMovieIdIn_ForMovies1And2_ReturnsSimilarMovies() {
         Set<UUID> movieIds = Set.of(m1.getId(), m2.getId());
         List<AverageMovieRating> averages = movieRepository.findAverageMovieRatingsByMovieIdIn(movieIds, PageRequest.of(0, 10));
         assertEquals(6, averages.size());
