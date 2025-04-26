@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.movierc.shared.enm.FilmPersonRole;
 
 import java.util.UUID;
@@ -21,7 +20,6 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class FilmPersonInMovieRole {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
