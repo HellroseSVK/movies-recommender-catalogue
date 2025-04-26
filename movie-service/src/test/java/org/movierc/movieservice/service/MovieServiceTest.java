@@ -120,7 +120,7 @@ class MovieServiceTest {
 
         Movie result = movieService.createMovie(movieParam, genreIds, filmPersonRoles);
 
-        verify(movieRepository, times(2)).save(any(Movie.class));
+        verify(movieRepository, times(1)).save(any(Movie.class));
         assertNotNull(result);
         assertEquals(savedMovie.getTitle(), result.getTitle());
         assertEquals(1, result.getGenres().size());
