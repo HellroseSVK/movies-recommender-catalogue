@@ -193,7 +193,7 @@ class FilmPersonControllerTest {
         UUID id = UUID.randomUUID();
         FilmPersonUpdateDto updateDto = FilmPersonUpdateDto.builder()
                 .name("Non existent")
-                .dateOfBirth(LocalDate.now())
+                .dateOfBirth(LocalDate.of(1990, 1, 1))
                 .build();
         when(filmPersonFacade.updateFilmPerson(id, updateDto))
                 .thenThrow(new FilmPersonNotFoundException(id));

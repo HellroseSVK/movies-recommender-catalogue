@@ -21,13 +21,11 @@ public class FilmPersonCreateDto {
     @Schema(example = "John Doe")
     private String name;
     @Schema(example = "http://example.com/image1.jpg")
-    @NotNull
     private URL image;
     @Schema(example = "1980-01-01")
     @NotNull
     @Past
     private LocalDate dateOfBirth;
     @Schema(example = "John Doe is a famous actor known for his roles in various movies.")
-    @NotBlank
     private String biography;
 }

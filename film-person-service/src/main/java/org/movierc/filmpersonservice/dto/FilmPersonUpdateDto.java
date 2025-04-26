@@ -3,6 +3,7 @@ package org.movierc.filmpersonservice.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class FilmPersonUpdateDto {
     @Schema(example = "http://example.com/image1.jpg")
     private URL image;
     @NotNull
+    @Past
     @Schema(example = "1980-01-01")
     private LocalDate dateOfBirth;
     @Schema(example = "John Doe is a famous actor known for his roles in various movies.")

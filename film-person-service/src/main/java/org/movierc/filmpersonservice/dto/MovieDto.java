@@ -19,6 +19,5 @@ public class MovieDto {
     private UUID id;
     @NotBlank
     @Schema(example = "Inception")
-    @NotBlank
     private String title;
 }

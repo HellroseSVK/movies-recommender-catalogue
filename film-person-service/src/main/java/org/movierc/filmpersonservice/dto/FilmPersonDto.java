@@ -21,12 +21,10 @@ import java.util.UUID;
 public class FilmPersonDto {
     @NotNull
     private UUID id;
-    @NotBlank
     @Schema(example = "John Doe")
     @NotBlank
     private String name;
     @Schema(example = "http://example.com/image1.jpg")
-    @NotNull
     private URL image;
     @Schema(example = "1980-01-01")
     @NotNull
