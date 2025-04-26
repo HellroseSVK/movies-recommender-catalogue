@@ -49,8 +49,6 @@ public class MovieService {
         movie.setGenres(findGenres(genreIds));
         setFilmPersons(movie, filmPersonRoles);
 
-        movieRepository.save(movie);
-
         return movieRepository.save(movie);
     }
 
@@ -89,13 +87,12 @@ public class MovieService {
                 .entrySet()
                 .stream()
                 .map(filmPersonRole ->
-                        new FilmPersonInMovieRole(
-                                UUID.randomUUID(),
-                                movie,
-                                filmPersonRepository.findById(filmPersonRole.getKey())
-                                        .orElseThrow(() -> new FilmPersonNotFoundException(filmPersonRole.getKey())),
-                                filmPersonRole.getValue()
-                        )
+                        FilmPersonInMovieRole.builder()
+                                .movie(movie)
+                                .filmPerson(filmPersonRepository.findById(filmPersonRole.getKey())
+                                        .orElseThrow(() -> new FilmPersonNotFoundException(filmPersonRole.getKey())))
+                                .role(filmPersonRole.getValue())
+                                .build()
                 )
                 .collect(Collectors.toCollection(ArrayList::new));
 
@@ -145,12 +142,11 @@ public class MovieService {
             throw new FilmPersonWithThisRoleIsAlreadyAssigned(filmPerson, filmPersonRole);
         }
 
-        movie.getFilmPersonRoles().add(new FilmPersonInMovieRole(
-                UUID.randomUUID(),
-                movie,
-                filmPerson,
-                filmPersonRole
-        ));
+        movie.getFilmPersonRoles().add(FilmPersonInMovieRole.builder()
+                .movie(movie)
+                .filmPerson(filmPerson)
+                .role(filmPersonRole)
+                .build());
 
         return movieRepository.save(movie);
     }

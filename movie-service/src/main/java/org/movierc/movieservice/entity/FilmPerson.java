@@ -24,7 +24,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class FilmPerson {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String name;
     private URL image;
