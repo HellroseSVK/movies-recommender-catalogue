@@ -55,6 +55,15 @@ This project follows a **microservices architecture**, where each service is res
 - **Key Features**:
     - Recommend movies based on genre and user feedback
 
+## Architecture Overview
+### Persistence:
+Each microservice uses its own relational database.
+Data is managed through Spring Data JPA and stored in an H2 database for development and testing purposes.
+
+### Asynchronous Communication:
+Microservices communicate asynchronously via Apache ActiveMQ Artemis as the message broker.
+Events are published and consumed through message queues, enabling loose coupling and scalability across services.
+
 ## 🛠️ Build & Run Guide
 
 This project can be run in two ways: using **Docker Compose** or **Maven**.
