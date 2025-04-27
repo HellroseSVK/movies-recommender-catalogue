@@ -61,8 +61,10 @@ Each microservice uses its own relational database.
 Data is managed through Spring Data JPA and stored in an H2 database for development and testing purposes.
 
 ### Asynchronous Communication:
-Microservices communicate asynchronously via Apache ActiveMQ Artemis as the message broker.
+Microservices communicate asynchronously via RabbitMQ as the message broker.
 Events are published and consumed through message queues, enabling loose coupling and scalability across services.
+
+The feedback and recommendation microservices use batch processing to process user ratings.
 
 ## 🛠️ Build & Run Guide
 
