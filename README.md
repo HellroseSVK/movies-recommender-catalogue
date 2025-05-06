@@ -154,6 +154,9 @@ During the development of this project, we utilized AI tools for coding assistan
 
 ## Seeding databases
 
+Before seeding the database, please create a bearer token with scope `test_write` and set it as an environment variable `BEARER_TOKEN` in the terminal.
+You can create such token by authorizing in swagger UI. You can then find the token in the `Manage Active Tokens in [Masaryk University OpenID Connect](https://id.muni.cz/oidc/manage/user/tokens)
+
 To seed the databases with initial data, you can run `$ npm run seed` command in the root directory of the project or root
 directory of any service. Optionally you can also specify which service to seed from the root directory of the project
 with following commands:

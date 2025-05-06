@@ -23,6 +23,14 @@ function fetchFilmPersons() {
 
 
 (async function seedAll() {
+    const bearer = process.env.BEARER_TOKEN;
+
+    const header = {
+        headers: {
+            'Authorization': `Bearer ${bearer}`,
+        }
+    }
+
     let genres = await fetchGenres();
     console.log("Fetched genres:", genres);
     let filmPersons = await fetchFilmPersons();
@@ -41,7 +49,7 @@ function fetchFilmPersons() {
     async function createGenre() {
         const genre = generateGenre();
         try {
-            const response = await axios.post("http://localhost:8081/api/v1/genre", genre);
+            const response = await axios.post("http://localhost:8081/api/v1/genre", genre, header);
             console.log("Genre created:", response.data);
             genres.push(response.data);
         } catch (error) {
@@ -114,7 +122,7 @@ function fetchFilmPersons() {
     async function createMovie() {
         const movie = generateMovie();
         try {
-            const response = await axios.post("http://localhost:8081/api/v1/movie", movie);
+            const response = await axios.post("http://localhost:8081/api/v1/movie", movie, header);
             console.log("Movie created:", response.data);
         } catch (error) {
             console.error("Error creating movie:", error.response ? error.response.data : error.message);

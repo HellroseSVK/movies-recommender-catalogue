@@ -32,6 +32,14 @@ function fetchRatingCategories() {
 
 
 (async function seedAll() {
+    const bearer = process.env.BEARER_TOKEN;
+
+    const header = {
+        headers: {
+            'Authorization': `Bearer ${bearer}`,
+        }
+    }
+
     let users = await fetchUsers();
     console.log("Fetched users:", users);
     let movies = await fetchMovies();
@@ -53,7 +61,7 @@ function fetchRatingCategories() {
     async function createRatingCategory() {
         const ratingCategory = generateRatingCategory();
         try {
-            const response = await axios.post("http://localhost:8084/api/v1/rating/category", ratingCategory);
+            const response = await axios.post("http://localhost:8084/api/v1/rating/category", ratingCategory, header);
             console.log("Rating Category created:", response.data);
             ratingCategories.push(response.data);
         } catch (error) {
@@ -94,7 +102,7 @@ function fetchRatingCategories() {
     async function createRating() {
         const rating = generateRating();
         try {
-            const response = await axios.post("http://localhost:8084/api/v1/rating", rating);
+            const response = await axios.post("http://localhost:8084/api/v1/rating", rating, header);
             console.log("Rating created:", response.data);
         } catch (error) {
             console.error("Error creating rating:", error.response ? error.response.data : error.message);

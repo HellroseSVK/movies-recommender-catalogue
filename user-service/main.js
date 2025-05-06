@@ -4,6 +4,14 @@ const axios = require('axios').default;
 const numberOfUsers = process.argv[2] || 100;
 
 (async function seedUsers() {
+    const bearer = process.env.BEARER_TOKEN;
+
+    const header = {
+        headers: {
+            'Authorization': `Bearer ${bearer}`,
+        }
+    }
+
     function generateUser() {
         return {
             username: faker.internet.displayName(),
@@ -16,7 +24,7 @@ const numberOfUsers = process.argv[2] || 100;
     async function createUser() {
         const user = generateUser();
         try {
-            const response = await axios.post("http://localhost:8083/api/v1/user", user);
+            const response = await axios.post("http://localhost:8083/api/v1/user", user, header);
             console.log("User created:", response.data);
         } catch (error) {
             console.error("Error creating user:", error.response ? error.response.data : error.message);

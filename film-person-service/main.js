@@ -7,6 +7,13 @@ const { biographies } = require('./seed/biography.json');
 
 
 (async function seedFilmPersons() {
+    const bearer = process.env.BEARER_TOKEN;
+
+    const header = {
+        headers: {
+            'Authorization': `Bearer ${bearer}`,
+        }
+    }
 
     function generateFilmPerson() {
         const sex = faker.person.sexType();
@@ -21,7 +28,7 @@ const { biographies } = require('./seed/biography.json');
     async function createFilmPerson() {
         const filmPerson = generateFilmPerson();
         try {
-            const response = await axios.post("http://localhost:8082/api/v1/filmPerson", filmPerson);
+            const response = await axios.post("http://localhost:8082/api/v1/filmPerson", filmPerson, header);
             console.log("Film Person created:", response.data);
         } catch (error) {
             console.error("Error creating film person:", error.response ? error.response.data : error.message);
