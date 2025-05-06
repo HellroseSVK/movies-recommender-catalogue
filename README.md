@@ -154,29 +154,27 @@ During the development of this project, we utilized AI tools for coding assistan
 
 ## Seeding databases
 
-To seed the databases with initial data, you can run `$ npm seed` command in the root directory of the project or root
+To seed the databases with initial data, you can run `$ npm run seed` command in the root directory of the project or root
 directory of any service. Optionally you can also specify which service to seed from the root directory of the project
 with following commands:
 
-| Service                | URL                         |
-|------------------------|-----------------------------|
-| All services           | `$ npm seed`                |
-| Movie Service          | `$ npm seed:movie`          |
-| Film Person Service    | `$ npm seed:film-person`    |
-| User Service           | `$ npm seed:user`           |
-| Feedback Service       | `$ npm seed:feedback`       |
-| Recommendation Service | `$ npm seed:recommendation` |
+| Service                | URL                              |
+|------------------------|----------------------------------|
+| All services           | `$ npm run seed`                 |
+| Movie Service          | `$ npm run seed:movie`           |
+| Film Person Service    | `$ npm run seed:film-person`     |
+| User Service           | `$ npm run seed:user`            |
+| Feedback Service       | `$ npm run seed:feedback`        |
 
-Recommendation service does not need to be seeded as it is an aggregator of data from other services.
-To specify the amount of seed each service separately, you can use the following commands:
+To specify the amount of seeded data in each service separately, you can use the following commands:
 ```shell
-$ npm seed:movie -- <number of entries>
+$ npm run seed:movie -- <number of entries>
 ```
+This will not work when seeding all services at once.
 
-It is advised to seed the databases in the following order:
+You can either seed all services at one, or it is advised to seed the databases in the following order:
 ```
 Film Person Service --- Movie Service -|  
                         User Service  -+- Feedback Service
 ```
 
-Alternatively you can seed all services at once but first few entries might fail due to missing data in the database.
