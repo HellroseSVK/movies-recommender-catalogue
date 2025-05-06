@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.movierc.userservice.UserServiceApplication;
 import org.movierc.userservice.dto.UserCreateDto;
 import org.movierc.userservice.dto.UserDto;
 import org.movierc.userservice.dto.UserUpdateDto;
@@ -32,15 +34,21 @@ public class UserController {
     private final UserFacade userFacade;
 
     @Operation(summary = "Get all users", description = "Retrieve a list of all users.")
-    @ApiResponse(responseCode = "200", description = "List of users retrieved successfully")
+    @SecurityRequirement(name = UserServiceApplication.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of users retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - access token not provided or not valid", content = @Content()),
+    })
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userFacade.getAllUsers());
     }
 
     @Operation(summary = "Get user by ID", description = "Retrieve a specific user by their ID.")
+    @SecurityRequirement(name = UserServiceApplication.SECURITY_SCHEME_NAME, scopes = {"test_read"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - access token not provided or not valid", content = @Content()),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json"))
     })
     @GetMapping("/{id}")
@@ -49,9 +57,11 @@ public class UserController {
     }
 
     @Operation(summary = "Create new user", description = "Create a new user with the provided information.")
+    @SecurityRequirement(name = UserServiceApplication.SECURITY_SCHEME_NAME, scopes = {"test_write"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User created successfully", content = @Content(schema = @Schema(implementation = UserDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "application/problem+json"))
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - access token not provided or not valid", content = @Content()),
     })
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserCreateDto userCreateDto) {
@@ -59,8 +69,10 @@ public class UserController {
     }
 
     @Operation(summary = "Delete user", description = "Delete a user by their ID.")
+    @SecurityRequirement(name = UserServiceApplication.SECURITY_SCHEME_NAME, scopes = {"test_2"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - access token not provided or not valid", content = @Content()),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json"))
     })
     @DeleteMapping("/{id}")
@@ -70,10 +82,12 @@ public class UserController {
     }
 
     @Operation(summary = "Update user", description = "Update an existing user with new information.")
+    @SecurityRequirement(name = UserServiceApplication.SECURITY_SCHEME_NAME, scopes = {"test_1"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(mediaType = "application/problem+json")),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json"))
+            @ApiResponse(responseCode = "401", description = "Unauthorized - access token not provided or not valid", content = @Content()),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/problem+json")),
     })
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable UUID id, @RequestBody @Valid UserUpdateDto userUpdateDto) {
