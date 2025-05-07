@@ -36,7 +36,7 @@ spring:
           client-secret: fa228ebc-4d54-4cda-901e-4d6287f8b1652a9c9c44-73c9-4502-973f-bcdb4a8ec96a
 springdoc:
   swagger-ui:
-    oauth2-redirect-url: http://localhost:8083/login/oauth2/code/muni
+    oauth2-redirect-url: http://localhost:${server.port}/login/oauth2/code/muni
     path: /swagger-ui.html
     oauth:
       # Martin Kuba's testing client
@@ -48,6 +48,9 @@ springdoc:
         - test_write
         - test_1
         - test_2
+        - test_3
+        - test_4
+        - test_5
 server:
   port: "${USER_SERVICE_PORT:8083}"
 management:
