@@ -49,6 +49,16 @@ services:
       - ./config/recommendation/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
+  oauth2-client:
+    build:
+      context: ./
+      dockerfile: ./oauth2-client/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/oauth2/external-application.yml:/app/application.yaml
+    env_file: ./etc/dev.env
+
   artemis:
     image: apache/activemq-artemis:latest
     container_name: artemis-broker

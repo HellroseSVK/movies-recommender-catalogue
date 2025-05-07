@@ -14,7 +14,7 @@
 
 # TCP port for HTTP requests
 server:
-  port: 8080
+  port: "${OAUTH2_CLIENT_PORT:8080}"
 
 # OAuth client config
 spring:
