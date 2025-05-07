@@ -127,9 +127,8 @@ Once running, each service provides OpenAPI documentation at:
 |------------------------|----------------------------------------|
 | Movie Service          | http://localhost:8081/swagger-ui.html |
 | Film Person Service    | http://localhost:8082/swagger-ui.html |
-| User Service           | http://localhost:8083/swagger-ui.html |
-| Feedback Service       | http://localhost:8084/swagger-ui.html |
-| Recommendation Service | http://localhost:8085/swagger-ui.html |
+| Feedback Service       | http://localhost:8083/swagger-ui.html |
+| Recommendation Service | http://localhost:8084/swagger-ui.html |
 
 ---
 

@@ -57,7 +57,7 @@ springdoc:
         - test_4
         - test_5
 server:
-  port: "${FEEDBACK_SERVICE_PORT:8084}"
+  port: "${FEEDBACK_SERVICE_PORT:8083}"
 management:
   endpoints:
     web:

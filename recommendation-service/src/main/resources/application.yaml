@@ -60,7 +60,7 @@ batch:
   size: 50 # Number of records to process in a single batch
   timeout-ms: 500 # Timeout between messages for batch processing in milliseconds
 server:
-  port: "${RECOMMENDATION_SERVICE_PORT:8085}"
+  port: "${RECOMMENDATION_SERVICE_PORT:8084}"
 management:
   endpoints:
     web:

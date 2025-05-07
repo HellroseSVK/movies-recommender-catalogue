@@ -12,11 +12,14 @@ import org.movierc.filmpersonservice.rabbit.FilmPersonEventProducer;
 import org.movierc.filmpersonservice.rabbit.MovieEventConsumer;
 import org.movierc.filmpersonservice.repository.FilmPersonRepository;
 import org.movierc.shared.enm.FilmPersonRole;
+import org.movierc.shared.security.Authorities;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +88,11 @@ class FilmPersonServiceIntegrationTest {
 
         mockMvc.perform(post("/api/v1/filmPerson")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("John Smith"));
 
@@ -102,7 +109,11 @@ class FilmPersonServiceIntegrationTest {
 
         mockMvc.perform(put("/api/v1/filmPerson/" + filmPerson.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Janet Doe"));
 
@@ -114,7 +125,11 @@ class FilmPersonServiceIntegrationTest {
     @Test
     @Transactional
     void deleteFilmPerson_removesAndSendsEvent() throws Exception {
-        mockMvc.perform(delete("/api/v1/filmPerson/" + filmPerson.getId()))
+        mockMvc.perform(delete("/api/v1/filmPerson/" + filmPerson.getId())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isNoContent());
 
         assertThat(filmPersonRepository.findById(filmPerson.getId())).isEmpty();
@@ -124,7 +139,11 @@ class FilmPersonServiceIntegrationTest {
     @Test
     @Transactional
     void getById_returnsCorrectFilmPerson() throws Exception {
-        mockMvc.perform(get("/api/v1/filmPerson/" + filmPerson.getId()))
+        mockMvc.perform(get("/api/v1/filmPerson/" + filmPerson.getId())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL))
+                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Jane Doe"));
     }
@@ -137,7 +156,11 @@ class FilmPersonServiceIntegrationTest {
                 .dateOfBirth(LocalDate.of(1975, 7, 7))
                 .build());
 
-        mockMvc.perform(get("/api/v1/filmPerson"))
+        mockMvc.perform(get("/api/v1/filmPerson")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL))
+                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }

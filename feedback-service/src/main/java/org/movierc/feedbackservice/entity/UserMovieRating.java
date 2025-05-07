@@ -26,8 +26,7 @@ public class UserMovieRating {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @ManyToOne
-    private User user;
+    private String userId;
     @ManyToOne
     private Movie movie;
     @OneToMany(mappedBy = "rating", cascade = CascadeType.ALL)

@@ -9,9 +9,9 @@ import java.util.UUID;
 
 @Repository
 public interface UserMovieRatingRepository extends JpaRepository<UserMovieRating, UUID> {
-    Optional<UserMovieRating> findByUserIdAndMovieId(UUID userId, UUID movieId);
+    Optional<UserMovieRating> findByUserIdAndMovieId(String userId, UUID movieId);
 
-    boolean existsByUserIdAndMovieId(UUID userId, UUID movieId);
+    boolean existsByUserIdAndMovieId(String userId, UUID movieId);
 
-    void deleteByUserIdAndMovieId(UUID userId, UUID movieId);
+    void deleteByUserIdAndMovieId(String userId, UUID movieId);
 }
