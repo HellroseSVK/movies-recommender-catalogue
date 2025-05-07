@@ -15,7 +15,7 @@
 
     <packaging>pom</packaging>
 
-    <groupId>com.movierc</groupId>
+    <groupId>org.movierc</groupId>
     <artifactId>movierc-parent</artifactId>
     <version>1.0.0</version>
     <name>movierc-parent</name>
@@ -41,6 +41,7 @@
         <module>user-service</module>
         <module>feedback-service</module>
         <module>recommendation-service</module>
+        <module>oauth2-client</module>
         <module>shared</module>
     </modules>
 

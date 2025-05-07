@@ -1,4 +1,4 @@
-package cz.muni.pa165.oauth2.client;
+package org.movierc.oauth2.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
