@@ -14,9 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @AllArgsConstructor
+@Transactional
 public class MovieEventConsumer {
     private final Logger logger = LoggerFactory.getLogger(MovieEventConsumer.class);
 
@@ -32,12 +34,10 @@ public class MovieEventConsumer {
             movieRepository.save(movieEventMapper.movieCreatedEventToMovie(event));
         }
 
-        event.getFilmPersonRoles().forEach(filmPersonRole -> {
-                     filmPersonRepository.findById(filmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
-                        filmPerson.getMovies().add(filmPersonMovieAssignmentMapper.movieFilmPersonRoleToFilmPersonMovieAssignment(filmPersonRole));
-                        filmPersonRepository.save(filmPerson);
-                    });
-        });
+        event.getFilmPersonRoles().forEach(filmPersonRole -> filmPersonRepository.findById(filmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
+           filmPerson.getMovies().add(filmPersonMovieAssignmentMapper.movieFilmPersonRoleToFilmPersonMovieAssignment(filmPersonRole));
+           filmPersonRepository.save(filmPerson);
+       }));
 
         logger.info("Received Movie Created: {}", event);
     }
@@ -57,12 +57,10 @@ public class MovieEventConsumer {
             movieRepository.deleteById(event.getId());
         }
 
-        event.getFilmPersonRoles().forEach(filmPersonRole -> {
-            filmPersonRepository.findById(filmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
-                filmPerson.getMovies().removeIf(m -> m.getMovieId().equals(event.getId()));
-                filmPersonRepository.save(filmPerson);
-            });
-        });
+        event.getFilmPersonRoles().forEach(filmPersonRole -> filmPersonRepository.findById(filmPersonRole.getFilmPersonId()).ifPresent(filmPerson -> {
+            filmPerson.getMovies().removeIf(m -> m.getMovieId().equals(event.getId()));
+            filmPersonRepository.save(filmPerson);
+        }));
 
         logger.info("Received Movie Deleted: {}", event);
     }
