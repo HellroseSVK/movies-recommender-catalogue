@@ -38,7 +38,7 @@ public class UserMovieRatingFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<UserMovieRatingDto> getRatingsByUserId(UUID userId) {
+    public List<UserMovieRatingDto> getRatingsByUserId(String userId) {
         return userMovieRatingService.getRatingsByUserId(userId).stream()
                 .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .collect(Collectors.toList());
@@ -60,11 +60,7 @@ public class UserMovieRatingFacade {
         var dto = userMovieRatingCreateDtoMapper.userMovieRatingCreateDtoToUserMovieRating(userMovieRatingCreateDto);
         dto.setRatingDetails(userMovieRatingCreateDto.getRatingDetails().stream().map(ratingDetailMapper::ratingDetailCreateDtoToRatingDetail).toList());
 
-        var userMovieRating = userMovieRatingService.createRating(
-                dto,
-                userMovieRatingCreateDto.getUserId(),
-                userMovieRatingCreateDto.getMovieId()
-        );
+        var userMovieRating = userMovieRatingService.createRating(dto, userMovieRatingCreateDto.getMovieId());
 
         userMovieRatingEventProducer.sendMovieRatingCreatedEvent(
                 movieRatingMapper.userMovieRatingToMovieRatingCreatedEvent(userMovieRating)
@@ -76,15 +72,14 @@ public class UserMovieRatingFacade {
         return movieRatingMapper.userMovieRatingTouserMovieRatingDto(userMovieRating);
     }
 
-    public UserMovieRatingDto updateRating(UUID id, UserMovieRatingUpdateDto userMovieRatingUpdateDto) {
+    public UserMovieRatingDto updateRating(UUID id, UserMovieRatingUpdateDto userMovieRatingUpdateDto, String requiredUserId) {
         var userMovieRating = userMovieRatingService.updateRating(
                 id,
-                userMovieRatingUpdateDto.getUserId(),
-                userMovieRatingUpdateDto.getMovieId(),
                 userMovieRatingUpdateDto.getRatingDetails().stream()
                         .map(ratingDetailMapper::ratingDetailDtoToRatingDetail)
                         .collect(Collectors.toList()),
-                userMovieRatingUpdateDto.getComment()
+                userMovieRatingUpdateDto.getComment(),
+                requiredUserId
         );
 
         userMovieRatingEventProducer.sendMovieRatingUpdatedEvent(
@@ -97,8 +92,11 @@ public class UserMovieRatingFacade {
         return movieRatingMapper.userMovieRatingTouserMovieRatingDto(userMovieRating);
     }
 
-    public void deleteRating(UUID id) {
-        var userMovieRating = userMovieRatingService.deleteRating(id);
+    public void deleteRating(
+            UUID id,
+            String requiredUserId
+    ) {
+        var userMovieRating = userMovieRatingService.deleteRating(id, requiredUserId);
 
         userMovieRatingEventProducer.sendMovieRatingDeletedEvent(
                 movieRatingMapper.userMovieRatingToMovieRatingDeletedEvent(userMovieRating)

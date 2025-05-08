@@ -4,9 +4,9 @@
 
 The web application is a catalogue of movies of different genres.
 Each movie has a title, description, film director, and list of actors, and image(s) from the main playbill.
-Each movie is categorized in one or more genres.
-Only the administrator can create, remove and update the list of movies.
-Users can rate the movies according to different criteria
+Each movie is categorized in one or more genres. 
+Only the administrator can create, remove, and update the list of movies. 
+Users can rate the movies according to different criteria 
 The main feature of the system is that users can pick one movie and get the list
 of similar movies and movies that were liked the most by other users watching the same movie.
 
@@ -31,15 +31,7 @@ This project follows a **microservices architecture**, where each service is res
     - Store biography, date of birth, and image
     - Link film persons to movies based on their roles (actor, director, etc.)
 
-### 3. User Service 👤
-
-- **Purpose:** Manages users, their roles, and authentication.
-- **Key Features:**
-    - User registration & login
-    - Role-based access control (ADMIN, USER)
-    - Manage user profiles (update email, username)
-
-### 4. Feedback Service 📝
+### 3. Feedback Service 📝
 
 - **Purpose**: Handles both user ratings and written reviews for movies.
 - **Key Features**:
@@ -50,7 +42,7 @@ This project follows a **microservices architecture**, where each service is res
     - Retrieve user-specific feedback
     - Allow administrators to moderate reviews
 
-### 5. 🎯 Recommendation Service
+### 4. 🎯 Recommendation Service
 
 - **Purpose**: Suggests similar movies or top-rated movies based on user preferences and feedback.
 - **Key Features**:
@@ -69,6 +61,11 @@ Microservices communicate asynchronously via RabbitMQ as the message broker.
 Events are published and consumed through message queues, enabling loose coupling and scalability across services.
 
 The feedback and recommendation microservices use batch processing to process user ratings.
+
+### Authentication:
+The application uses OAuth2 for authentication and authorization. 
+Users are provided with a token upon successful login, which is required for accessing protected resources.
+Users can get JWT token by using the OAuth2 client service, using MUNI credentials.
 
 ## 🛠️ Build & Run Guide
 
@@ -97,14 +94,14 @@ are used automatically unless a different setup is needed:**
 
 #### 📊 Available Services
 
-| Service                | Port  | Description                 |
-|------------------------|-------|-----------------------------|
-| Movie Service          | 8081  | Movie and genre management  |
-| Film Person Service    | 8082  | Actors, directors, creators |
-| User Service           | 8083  | Users, login, roles         |
-| Feedback Service       | 8084  | Ratings, reviews            |
-| Recommendation Service | 8085  | Movie recommendations       |
-| RabbitMQ Management UI | 15672 | http://localhost:15672      |
+| Service                | Port  | Description                      |
+|------------------------|-------|----------------------------------|
+| OAuth2 Client          | 8080  | Oauth2 client for authentication |
+| Movie Service          | 8081  | Movie and genre management       |
+| Film Person Service    | 8082  | Actors, directors, creators      |
+| Feedback Service       | 8083  | Ratings, reviews                 |
+| Recommendation Service | 8084  | Movie recommendations            |
+| RabbitMQ Management UI | 15672 | http://localhost:15672           |
 
 ---
 
@@ -134,9 +131,8 @@ Once running, each service provides OpenAPI documentation at:
 |------------------------|---------------------------------------|
 | Movie Service          | http://localhost:8081/swagger-ui.html |
 | Film Person Service    | http://localhost:8082/swagger-ui.html |
-| User Service           | http://localhost:8083/swagger-ui.html |
-| Feedback Service       | http://localhost:8084/swagger-ui.html |
-| Recommendation Service | http://localhost:8085/swagger-ui.html |
+| Feedback Service       | http://localhost:8083/swagger-ui.html |
+| Recommendation Service | http://localhost:8084/swagger-ui.html |
 
 ---
 
@@ -166,7 +162,6 @@ with following commands:
 | All services           | `$ npm run seed`                 |
 | Movie Service          | `$ npm run seed:movie`           |
 | Film Person Service    | `$ npm run seed:film-person`     |
-| User Service           | `$ npm run seed:user`            |
 | Feedback Service       | `$ npm run seed:feedback`        |
 
 To specify the amount of seeded data in each service separately, you can use the following commands:
@@ -177,7 +172,6 @@ This will not work when seeding all services at once.
 
 You can either seed all services at one, or it is advised to seed the databases in the following order:
 ```
-Film Person Service --- Movie Service -|  
-                        User Service  -+- Feedback Service
+Film Person Service --> Movie Service --> Feedback Service 
 ```
 

@@ -6,11 +6,9 @@ import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.movierc.feedbackservice.exception.MovieNotFoundException;
 import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
 import org.movierc.feedbackservice.exception.UserMovieRatingNotFoundException;
-import org.movierc.feedbackservice.exception.UserNotFoundException;
 import org.movierc.feedbackservice.repository.MovieRepository;
 import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 import org.movierc.feedbackservice.repository.UserMovieRatingRepository;
-import org.movierc.feedbackservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +20,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserMovieRatingService {
     private final UserMovieRatingRepository userMovieRatingRepository;
-    private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final RatingCategoryRepository ratingCategoryRepository;
 
@@ -32,11 +29,7 @@ public class UserMovieRatingService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserMovieRating> getRatingsByUserId(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
-
+    public List<UserMovieRating> getRatingsByUserId(String userId) {
         return userMovieRatingRepository.findByUserId(userId);
     }
 
@@ -55,11 +48,7 @@ public class UserMovieRatingService {
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
     }
 
-    public UserMovieRating createRating(UserMovieRating userMovieRating, UUID userId, UUID movieId) {
-        userMovieRating.setUser(
-                userRepository.findById(userId)
-                        .orElseThrow(() -> new UserNotFoundException(userId))
-        );
+    public UserMovieRating createRating(UserMovieRating userMovieRating, UUID movieId) {
         userMovieRating.setMovie(
                 movieRepository.findById(movieId)
                         .orElseThrow(() -> new MovieNotFoundException(movieId))
@@ -72,28 +61,32 @@ public class UserMovieRatingService {
         return userMovieRatingRepository.save(userMovieRating);
     }
 
-    public UserMovieRating updateRating(UUID id, UUID userId, UUID movieId, List<RatingDetail> ratingDetails, String comment) {
+    public UserMovieRating updateRating(
+            UUID id,
+            List<RatingDetail> ratingDetails,
+            String comment,
+            String requiredUserId
+    ) {
         var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
 
-        userMovieRating.setUser(
-                userRepository.findById(userId)
-                        .orElseThrow(() -> new UserNotFoundException(userId))
-        );
-        userMovieRating.setMovie(
-                movieRepository.findById(movieId)
-                        .orElseThrow(() -> new UserMovieRatingNotFoundException(movieId))
-        );
+        if (requiredUserId != null && !userMovieRating.getUserId().equals(requiredUserId)) {
+            throw new UserMovieRatingNotFoundException(id);
+        }
+
         userMovieRating.setRatingDetails(ratingDetails);
         userMovieRating.setComment(comment);
-
 
         return userMovieRatingRepository.save(userMovieRating);
     }
 
-    public UserMovieRating deleteRating(UUID id) {
+    public UserMovieRating deleteRating(UUID id, String requiredUserId) {
         var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
+
+        if (requiredUserId != null && !userMovieRating.getUserId().equals(requiredUserId)) {
+            throw new UserMovieRatingNotFoundException(id);
+        }
 
         userMovieRatingRepository.deleteById(id);
 

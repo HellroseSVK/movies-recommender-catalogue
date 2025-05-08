@@ -19,22 +19,12 @@ services:
       - ./config/film-person/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
-  user-service:
-    build:
-      context: ./
-      dockerfile: ./user-service/Dockerfile
-    ports:
-      - "8083:8083"
-    volumes:
-      - ./config/user/external-application.yml:/app/application.yaml
-    env_file: ./etc/dev.env
-
   feedback-service:
     build:
       context: ./
       dockerfile: ./feedback-service/Dockerfile
     ports:
-      - "8084:8084"
+      - "8083:8083"
     volumes:
       - ./config/feedback/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
@@ -44,9 +34,19 @@ services:
       context: ./
       dockerfile: ./recommendation-service/Dockerfile
     ports:
-      - "8085:8085"
+      - "8084:8084"
     volumes:
       - ./config/recommendation/external-application.yml:/app/application.yaml
+    env_file: ./etc/dev.env
+
+  oauth2-client:
+    build:
+      context: ./
+      dockerfile: ./oauth2-client/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/oauth2/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
   artemis:
@@ -72,5 +72,30 @@ services:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: rabbit
 
+  prometheus:
+    image: bitnami/prometheus:3.3.1
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-storage:/opt/bitnami/prometheus/data
+      - ./etc/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.0.0
+    container_name: grafana
+    ports:
+      - "3000:3000" # Grafana console: http://localhost:3000 (user: admin, pass: admin)
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./etc/grafana:/etc/grafana/provisioning
+    restart: unless-stopped
+
 volumes:
   artemis-data:
+  prometheus-storage:
+  grafana-storage:
+

@@ -19,6 +19,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class MovieRatingChangedEvent implements Serializable {
     private UUID movieId;
-    private UUID userId;
+    private String userId;
     private List<RatingDetail> newRatingDetails;
 }

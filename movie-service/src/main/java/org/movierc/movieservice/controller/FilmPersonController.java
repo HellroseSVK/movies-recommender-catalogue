@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.movierc.movieservice.dto.AssignFilmPersonRoleDto;
 import org.movierc.movieservice.dto.MovieDto;
 import org.movierc.movieservice.dto.RemoveFilmPersonRoleDto;
 import org.movierc.movieservice.facade.MovieFacade;
+import org.movierc.shared.security.OAuth2;
+import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +26,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/movie/{movieId}/filmPerson")
 @RestController
 @AllArgsConstructor
+@SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_MOVIE})
 public class FilmPersonController {
     private final MovieFacade movieFacade;
 
@@ -36,6 +40,14 @@ public class FilmPersonController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successfully assigned film person to movie"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "404",
@@ -68,6 +80,14 @@ public class FilmPersonController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successfully removed filmPerson from movie"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "404",

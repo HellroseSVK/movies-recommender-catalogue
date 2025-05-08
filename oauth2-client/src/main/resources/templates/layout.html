@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" th:lang="${#locale.language}"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="SHORTCUT ICON" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/js-cookie/js.cookie.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <title th:text="${title}">Page title</title>
+</head>
+<body>
+<div class="container">
+    <h1 id="title"><a th:href="@{/}" th:text="${title}">Page title</a></h1>
+    <th:block layout:fragment="body">
+        some placeholder text in the page body
+    </th:block>
+</div>
+</body>
+</html>

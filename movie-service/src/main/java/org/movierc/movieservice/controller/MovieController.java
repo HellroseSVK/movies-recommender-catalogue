@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.movierc.movieservice.dto.MovieCreateDto;
 import org.movierc.movieservice.dto.MovieDto;
 import org.movierc.movieservice.dto.MovieUpdateDto;
 import org.movierc.movieservice.facade.MovieFacade;
+import org.movierc.shared.security.OAuth2;
+import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,11 +39,22 @@ public class MovieController {
             summary = "Get all movies",
             description = "Retrieve a list of all movies"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.READ_SCOPE})
     @ApiResponses(
             value = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successfully retrieved list of movies"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid",
+                            content = @Content()
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope",
+                            content = @Content()
                     ),
                     @ApiResponse(
                             responseCode = "500",
@@ -58,11 +72,20 @@ public class MovieController {
             summary = "Get movie by ID",
             description = "Retrieve a movie by its ID"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.READ_SCOPE})
     @ApiResponses(
             value = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successfully retrieved movie"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "404",
@@ -85,6 +108,7 @@ public class MovieController {
             summary = "Create a new movie",
             description = "Create a new movie with the provided details"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_MOVIE})
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -95,6 +119,14 @@ public class MovieController {
                             responseCode = "400",
                             description = "Invalid input data",
                             content = @Content(mediaType = "application/problem+json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "500",
@@ -115,6 +147,7 @@ public class MovieController {
             summary = "Update a movie",
             description = "Update an existing movie with the provided details"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_MOVIE})
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -125,6 +158,14 @@ public class MovieController {
                             responseCode = "400",
                             description = "Invalid input data",
                             content = @Content(mediaType = "application/problem+json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "404",
@@ -150,11 +191,20 @@ public class MovieController {
             summary = "Delete a movie",
             description = "Delete a movie by its ID"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_MOVIE})
     @ApiResponses(
             value = {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Successfully deleted movie"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "404",

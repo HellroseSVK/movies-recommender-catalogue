@@ -20,7 +20,7 @@ public class UserMovieRatingDto {
     private UUID id;
     @Valid
     @NotNull
-    private UserDto user;
+    private String userId;
     @Valid
     @NotNull
     private MovieDto movie;

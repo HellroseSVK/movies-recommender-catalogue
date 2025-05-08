@@ -6,6 +6,8 @@ import org.movierc.recommendationservice.entity.RatingCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.Set;
@@ -22,6 +24,9 @@ class RatingCategoryRepositoryTest {
 
     @Autowired
     private RatingCategoryRepository ratingCategoryRepository;
+
+    @MockitoBean
+    private SecurityFilterChain securityFilterChain;
 
     private RatingCategory category1;
     private RatingCategory category2;

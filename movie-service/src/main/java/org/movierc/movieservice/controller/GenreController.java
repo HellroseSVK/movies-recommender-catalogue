@@ -4,11 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.movierc.movieservice.dto.GenreCreateDto;
 import org.movierc.movieservice.dto.GenreDto;
 import org.movierc.movieservice.facade.GenreFacade;
+import org.movierc.shared.security.OAuth2;
+import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,11 +36,20 @@ public class GenreController {
             summary = "Get all genres",
             description = "Retrieve a list of all genres"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.READ_SCOPE})
     @ApiResponses(
             value = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successfully retrieved list of genres"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "500",
@@ -55,11 +67,20 @@ public class GenreController {
             summary = "Create a new genre",
             description = "Create a new genre"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_MOVIE})
     @ApiResponses(
             value = {
                     @ApiResponse(
                             responseCode = "201",
                             description = "Successfully created genre"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "500",
@@ -77,11 +98,20 @@ public class GenreController {
             summary = "Delete a genre",
             description = "Delete a genre by its ID"
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_MOVIE})
     @ApiResponses(
             value = {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Successfully deleted genre"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope"
                     ),
                     @ApiResponse(
                             responseCode = "404",

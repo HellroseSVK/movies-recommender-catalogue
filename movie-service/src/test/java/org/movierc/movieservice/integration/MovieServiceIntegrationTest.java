@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,11 +67,13 @@ class MovieServiceIntegrationTest {
     @MockitoBean
     private RabbitTemplate rabbitTemplate;
 
+    @MockitoBean
+    public SecurityFilterChain securityFilterChain;
+
     private FilmPerson filmPerson;
     private Movie movie;
     @Autowired
     private MovieEventProducer movieEventProducer;
-    ;
 
     @BeforeEach
     void setUp() {
