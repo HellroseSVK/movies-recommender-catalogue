@@ -35,11 +35,11 @@ spring:
 #              - eduperson_scoped_affiliation
               - test_read
               - test_write
-#              - test_1
-#              - test_2
-#              - test_3
-#              - test_4
-#              - test_5
+              - test_1
+              - test_2
+              - test_3
+              - test_4
+              - test_5
         provider:
           muni:
             # URL to which .well-know/openid-configuration will be added to download metadata
