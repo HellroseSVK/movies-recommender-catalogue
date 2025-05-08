@@ -3,7 +3,6 @@ package org.movierc.feedbackservice.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.movierc.feedbackservice.entity.Movie;
-import org.movierc.feedbackservice.entity.User;
 import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -24,17 +23,14 @@ class UserMovieRatingRepositoryTest {
     @Autowired
     private UserMovieRatingRepository userMovieRatingRepository;
 
-    private User user1, user2;
+    private String user1, user2;
     private Movie movie1, movie2;
 
     @BeforeEach
     void setUp() {
         // Create and persist User entities
-        user1 = User.builder().id(UUID.randomUUID()).build();
-        entityManager.persist(user1);
-
-        user2 = User.builder().id(UUID.randomUUID()).build();
-        entityManager.persist(user2);
+        user1 = UUID.randomUUID().toString();
+        user2 = UUID.randomUUID().toString();
 
         // Create and persist Movie entities
         movie1 = Movie.builder().id(UUID.randomUUID()).title("Movie 1").build();
@@ -46,19 +42,19 @@ class UserMovieRatingRepositoryTest {
         entityManager.flush();
         // Create and persist UserMovieRating entities
         UserMovieRating umr1 = UserMovieRating.builder()
-                .user(user1)
+                .userId(user1)
                 .movie(movie1)
                 .build();
         entityManager.persist(umr1);
 
         UserMovieRating umr2 = UserMovieRating.builder()
-                .user(user1)
+                .userId(user1)
                 .movie(movie2)
                 .build();
         entityManager.persist(umr2);
 
         UserMovieRating umr3 = UserMovieRating.builder()
-                .user(user2)
+                .userId(user2)
                 .movie(movie1)
                 .build();
         entityManager.persist(umr3);
@@ -68,9 +64,9 @@ class UserMovieRatingRepositoryTest {
 
     @Test
     void findByUserId_ShouldReturnRatingsForUser() {
-        List<UserMovieRating> ratings = userMovieRatingRepository.findByUserId(user1.getId());
+        List<UserMovieRating> ratings = userMovieRatingRepository.findByUserId(user1);
         assertEquals(2, ratings.size());
-        assertTrue(ratings.stream().allMatch(r -> r.getUser().getId().equals(user1.getId())));
+        assertTrue(ratings.stream().allMatch(r -> r.getUserId().equals(user1)));
     }
 
     @Test
@@ -82,7 +78,7 @@ class UserMovieRatingRepositoryTest {
 
     @Test
     void findByUserId_NoRatingsForUser() {
-        List<UserMovieRating> ratings = userMovieRatingRepository.findByUserId(UUID.randomUUID());
+        List<UserMovieRating> ratings = userMovieRatingRepository.findByUserId(UUID.randomUUID().toString());
         assertTrue(ratings.isEmpty());
     }
 

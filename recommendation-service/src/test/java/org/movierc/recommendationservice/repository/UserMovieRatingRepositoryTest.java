@@ -25,7 +25,7 @@ class UserMovieRatingRepositoryTest {
     private UserMovieRatingRepository userMovieRatingRepository;
 
     private Movie movie;
-    private UUID existingUserId;
+    private String existingUserId;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +35,7 @@ class UserMovieRatingRepositoryTest {
                 .build();
         entityManager.persist(movie);
 
-        existingUserId = UUID.randomUUID();
+        existingUserId = UUID.randomUUID().toString();
         UserMovieRating umr = UserMovieRating.builder()
                 .userId(existingUserId)
                 .movie(movie)
@@ -57,7 +57,7 @@ class UserMovieRatingRepositoryTest {
     @Test
     void findByUserIdAndMovieId_NonExistingRecord_ReturnsEmpty() {
         // Act
-        Optional<UserMovieRating> result = userMovieRatingRepository.findByUserIdAndMovieId(UUID.randomUUID(), movie.getId());
+        Optional<UserMovieRating> result = userMovieRatingRepository.findByUserIdAndMovieId(UUID.randomUUID().toString(), movie.getId());
         // Verify
         assertFalse(result.isPresent());
     }
@@ -73,7 +73,7 @@ class UserMovieRatingRepositoryTest {
     @Test
     void existsByUserIdAndMovieId_NonExistingRecord_ReturnsFalse() {
         // Act
-        boolean exists = userMovieRatingRepository.existsByUserIdAndMovieId(UUID.randomUUID(), movie.getId());
+        boolean exists = userMovieRatingRepository.existsByUserIdAndMovieId(UUID.randomUUID().toString(), movie.getId());
         // Verify
         assertFalse(exists);
     }

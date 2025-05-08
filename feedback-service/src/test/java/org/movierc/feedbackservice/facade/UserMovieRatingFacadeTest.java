@@ -14,11 +14,9 @@ import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.movierc.feedbackservice.mapper.MovieMapper;
 import org.movierc.feedbackservice.mapper.MovieRatingMapper;
 import org.movierc.feedbackservice.mapper.RatingDetailMapper;
-import org.movierc.feedbackservice.mapper.UserMapper;
 import org.movierc.feedbackservice.mapper.UserMovieRatingCreateDtoMapper;
 import org.movierc.feedbackservice.rabbit.UserMovieRatingEventProducer;
 import org.movierc.feedbackservice.service.UserMovieRatingService;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +42,6 @@ class UserMovieRatingFacadeTest {
     private final MovieRatingMapper movieRatingMapper = Mappers.getMapper(MovieRatingMapper.class);
     private final RatingDetailMapper ratingDetailMapper = Mappers.getMapper(RatingDetailMapper.class);
     private final UserMovieRatingCreateDtoMapper userMovieRatingCreateDtoMapper = Mappers.getMapper(UserMovieRatingCreateDtoMapper.class);
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     private final MovieMapper movieMapper = Mappers.getMapper(MovieMapper.class);
 
     @BeforeEach
@@ -58,11 +55,7 @@ class UserMovieRatingFacadeTest {
             userMovieRatingEventArtemisProducer
         );
 
-      var field = movieRatingMapper.getClass().getDeclaredField("userMapper");
-      field.setAccessible(true);
-      field.set(movieRatingMapper, userMapper);
-      field.setAccessible(false);
-      field = movieRatingMapper.getClass().getDeclaredField("movieMapper");
+      var field = movieRatingMapper.getClass().getDeclaredField("movieMapper");
       field.setAccessible(true);
       field.set(movieRatingMapper, movieMapper);
       field.setAccessible(false);
@@ -83,7 +76,7 @@ class UserMovieRatingFacadeTest {
 
     @Test
     void getRatingsByUserId_ReturnsList() {
-        UUID userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
         UserMovieRating entity = new UserMovieRating();
         entity.setComment("User-specific rating");
         when(userMovieRatingService.getRatingsByUserId(userId)).thenReturn(List.of(entity));
@@ -125,7 +118,7 @@ class UserMovieRatingFacadeTest {
 
     @Test
     void createRating_ReturnsMappedDto() {
-        UUID userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
         UUID movieId = UUID.randomUUID();
         UserMovieRatingCreateDto createDto = UserMovieRatingCreateDto.builder()
             .userId(userId)
@@ -137,7 +130,7 @@ class UserMovieRatingFacadeTest {
         UserMovieRating entity = new UserMovieRating();
         entity.setComment("New rating");
         when(userMovieRatingService.createRating(
-                any(), any(), any()
+                any(), any()
         )).thenReturn(entity);
 
         UserMovieRatingDto result = userMovieRatingFacade.createRating(createDto);
@@ -146,8 +139,7 @@ class UserMovieRatingFacadeTest {
         assertEquals("New rating", result.getComment());
         verify(userMovieRatingService).createRating(
             argThat(e -> e.getComment().equals("New rating")),
-            eq(userId),
-            eq(movieId)
+                eq(movieId)
         );
         verify(userMovieRatingEventProducer).sendMovieRatingCreatedEvent(any());
         verify(userMovieRatingEventArtemisProducer).sendMovieRatingChangedEvent(any());
@@ -156,7 +148,7 @@ class UserMovieRatingFacadeTest {
     @Test
     void updateRating_ReturnsMappedDto() {
         UUID ratingId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
         UUID movieId = UUID.randomUUID();
         UserMovieRatingUpdateDto updateDto = UserMovieRatingUpdateDto.builder()
             .userId(userId)

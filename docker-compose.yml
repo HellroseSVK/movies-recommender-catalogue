@@ -19,22 +19,12 @@ services:
       - ./config/film-person/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
 
-  user-service:
-    build:
-      context: ./
-      dockerfile: ./user-service/Dockerfile
-    ports:
-      - "8083:8083"
-    volumes:
-      - ./config/user/external-application.yml:/app/application.yaml
-    env_file: ./etc/dev.env
-
   feedback-service:
     build:
       context: ./
       dockerfile: ./feedback-service/Dockerfile
     ports:
-      - "8084:8084"
+      - "8083:8083"
     volumes:
       - ./config/feedback/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env
@@ -44,7 +34,7 @@ services:
       context: ./
       dockerfile: ./recommendation-service/Dockerfile
     ports:
-      - "8085:8085"
+      - "8084:8084"
     volumes:
       - ./config/recommendation/external-application.yml:/app/application.yaml
     env_file: ./etc/dev.env

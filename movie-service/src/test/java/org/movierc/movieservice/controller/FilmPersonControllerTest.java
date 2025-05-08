@@ -8,9 +8,13 @@ import org.movierc.movieservice.dto.MovieDto;
 import org.movierc.movieservice.dto.RemoveFilmPersonRoleDto;
 import org.movierc.movieservice.facade.MovieFacade;
 import org.movierc.shared.enm.FilmPersonRole;
+import org.movierc.shared.security.Authorities;
+import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -54,7 +58,10 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(post("/api/v1/movie/{movieId}/filmPerson", movieId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(assignDto)))
+                        .content(objectMapper.writeValueAsString(assignDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(movieId.toString())));
 
@@ -71,7 +78,10 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(post("/api/v1/movie/{movieId}/filmPerson", UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(assignDto)))
+                        .content(objectMapper.writeValueAsString(assignDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isBadRequest());
     }
 
@@ -93,7 +103,10 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(delete("/api/v1/movie/{movieId}/filmPerson", movieId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(removeDto)))
+                        .content(objectMapper.writeValueAsString(removeDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(movieId.toString())));
 
@@ -110,7 +123,10 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(delete("/api/v1/movie/{movieId}/filmPerson", UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(removeDto)))
+                        .content(objectMapper.writeValueAsString(removeDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isBadRequest());
     }
 }

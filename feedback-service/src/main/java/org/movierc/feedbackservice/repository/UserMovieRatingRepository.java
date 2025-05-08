@@ -11,6 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface UserMovieRatingRepository extends JpaRepository<UserMovieRating, UUID> {
-    List<UserMovieRating> findByUserId(UUID userId);
+    List<UserMovieRating> findByUserId(String userId);
     List<UserMovieRating> findByMovieId(UUID movieId);
 }

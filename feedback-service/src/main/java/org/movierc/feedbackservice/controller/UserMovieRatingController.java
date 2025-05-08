@@ -59,7 +59,7 @@ public class UserMovieRatingController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
-    public ResponseEntity<List<UserMovieRatingDto>> getRatingsByUserId(@PathVariable UUID userId) {
+    public ResponseEntity<List<UserMovieRatingDto>> getRatingsByUserId(@PathVariable String userId) {
         return ResponseEntity.ok(userMovieRatingFacade.getRatingsByUserId(userId));
     }
 

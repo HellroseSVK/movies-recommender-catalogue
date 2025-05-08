@@ -38,7 +38,7 @@ public class UserMovieRatingFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<UserMovieRatingDto> getRatingsByUserId(UUID userId) {
+    public List<UserMovieRatingDto> getRatingsByUserId(String userId) {
         return userMovieRatingService.getRatingsByUserId(userId).stream()
                 .map(movieRatingMapper::userMovieRatingTouserMovieRatingDto)
                 .collect(Collectors.toList());
@@ -60,11 +60,7 @@ public class UserMovieRatingFacade {
         var dto = userMovieRatingCreateDtoMapper.userMovieRatingCreateDtoToUserMovieRating(userMovieRatingCreateDto);
         dto.setRatingDetails(userMovieRatingCreateDto.getRatingDetails().stream().map(ratingDetailMapper::ratingDetailCreateDtoToRatingDetail).toList());
 
-        var userMovieRating = userMovieRatingService.createRating(
-                dto,
-                userMovieRatingCreateDto.getUserId(),
-                userMovieRatingCreateDto.getMovieId()
-        );
+        var userMovieRating = userMovieRatingService.createRating(dto, userMovieRatingCreateDto.getMovieId());
 
         userMovieRatingEventProducer.sendMovieRatingCreatedEvent(
                 movieRatingMapper.userMovieRatingToMovieRatingCreatedEvent(userMovieRating)

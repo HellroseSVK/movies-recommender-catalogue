@@ -18,7 +18,7 @@ import java.util.UUID;
 @Valid
 public class UserMovieRatingUpdateDto {
     @NotNull
-    private UUID userId;
+    private String userId;
     @NotNull
     private UUID movieId;
     @NotNull
