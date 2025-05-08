@@ -88,7 +88,6 @@ class UserMovieRatingServiceTest {
 
     @Test
     void createRating_ValidInput_ReturnsEntity() {
-        UUID userId = UUID.randomUUID();
         UUID movieId = UUID.randomUUID();
         Movie movie = new Movie();
         UserMovieRating entity = new UserMovieRating();
@@ -106,21 +105,29 @@ class UserMovieRatingServiceTest {
     @Test
     void updateRating_WhenExists_ReturnsUpdatedEntity() {
         UUID id = UUID.randomUUID();
-        var userId = UUID.randomUUID().toString();
-        UUID movieId = UUID.randomUUID();
-        Movie movie = new Movie();
         UserMovieRating entity = new UserMovieRating();
         List<RatingDetail> ratingDetails = Collections.emptyList();
         String comment = "Updated comment";
 
         when(userMovieRatingRepository.findById(id)).thenReturn(Optional.of(entity));
-        when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
         when(userMovieRatingRepository.save(entity)).thenReturn(entity);
 
-        UserMovieRating result = userMovieRatingService.updateRating(id, userId, movieId, ratingDetails, comment);
+        UserMovieRating result = userMovieRatingService.updateRating(id, ratingDetails, comment, null);
 
         assertEquals(entity, result);
         verify(userMovieRatingRepository).save(entity);
+    }
+
+    @Test
+    void updateRating_WhenExistsButWrongUser_ThrowsException() {
+        UUID id = UUID.randomUUID();
+        UserMovieRating entity = new UserMovieRating();
+        entity.setUserId("user1");
+        List<RatingDetail> ratingDetails = Collections.emptyList();
+
+        when(userMovieRatingRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.updateRating(id, ratingDetails, "No update", "user2"));
     }
 
     @Test
@@ -130,7 +137,7 @@ class UserMovieRatingServiceTest {
 
         when(userMovieRatingRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.updateRating(id, UUID.randomUUID().toString(), UUID.randomUUID(), ratingDetails, "No update"));
+        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.updateRating(id, ratingDetails, "No update", null));
         verify(userMovieRatingRepository).findById(id);
     }
 
@@ -141,11 +148,23 @@ class UserMovieRatingServiceTest {
 
         when(userMovieRatingRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        UserMovieRating result = userMovieRatingService.deleteRating(id);
+        UserMovieRating result = userMovieRatingService.deleteRating(id, null);
 
         assertEquals(entity, result);
         verify(userMovieRatingRepository).deleteById(id);
     }
+
+    @Test
+    void deleteRating_WhenExistsButWrongUser_ThrowsException() {
+        UUID id = UUID.randomUUID();
+        UserMovieRating entity = new UserMovieRating();
+        entity.setUserId("user1");
+
+        when(userMovieRatingRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.deleteRating(id, "user2"));
+    }
+
 
     @Test
     void deleteRating_WhenNotExists_ThrowsException() {
@@ -153,7 +172,7 @@ class UserMovieRatingServiceTest {
 
         when(userMovieRatingRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.deleteRating(id));
+        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.deleteRating(id, null));
         verify(userMovieRatingRepository).findById(id);
     }
 }

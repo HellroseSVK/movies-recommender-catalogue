@@ -4,10 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.movierc.feedbackservice.dto.RatingCategoryCreateDto;
 import org.movierc.feedbackservice.dto.RatingCategoryDto;
 import org.movierc.feedbackservice.facade.RatingCategoryFacade;
+import org.movierc.shared.security.OAuth2;
+import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,10 +34,21 @@ public class RatingCategoryController {
             summary = "Get all rating categories",
             description = "Get a list of all rating categories. The categories are used to rate movies."
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.READ_SCOPE})
     @ApiResponses(
             value = {
-                     @ApiResponse(responseCode = "200", description = "Rating categories retrieved successfully"),
-                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
+                    @ApiResponse(responseCode = "200", description = "Rating categories retrieved successfully"),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid",
+                            content = @Content()
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope",
+                            content = @Content()
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<List<RatingCategoryDto>> getAllRatingCategories() {
@@ -46,9 +60,20 @@ public class RatingCategoryController {
             summary = "Get rating category by id",
             description = "Get a rating category by id. The id is the unique identifier of the category."
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.READ_SCOPE})
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Rating category retrieved successfully"),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid",
+                            content = @Content()
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope",
+                            content = @Content()
+                    ),
                     @ApiResponse(responseCode = "404", description = "Rating category not found", content = @Content(mediaType = "application/problem+json")),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
@@ -62,9 +87,20 @@ public class RatingCategoryController {
             summary = "Create rating category",
             description = "Create a new rating category. The category is used to rate movies."
     )
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_RATING})
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "201", description = "Rating category created successfully"),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - access token not provided or not valid",
+                            content = @Content()
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - insufficient scope",
+                            content = @Content()
+                    ),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
             }
     )

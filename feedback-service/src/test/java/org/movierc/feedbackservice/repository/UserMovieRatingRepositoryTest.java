@@ -7,6 +7,8 @@ import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +27,9 @@ class UserMovieRatingRepositoryTest {
 
     private String user1, user2;
     private Movie movie1, movie2;
+
+    @MockitoBean
+    private SecurityFilterChain securityFilterChain;
 
     @BeforeEach
     void setUp() {

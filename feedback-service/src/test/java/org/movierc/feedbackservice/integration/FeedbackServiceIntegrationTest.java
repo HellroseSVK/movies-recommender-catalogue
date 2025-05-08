@@ -87,7 +87,9 @@ class FeedbackServiceIntegrationTest {
     @Test
     @Transactional
     void createRating_createsSuccessfully() throws Exception {
-        var request = UserMovieRatingCreateDto.builder().movieId(movie.getId()).userId(userId)
+        var request = UserMovieRatingCreateDto.builder()
+                .movieId(movie.getId())
+                .userId(userId)
                 .ratingDetails(List.of(RatingDetailCreateDto.builder().rating(45).ratingCategoryId(ratingCategory.getId()).build()))
                 .comment("Awesome!")
                 .build();
@@ -96,6 +98,7 @@ class FeedbackServiceIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .jwt(b -> b.subject(userId))
                                 .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
                 )
                 .andExpect(status().isCreated());
@@ -103,6 +106,49 @@ class FeedbackServiceIntegrationTest {
         UserMovieRating rating = userMovieRatingRepository.findByMovieId(movie.getId()).get(0);
         assertEquals(45, rating.getRatingDetails().get(0).getRating());
         verify(userMovieRatingEventProducer).sendMovieRatingCreatedEvent(any());
+    }
+
+    @Test
+    @Transactional
+    void createRating_createsSuccessfullyAsAdmin() throws Exception {
+        var request = UserMovieRatingCreateDto.builder()
+                .movieId(movie.getId())
+                .userId(userId)
+                .ratingDetails(List.of(RatingDetailCreateDto.builder().rating(45).ratingCategoryId(ratingCategory.getId()).build()))
+                .comment("Awesome!")
+                .build();
+
+        mockMvc.perform(post("/api/v1/rating")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_ALL_ADMIN)))
+                )
+                .andExpect(status().isCreated());
+
+        UserMovieRating rating = userMovieRatingRepository.findByMovieId(movie.getId()).get(0);
+        assertEquals(45, rating.getRatingDetails().get(0).getRating());
+        verify(userMovieRatingEventProducer).sendMovieRatingCreatedEvent(any());
+    }
+
+    @Test
+    @Transactional
+    void createRating_failsMovieDowNotExist() throws Exception {
+        var request = UserMovieRatingCreateDto.builder()
+                .movieId(UUID.randomUUID())
+                .userId(userId)
+                .ratingDetails(List.of(RatingDetailCreateDto.builder().rating(45).ratingCategoryId(ratingCategory.getId()).build()))
+                .comment("Awesome!")
+                .build();
+
+        mockMvc.perform(post("/api/v1/rating")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .jwt(b -> b.subject(userId))
+                                .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
+                )
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -152,7 +198,42 @@ class FeedbackServiceIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest))
                         .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .jwt(b -> b.subject(userId))
                                 .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
+                )
+                .andExpect(status().isOk());
+
+        UserMovieRating updatedRating = userMovieRatingRepository.findByMovieId(movie.getId()).getFirst();
+        assertEquals(50, updatedRating.getRatingDetails().getFirst().getRating());
+        assertEquals("Great movie!", updatedRating.getComment());
+        verify(userMovieRatingEventProducer).sendMovieRatingUpdatedEvent(any());
+    }
+
+    @Test
+    @Transactional
+    void updateRating_updatesSuccessfullyAsAdmin() throws Exception {
+        UserMovieRating rating = UserMovieRating.builder()
+                .userId(userId)
+                .movie(movie)
+                .ratingDetails(
+                        List.of(RatingDetail.builder().rating(45).ratingCategoryId(ratingCategory.getId()).build())
+                )
+                .comment("Good movie!")
+                .build();
+        userMovieRatingRepository.saveAndFlush(rating);
+
+        var updateRequest = UserMovieRatingCreateDto.builder()
+                .movieId(movie.getId())
+                .userId(userId)
+                .ratingDetails(List.of(RatingDetailCreateDto.builder().rating(50).ratingCategoryId(ratingCategory.getId()).build()))
+                .comment("Great movie!")
+                .build();
+
+        mockMvc.perform(put("/api/v1/rating/" + rating.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_ALL_ADMIN)))
                 )
                 .andExpect(status().isOk());
 
@@ -178,7 +259,33 @@ class FeedbackServiceIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rating.getId()))
                         .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .jwt(b -> b.subject(userId))
                                 .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
+                )
+                .andExpect(status().is(204));
+
+        List<UserMovieRating> ratings = userMovieRatingRepository.findByMovieId(movie.getId());
+        assertTrue(ratings.isEmpty());
+        verify(userMovieRatingEventProducer).sendMovieRatingDeletedEvent(any());
+    }
+
+    @Test
+    @Transactional
+    void deleteRating_deletesSuccessfullyAsAdmin() throws Exception {
+        UserMovieRating rating = UserMovieRating.builder()
+                .userId(userId)
+                .movie(movie)
+                .ratingDetails(
+                        List.of(RatingDetail.builder().rating(45).ratingCategoryId(ratingCategory.getId()).build())
+                )
+                .build();
+        userMovieRatingRepository.saveAndFlush(rating);
+
+        mockMvc.perform(delete("/api/v1/rating/" + rating.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rating.getId()))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_ALL_ADMIN)))
                 )
                 .andExpect(status().is(204));
 

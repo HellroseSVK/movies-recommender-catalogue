@@ -18,10 +18,6 @@ import java.util.UUID;
 @Valid
 public class UserMovieRatingUpdateDto {
     @NotNull
-    private String userId;
-    @NotNull
-    private UUID movieId;
-    @NotNull
     private List<@Valid RatingDetailDto> ratingDetails;
     @Schema(example = "This movie was amazing!")
     private String comment;
