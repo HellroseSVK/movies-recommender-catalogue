@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}" th:with="title=${#messages.msg('index.title')}">
+<body>
+<th:block layout:fragment="body">
+
+    <div th:if="${user==null}">
+        <p th:text="#{index.body.annon}">text about anonymous user</p>
+        <p><a th:href="@{/login}" th:text="#{index.body.login}">Generated list of login choices</a></p>
+        <p>
+        <form method="post" th:action="@{/oauth2/authorization/muni}">
+            <button class="btn btn-outline-primary" type="submit">Login MUNI</button>
+        </form>
+    </div>
+
+
+    <div th:if="${user}">
+        <p th:text="#{index.body.authuser}">text about authenticated user</p>
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">subject</th>
+                <td th:text="${user.subject}"></td>
+            </tr>
+            <tr>
+                <th scope="row">name</th>
+                <td th:text="${user.fullName}"></td>
+            </tr>
+            <tr>
+                <th scope="row">given_name</th>
+                <td th:text="${user.givenName}"></td>
+            </tr>
+            <tr>
+                <th scope="row">family_name</th>
+                <td th:text="${user.familyName}"></td>
+            </tr>
+            <tr>
+                <th scope="row">email</th>
+                <td th:text="${user.email}"></td>
+            </tr>
+            <tr>
+                <th scope="row">email_verified</th>
+                <td th:text="${user.emailVerified}"></td>
+            </tr>
+            <tr>
+                <th scope="row">zoneinfo</th>
+                <td th:text="${user.zoneInfo}"></td>
+            </tr>
+            <tr>
+                <th scope="row">locale</th>
+                <td th:text="${user.locale}"></td>
+            </tr>
+            <tr>
+                <th scope="row">preferred_username</th>
+                <td th:text="${user.preferredUsername}"></td>
+            </tr>
+            <tr>
+                <th scope="row">access_token</th>
+                <td>
+                    <textarea cols="30" rows="10" th:text="${accessToken}">
+                    </textarea>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">picture</th>
+                <td><img th:if="${user.picture!=null}" th:src="${user.picture}" src="" alt="image"></td>
+            </tr>
+            <tr th:if="${user.getClaimAsStringList('eduperson_scoped_affiliation')}">
+                <th scope="row">eduperson_scoped_affiliation</th>
+                <td>
+                    <ul>
+                        <li th:each="affiliation: ${user.getClaimAsStringList('eduperson_scoped_affiliation')}"
+                            th:text="${affiliation}"></li>
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div>
+            <button th:data-token="${accessToken}"
+                    onclick="navigator.clipboard.writeText(this.getAttribute('data-token'))">Copy access token to
+                clipboard
+            </button>
+        </div>
+        <th:block th:if="${issuerName=='MUNI'}">
+            <p th:text="#{index.body.authuser.link.announcement}">text for muni</p>
+        </th:block>
+        <p>
+        <form method="post" th:action="@{/logout}">
+            <button class="btn btn-outline-primary" type="submit">Logout</button>
+        </form>
+        </p>
+    </div>
+
+
+</th:block>
+</body>
+</html>
