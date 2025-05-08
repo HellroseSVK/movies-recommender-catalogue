@@ -148,11 +148,7 @@ class UserMovieRatingFacadeTest {
     @Test
     void updateRating_ReturnsMappedDto() {
         UUID ratingId = UUID.randomUUID();
-        var userId = UUID.randomUUID().toString();
-        UUID movieId = UUID.randomUUID();
         UserMovieRatingUpdateDto updateDto = UserMovieRatingUpdateDto.builder()
-            .userId(userId)
-            .movieId(movieId)
             .ratingDetails(Collections.emptyList())
             .comment("Updated rating")
             .build();
@@ -161,23 +157,19 @@ class UserMovieRatingFacadeTest {
         entity.setComment("Updated rating");
         when(userMovieRatingService.updateRating(
                 eq(ratingId),
-                eq(userId),
-                eq(movieId),
                 eq(Collections.emptyList()),
-                eq("Updated rating")
-        )).thenReturn(entity);
+                eq("Updated rating"),
+                eq(null))).thenReturn(entity);
 
-        UserMovieRatingDto result = userMovieRatingFacade.updateRating(ratingId, updateDto);
+        UserMovieRatingDto result = userMovieRatingFacade.updateRating(ratingId, updateDto, null);
 
         assertNotNull(result);
         assertEquals("Updated rating", result.getComment());
         verify(userMovieRatingService).updateRating(
             eq(ratingId),
-            eq(userId),
-            eq(movieId),
-            eq(Collections.emptyList()),
-            eq("Updated rating")
-        );
+                eq(Collections.emptyList()),
+            eq("Updated rating"),
+                eq(null));
         verify(userMovieRatingEventProducer).sendMovieRatingUpdatedEvent(any());
         verify(userMovieRatingEventArtemisProducer).sendMovieRatingChangedEvent(any());
     }
@@ -186,11 +178,11 @@ class UserMovieRatingFacadeTest {
     void deleteRating_CallsServiceAndSendsEvent() {
         UUID ratingId = UUID.randomUUID();
         UserMovieRating entity = new UserMovieRating();
-        when(userMovieRatingService.deleteRating(ratingId)).thenReturn(entity);
+        when(userMovieRatingService.deleteRating(ratingId, null)).thenReturn(entity);
 
-        userMovieRatingFacade.deleteRating(ratingId);
+        userMovieRatingFacade.deleteRating(ratingId, null);
 
-        verify(userMovieRatingService).deleteRating(ratingId);
+        verify(userMovieRatingService).deleteRating(ratingId, null);
         verify(userMovieRatingEventProducer).sendMovieRatingDeletedEvent(any());
         verify(userMovieRatingEventArtemisProducer).sendMovieRatingChangedEvent(any());
     }

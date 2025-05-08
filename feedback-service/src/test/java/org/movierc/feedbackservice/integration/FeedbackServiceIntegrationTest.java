@@ -87,7 +87,9 @@ class FeedbackServiceIntegrationTest {
     @Test
     @Transactional
     void createRating_createsSuccessfully() throws Exception {
-        var request = UserMovieRatingCreateDto.builder().movieId(movie.getId()).userId(userId)
+        var request = UserMovieRatingCreateDto.builder()
+                .movieId(movie.getId())
+                .userId(userId)
                 .ratingDetails(List.of(RatingDetailCreateDto.builder().rating(45).ratingCategoryId(ratingCategory.getId()).build()))
                 .comment("Awesome!")
                 .build();
@@ -96,6 +98,7 @@ class FeedbackServiceIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .jwt(b -> b.subject(userId))
                                 .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
                 )
                 .andExpect(status().isCreated());
@@ -152,6 +155,7 @@ class FeedbackServiceIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest))
                         .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .jwt(b -> b.subject(userId))
                                 .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
                 )
                 .andExpect(status().isOk());
@@ -178,6 +182,7 @@ class FeedbackServiceIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rating.getId()))
                         .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .jwt(b -> b.subject(userId))
                                 .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
                 )
                 .andExpect(status().is(204));

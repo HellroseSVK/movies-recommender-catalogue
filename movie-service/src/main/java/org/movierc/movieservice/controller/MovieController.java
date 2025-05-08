@@ -48,11 +48,13 @@ public class MovieController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Unauthorized - access token not provided or not valid"
+                            description = "Unauthorized - access token not provided or not valid",
+                            content = @Content()
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Forbidden - insufficient scope"
+                            description = "Forbidden - insufficient scope",
+                            content = @Content()
                     ),
                     @ApiResponse(
                             responseCode = "500",

@@ -61,25 +61,32 @@ public class UserMovieRatingService {
         return userMovieRatingRepository.save(userMovieRating);
     }
 
-    public UserMovieRating updateRating(UUID id, String userId, UUID movieId, List<RatingDetail> ratingDetails, String comment) {
+    public UserMovieRating updateRating(
+            UUID id,
+            List<RatingDetail> ratingDetails,
+            String comment,
+            String requiredUserId
+    ) {
         var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
 
-        userMovieRating.setUserId(userId);
-        userMovieRating.setMovie(
-                movieRepository.findById(movieId)
-                        .orElseThrow(() -> new UserMovieRatingNotFoundException(movieId))
-        );
+        if (requiredUserId != null && !userMovieRating.getUserId().equals(requiredUserId)) {
+            throw new UserMovieRatingNotFoundException(id);
+        }
+
         userMovieRating.setRatingDetails(ratingDetails);
         userMovieRating.setComment(comment);
-
 
         return userMovieRatingRepository.save(userMovieRating);
     }
 
-    public UserMovieRating deleteRating(UUID id) {
+    public UserMovieRating deleteRating(UUID id, String requiredUserId) {
         var userMovieRating = userMovieRatingRepository.findById(id)
                 .orElseThrow(() -> new UserMovieRatingNotFoundException(id));
+
+        if (requiredUserId != null && !userMovieRating.getUserId().equals(requiredUserId)) {
+            throw new UserMovieRatingNotFoundException(id);
+        }
 
         userMovieRatingRepository.deleteById(id);
 
