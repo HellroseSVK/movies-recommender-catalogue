@@ -91,12 +91,12 @@ docker compose up --build
 
 | Service                | Port  | Description                      |
 |------------------------|-------|----------------------------------|
+| OAuth2 Client          | 8080  | Oauth2 client for authentication |
 | Movie Service          | 8081  | Movie and genre management       |
 | Film Person Service    | 8082  | Actors, directors, creators      |
 | Feedback Service       | 8083  | Ratings, reviews                 |
 | Recommendation Service | 8084  | Movie recommendations            |
 | RabbitMQ Management UI | 15672 | http://localhost:15672           |
-| OAuth2 Client          | 8090  | Oauth2 client for authentication |
 
 ---
 
