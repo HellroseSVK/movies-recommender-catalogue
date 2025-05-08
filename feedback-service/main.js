@@ -1,15 +1,21 @@
 const {faker} = require('@faker-js/faker');
 const axios = require('axios').default;
 
-const numberOfUsers = process.argv[2] || 100;
+const numberOfFeedbacks = process.argv[2] || 100;
 
-function fetchUsers() {
-    return axios.get("http://localhost:8083/api/v1/user")
-        .then(response => response.data)
-        .catch(() => {
-            console.error("Error fetching genres, assuming empty list");
-            return [];
-        });
+function generateUser() {
+    return {
+        id: faker.helpers.rangeToNumber({ min: 1, max:  564999}) + "@muni.cz",
+    }
+}
+
+function fakeUsers() {
+    let users = [];
+    for (let i = 0; i < numberOfFeedbacks; i++) {
+        const user = generateUser();
+        users.push(user);
+    }
+    return users;
 }
 
 function fetchMovies() {
@@ -40,8 +46,8 @@ function fetchRatingCategories() {
         }
     }
 
-    let users = await fetchUsers();
-    console.log("Fetched users:", users);
+    let users = await fakeUsers();
+    console.log("Faked users:", users);
     let movies = await fetchMovies();
     console.log("Fetched movies:", movies);
     let ratingCategories = await fetchRatingCategories();
@@ -69,7 +75,7 @@ function fetchRatingCategories() {
         }
     }
 
-    for (let i = 0; i < numberOfUsers; i++) {
+    for (let i = 0; i < numberOfFeedbacks; i++) {
         await createRatingCategory();
     }
 
@@ -109,7 +115,7 @@ function fetchRatingCategories() {
         }
     }
 
-    for (let i = 0; i < numberOfUsers; i++) {
+    for (let i = 0; i < numberOfFeedbacks; i++) {
         await createRating();
     }
 })();

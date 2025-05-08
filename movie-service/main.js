@@ -1,7 +1,7 @@
 const {faker} = require('@faker-js/faker');
 const axios = require('axios').default;
 
-const numberOfUsers = process.argv[2] || 100;
+const numberOfMovies = process.argv[2] || 100;
 
 function fetchGenres() {
     return axios.get("http://localhost:8081/api/v1/genre")
@@ -57,7 +57,7 @@ function fetchFilmPersons() {
         }
     }
 
-    for (let i = 0; i < numberOfUsers; i++) {
+    for (let i = 0; i < numberOfMovies; i++) {
         await createGenre();
     }
 
@@ -129,7 +129,7 @@ function fetchFilmPersons() {
         }
     }
 
-    for (let i = 0; i < numberOfUsers; i++) {
+    for (let i = 0; i < numberOfMovies; i++) {
         await createMovie();
     }
 })();

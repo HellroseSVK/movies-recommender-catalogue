@@ -3,14 +3,12 @@
   "version": "1.0.0",
   "description": "Movie Recommender Catalogue Scripts",
   "scripts": {
-    "install:user": "cd user-service && npm install",
     "install:film-person": "cd film-person-service && npm install",
     "install:movie": "cd movie-service && npm install",
     "install:feedback": "cd feedback-service && npm install",
     "postinstall": "run-p install:*",
     "preseed": "npm install",
-    "seed": "npm run seed:user && npm run seed:film-person && npm run seed:movie && npm run seed:feedback",
-    "seed:user": "cd user-service && npm run seed",
+    "seed": "npm run seed:film-person && npm run seed:movie && npm run seed:feedback",
     "seed:film-person": "cd film-person-service && npm run seed",
     "seed:movie": "cd movie-service && npm run seed",
     "seed:feedback": "cd feedback-service && npm run seed"
