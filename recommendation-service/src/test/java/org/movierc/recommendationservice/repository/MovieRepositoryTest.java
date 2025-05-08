@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,9 @@ class MovieRepositoryTest {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @MockitoBean
+    private SecurityFilterChain securityFilterChain;
 
     private RatingCategory c1, c2, c3;
     private Movie m1, m2, m3, m4;
