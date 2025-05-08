@@ -1,0 +1,14 @@
+{
+  "name": "movie-service",
+  "version": "1.0.0",
+  "description": "Movie Service",
+  "main": "main.js",
+  "scripts": {
+    "preseed": "npm install",
+    "seed": "node main.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.7.0",
+    "axios": "^1.9.0"
+  }
+}
