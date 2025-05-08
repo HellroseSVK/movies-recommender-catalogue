@@ -3,13 +3,22 @@ package org.movierc.movieservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.movierc.movieservice.dto.*;
+import org.movierc.movieservice.dto.FilmPersonDto;
+import org.movierc.movieservice.dto.GenreDto;
+import org.movierc.movieservice.dto.MovieCreateDto;
+import org.movierc.movieservice.dto.MovieDto;
+import org.movierc.movieservice.dto.MovieFilmPersonRoleCreateDto;
+import org.movierc.movieservice.dto.MovieFilmPersonRoleDto;
+import org.movierc.movieservice.dto.MovieUpdateDto;
 import org.movierc.movieservice.exception.MovieNotFoundException;
 import org.movierc.movieservice.facade.MovieFacade;
 import org.movierc.shared.enm.FilmPersonRole;
+import org.movierc.shared.security.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -52,7 +61,10 @@ class MovieControllerTest {
         when(movieFacade.getAllMovies()).thenReturn(List.of(movieDto));
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/movie"))
+        mockMvc.perform(get("/api/v1/movie")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].title", is("Test Movie")));
@@ -66,7 +78,10 @@ class MovieControllerTest {
         when(movieFacade.getAllMovies()).thenReturn(Collections.emptyList());
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/movie"))
+        mockMvc.perform(get("/api/v1/movie")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
@@ -84,7 +99,10 @@ class MovieControllerTest {
         when(movieFacade.getMovieById(id)).thenReturn(movieDto);
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/movie/{id}", id))
+        mockMvc.perform(get("/api/v1/movie/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(id.toString())))
                 .andExpect(jsonPath("$.title", is("Test Movie")));
@@ -99,7 +117,10 @@ class MovieControllerTest {
         when(movieFacade.getMovieById(id)).thenThrow(new MovieNotFoundException(id));
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/movie/{id}", id))
+        mockMvc.perform(get("/api/v1/movie/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isNotFound());
 
         verify(movieFacade).getMovieById(id);
@@ -109,34 +130,37 @@ class MovieControllerTest {
     void createMovie_ValidInput_ReturnsCreatedMovieDto() throws Exception {
         // Setup
         MovieCreateDto createDto = MovieCreateDto.builder()
-            .title("New Movie")
-            .description("A new movie description")
-            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
-            .genres(List.of(UUID.randomUUID()))
-            .filmPersonRoles(List.of(MovieFilmPersonRoleCreateDto.builder()
-                .filmPersonId(UUID.randomUUID())
-                .role(FilmPersonRole.ACTOR)
-                .build()))
-            .build();
+                .title("New Movie")
+                .description("A new movie description")
+                .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+                .genres(List.of(UUID.randomUUID()))
+                .filmPersonRoles(List.of(MovieFilmPersonRoleCreateDto.builder()
+                        .filmPersonId(UUID.randomUUID())
+                        .role(FilmPersonRole.ACTOR)
+                        .build()))
+                .build();
         MovieDto returnedDto = MovieDto.builder()
-            .id(UUID.randomUUID())
-            .title("New Movie")
-            .description("A new movie description")
-            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
-            .genres(List.of(GenreDto.builder().id(UUID.randomUUID()).name("Action").build()))
-            .filmPersonRoles(List.of(MovieFilmPersonRoleDto.builder()
-                .filmPerson(FilmPersonDto.builder().id(UUID.randomUUID()).name("John Doe").build())
-                .role(FilmPersonRole.ACTOR)
-                .build()))
-            .build();
+                .id(UUID.randomUUID())
+                .title("New Movie")
+                .description("A new movie description")
+                .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+                .genres(List.of(GenreDto.builder().id(UUID.randomUUID()).name("Action").build()))
+                .filmPersonRoles(List.of(MovieFilmPersonRoleDto.builder()
+                        .filmPerson(FilmPersonDto.builder().id(UUID.randomUUID()).name("John Doe").build())
+                        .role(FilmPersonRole.ACTOR)
+                        .build()))
+                .build();
         when(movieFacade.createMovie(ArgumentMatchers.any(MovieCreateDto.class))).thenReturn(returnedDto);
 
         // Act & Verify
         mockMvc.perform(post("/api/v1/movie")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.title", is("New Movie")));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title", is("New Movie")));
 
         verify(movieFacade).createMovie(ArgumentMatchers.any(MovieCreateDto.class));
     }
@@ -149,7 +173,10 @@ class MovieControllerTest {
         // Act & Verify
         mockMvc.perform(post("/api/v1/movie")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isBadRequest());
     }
 
@@ -158,29 +185,32 @@ class MovieControllerTest {
         // Setup
         UUID id = UUID.randomUUID();
         MovieUpdateDto updateDto = MovieUpdateDto.builder()
-            .title("Updated Movie")
-            .description("An updated movie description")
-            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
-            .build();
+                .title("Updated Movie")
+                .description("An updated movie description")
+                .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+                .build();
         MovieDto updatedDto = MovieDto.builder()
-            .id(id)
-            .title("Updated Movie")
-            .description("An updated movie description")
-            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
-            .genres(List.of(GenreDto.builder().id(UUID.randomUUID()).name("Action").build()))
-            .filmPersonRoles(List.of(MovieFilmPersonRoleDto.builder()
-                .filmPerson(FilmPersonDto.builder().id(UUID.randomUUID()).name("John Doe").build())
-                .role(FilmPersonRole.ACTOR)
-                .build()))
-            .build();
+                .id(id)
+                .title("Updated Movie")
+                .description("An updated movie description")
+                .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+                .genres(List.of(GenreDto.builder().id(UUID.randomUUID()).name("Action").build()))
+                .filmPersonRoles(List.of(MovieFilmPersonRoleDto.builder()
+                        .filmPerson(FilmPersonDto.builder().id(UUID.randomUUID()).name("John Doe").build())
+                        .role(FilmPersonRole.ACTOR)
+                        .build()))
+                .build();
         when(movieFacade.updateMovie(id, updateDto)).thenReturn(updatedDto);
 
         // Act & Verify
         mockMvc.perform(put("/api/v1/movie/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.title", is("Updated Movie")));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is("Updated Movie")));
 
         verify(movieFacade).updateMovie(id, updateDto);
     }
@@ -190,18 +220,21 @@ class MovieControllerTest {
         // Setup
         UUID id = UUID.randomUUID();
         MovieUpdateDto updateDto = MovieUpdateDto.builder()
-            .title("Non existent")
-            .description("A non existent movie description")
-            .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
-            .build();
+                .title("Non existent")
+                .description("A non existent movie description")
+                .images(List.of(new URL("http://example.com/image1.jpg"), new URL("http://example.com/image2.jpg")))
+                .build();
         when(movieFacade.updateMovie(id, updateDto))
-            .thenThrow(new MovieNotFoundException(id));
+                .thenThrow(new MovieNotFoundException(id));
 
         // Act & Verify
         mockMvc.perform(put("/api/v1/movie/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-            .andExpect(status().isNotFound());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
+                .andExpect(status().isNotFound());
 
         verify(movieFacade).updateMovie(id, updateDto);
     }
@@ -212,7 +245,10 @@ class MovieControllerTest {
         UUID id = UUID.randomUUID();
 
         // Act & Verify
-        mockMvc.perform(delete("/api/v1/movie/{id}", id))
+        mockMvc.perform(delete("/api/v1/movie/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isNoContent());
 
         verify(movieFacade).deleteMovie(id);
@@ -225,7 +261,10 @@ class MovieControllerTest {
         doThrow(new MovieNotFoundException(id)).when(movieFacade).deleteMovie(id);
 
         // Act & Verify
-        mockMvc.perform(delete("/api/v1/movie/{id}", id))
+        mockMvc.perform(delete("/api/v1/movie/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isNotFound());
 
         verify(movieFacade).deleteMovie(id);

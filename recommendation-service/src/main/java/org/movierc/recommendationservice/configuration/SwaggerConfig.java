@@ -1,5 +1,6 @@
 package org.movierc.recommendationservice.configuration;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -11,13 +12,15 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi moviesGroupedOpenApi() {
         return GroupedOpenApi.builder()
-                .group("Movie API V1")
+                .group("Recommendation API V1")
                 .pathsToMatch("/api/v1/**")
                 .build();
     }
 
     @Bean
-    public OpenAPI openAPI() {
-        return new OpenAPI().info(new Info().title("Movie Recommender Catalogue - Recommendation service"));
+    public OpenAPI openAPI(Components securitySchemeComponent) {
+        return new OpenAPI()
+                .info(new Info().title("Movie Recommender Catalogue - Recommendation service"))
+                .components(securitySchemeComponent);
     }
 }

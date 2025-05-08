@@ -6,9 +6,12 @@ import org.movierc.feedbackservice.dto.UserMovieRatingCreateDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
 import org.movierc.feedbackservice.facade.UserMovieRatingFacade;
+import org.movierc.shared.security.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -45,21 +48,27 @@ class UserMovieRatingControllerTest {
         UserMovieRatingDto dto = new UserMovieRatingDto();
         when(userMovieRatingFacade.getAllRatings()).thenReturn(List.of(dto));
 
-        mockMvc.perform(get("/api/v1/rating"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)));
+        mockMvc.perform(get("/api/v1/rating")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
 
         verify(userMovieRatingFacade).getAllRatings();
     }
 
     @Test
     void getRatingsByUserId_ReturnsList() throws Exception {
-        UUID userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
         when(userMovieRatingFacade.getRatingsByUserId(userId)).thenReturn(List.of(new UserMovieRatingDto()));
 
-        mockMvc.perform(get("/api/v1/rating/user/{userId}", userId))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)));
+        mockMvc.perform(get("/api/v1/rating/user/{userId}", userId)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
 
         verify(userMovieRatingFacade).getRatingsByUserId(userId);
     }
@@ -69,9 +78,12 @@ class UserMovieRatingControllerTest {
         UUID movieId = UUID.randomUUID();
         when(userMovieRatingFacade.getRatingsByMovieId(movieId)).thenReturn(List.of(new UserMovieRatingDto()));
 
-        mockMvc.perform(get("/api/v1/rating/movie/{movieId}", movieId))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)));
+        mockMvc.perform(get("/api/v1/rating/movie/{movieId}", movieId)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
 
         verify(userMovieRatingFacade).getRatingsByMovieId(movieId);
     }
@@ -83,9 +95,12 @@ class UserMovieRatingControllerTest {
         dto.setId(id);
         when(userMovieRatingFacade.getRatingById(id)).thenReturn(dto);
 
-        mockMvc.perform(get("/api/v1/rating/{id}", id))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(id.toString())));
+        mockMvc.perform(get("/api/v1/rating/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(id.toString())));
 
         verify(userMovieRatingFacade).getRatingById(id);
     }
@@ -93,11 +108,11 @@ class UserMovieRatingControllerTest {
     @Test
     void createRating_ReturnsCreatedRating() throws Exception {
         UserMovieRatingCreateDto createDto = UserMovieRatingCreateDto.builder()
-            .userId(UUID.randomUUID())
-            .movieId(UUID.randomUUID())
-            .ratingDetails(Collections.emptyList())
-            .comment("Awesome!")
-            .build();
+                .userId(UUID.randomUUID().toString())
+                .movieId(UUID.randomUUID())
+                .ratingDetails(Collections.emptyList())
+                .comment("Awesome!")
+                .build();
 
         UserMovieRatingDto responseDto = new UserMovieRatingDto();
         responseDto.setId(UUID.randomUUID());
@@ -105,10 +120,13 @@ class UserMovieRatingControllerTest {
         when(userMovieRatingFacade.createRating(createDto)).thenReturn(responseDto);
 
         mockMvc.perform(post("/api/v1/rating")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id", is(responseDto.getId().toString())));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(responseDto.getId().toString())));
 
         verify(userMovieRatingFacade).createRating(createDto);
     }
@@ -117,11 +135,11 @@ class UserMovieRatingControllerTest {
     void updateRating_ReturnsUpdatedRating() throws Exception {
         UUID id = UUID.randomUUID();
         UserMovieRatingUpdateDto updateDto = UserMovieRatingUpdateDto.builder()
-            .userId(UUID.randomUUID())
-            .movieId(UUID.randomUUID())
-            .ratingDetails(Collections.emptyList())
-            .comment("Updated")
-            .build();
+                .userId(UUID.randomUUID().toString())
+                .movieId(UUID.randomUUID())
+                .ratingDetails(Collections.emptyList())
+                .comment("Updated")
+                .build();
 
         UserMovieRatingDto updated = new UserMovieRatingDto();
         updated.setId(id);
@@ -129,10 +147,13 @@ class UserMovieRatingControllerTest {
         when(userMovieRatingFacade.updateRating(id, updateDto)).thenReturn(updated);
 
         mockMvc.perform(put("/api/v1/rating/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(id.toString())));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(id.toString())));
 
         verify(userMovieRatingFacade).updateRating(id, updateDto);
     }
@@ -141,8 +162,11 @@ class UserMovieRatingControllerTest {
     void deleteRating_ReturnsNoContent() throws Exception {
         UUID id = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/v1/rating/{id}", id))
-            .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/v1/rating/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.RATING_SCOPE)))
+                )
+                .andExpect(status().isNoContent());
 
         verify(userMovieRatingFacade).deleteRating(id);
     }

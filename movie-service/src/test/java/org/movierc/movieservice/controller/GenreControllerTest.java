@@ -7,9 +7,12 @@ import org.movierc.movieservice.dto.GenreCreateDto;
 import org.movierc.movieservice.dto.GenreDto;
 import org.movierc.movieservice.exception.GenreNotFoundException;
 import org.movierc.movieservice.facade.GenreFacade;
+import org.movierc.shared.security.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -51,7 +54,10 @@ class GenreControllerTest {
         when(genreFacade.getGenres()).thenReturn(List.of(genreDto));
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/genre"))
+        mockMvc.perform(get("/api/v1/genre")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is("Action")));
@@ -65,7 +71,10 @@ class GenreControllerTest {
         when(genreFacade.getGenres()).thenReturn(Collections.emptyList());
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/genre"))
+        mockMvc.perform(get("/api/v1/genre")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
@@ -87,7 +96,10 @@ class GenreControllerTest {
         // Act & Verify
         mockMvc.perform(post("/api/v1/genre")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("Comedy")));
 
@@ -106,7 +118,10 @@ class GenreControllerTest {
         assertThrows(Exception.class, () ->
                 mockMvc.perform(post("/api/v1/genre")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(createDto)))
+                                .content(objectMapper.writeValueAsString(createDto))
+                                .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                        .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                        )
                         .andExpect(status().isInternalServerError()));
 
         verify(genreFacade).createGenre(ArgumentMatchers.any(GenreCreateDto.class));
@@ -119,7 +134,10 @@ class GenreControllerTest {
         UUID id = UUID.randomUUID();
 
         // Act & Verify
-        mockMvc.perform(delete("/api/v1/genre/{id}", id))
+        mockMvc.perform(delete("/api/v1/genre/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isNoContent());
 
         verify(genreFacade).deleteGenre(id);
@@ -132,7 +150,10 @@ class GenreControllerTest {
         doThrow(new GenreNotFoundException(id)).when(genreFacade).deleteGenre(id);
 
         // Act & Verify
-        mockMvc.perform(delete("/api/v1/genre/{id}", id))
+        mockMvc.perform(delete("/api/v1/genre/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_MOVIE)))
+                )
                 .andExpect(status().isNotFound());
 
         verify(genreFacade).deleteGenre(id);

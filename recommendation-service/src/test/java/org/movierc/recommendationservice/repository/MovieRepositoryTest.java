@@ -73,9 +73,9 @@ class MovieRepositoryTest {
         entityManager.persist(m4);
         entityManager.flush();
 
-        List<UUID> userIds = List.of(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+        var userIds = List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
-        Map<UUID, Map<Movie, List<Integer>>> ratings = new HashMap<>();
+        Map<String, Map<Movie, List<Integer>>> ratings = new HashMap<>();
         ratings.put(userIds.get(0), Map.of(
                 m1, List.of(80, 85, 90),
                 m2, List.of(90, 95, 100),
@@ -95,8 +95,8 @@ class MovieRepositoryTest {
                 m4, List.of(80, 85, 90)
         ));
 
-        for (Map.Entry<UUID, Map<Movie, List<Integer>>> userEntry : ratings.entrySet()) {
-            UUID userId = userEntry.getKey();
+        for (var userEntry : ratings.entrySet()) {
+            var userId = userEntry.getKey();
             for (Map.Entry<Movie, List<Integer>> movieEntry : userEntry.getValue().entrySet()) {
                 Movie movie = movieEntry.getKey();
                 List<Integer> vals = movieEntry.getValue();

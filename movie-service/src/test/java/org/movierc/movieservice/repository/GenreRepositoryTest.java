@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.movierc.movieservice.entity.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Optional;
 
@@ -14,6 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class GenreRepositoryTest {
     @Autowired
     private GenreRepository genreRepository;
+
+    @MockitoBean
+    public SecurityFilterChain securityFilterChain;
 
     @BeforeEach
     void setUp() {

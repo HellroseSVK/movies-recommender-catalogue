@@ -12,5 +12,6 @@ import java.util.UUID;
 )
 public interface UserMovieRatingCreateDtoMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "userId", source = "userMovieRating.userId")
     UserMovieRating userMovieRatingCreateDtoToUserMovieRating(UserMovieRatingCreateDto userMovieRating);
 }

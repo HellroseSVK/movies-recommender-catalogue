@@ -40,7 +40,7 @@ public class UserMovieRating {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID userId;
+    private String userId;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RatingDetail> ratingDetails;

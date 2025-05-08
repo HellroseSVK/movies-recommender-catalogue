@@ -12,10 +12,13 @@ import org.movierc.recommendationservice.rabbit.RatingCategoryEventConsumer;
 import org.movierc.recommendationservice.repository.MovieRepository;
 import org.movierc.recommendationservice.repository.RatingCategoryRepository;
 import org.movierc.recommendationservice.repository.UserMovieRatingRepository;
+import org.movierc.shared.security.Authorities;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -71,7 +74,10 @@ public class RecommendationServiceIntegrationTests {
 
         // Act
         mockMvc.perform(get("/api/v1/recommendation/by-categories/0")
-                        .param("categoryIds", dummyCategory.getId().toString()))
+                        .param("categoryIds", dummyCategory.getId().toString())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
@@ -84,7 +90,7 @@ public class RecommendationServiceIntegrationTests {
                 .id(UUID.randomUUID())
                 .title("Dummy Movie")
                 .build();
-        var userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
 
         var dummyCategory = RatingCategoryCreatedEvent.builder()
                 .id(UUID.randomUUID())
@@ -116,19 +122,28 @@ public class RecommendationServiceIntegrationTests {
 
         // Act & Verify
         mockMvc.perform(get("/api/v1/recommendation/by-categories/0")
-                        .param("categoryIds", dummyCategory.getId().toString()))
+                        .param("categoryIds", dummyCategory.getId().toString())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(dummyMovie.getId().toString()));
 
         mockMvc.perform(get("/api/v1/recommendation/by-categories/49")
-                        .param("categoryIds", dummyCategory.getId().toString()))
+                        .param("categoryIds", dummyCategory.getId().toString())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(dummyMovie.getId().toString()));
 
         mockMvc.perform(get("/api/v1/recommendation/by-categories/50")
-                        .param("categoryIds", dummyCategory.getId().toString()))
+                        .param("categoryIds", dummyCategory.getId().toString())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -148,7 +163,10 @@ public class RecommendationServiceIntegrationTests {
         entityManager.flush();
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/recommendation/by-movie/" + movie1.getId()))
+        mockMvc.perform(get("/api/v1/recommendation/by-movie/" + movie1.getId())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -168,7 +186,7 @@ public class RecommendationServiceIntegrationTests {
                 .id(UUID.randomUUID())
                 .title("Dummy Movie3")
                 .build();
-        var userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
 
         var dummyCategory = RatingCategoryCreatedEvent.builder()
                 .id(UUID.randomUUID())
@@ -219,12 +237,18 @@ public class RecommendationServiceIntegrationTests {
         entityManager.flush();
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/recommendation/by-movie/" + movie1.getId()))
+        mockMvc.perform(get("/api/v1/recommendation/by-movie/" + movie1.getId())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(movie2.getId().toString()));
 
-        mockMvc.perform(get("/api/v1/recommendation/by-movie/" + movie3.getId()))
+        mockMvc.perform(get("/api/v1/recommendation/by-movie/" + movie3.getId())
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL)))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }

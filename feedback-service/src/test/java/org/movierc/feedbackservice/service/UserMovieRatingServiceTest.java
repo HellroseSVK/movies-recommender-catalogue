@@ -7,13 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.movierc.feedbackservice.entity.Movie;
 import org.movierc.feedbackservice.entity.RatingDetail;
-import org.movierc.feedbackservice.entity.User;
 import org.movierc.feedbackservice.entity.UserMovieRating;
 import org.movierc.feedbackservice.exception.UserMovieRatingNotFoundException;
-import org.movierc.feedbackservice.exception.UserNotFoundException;
 import org.movierc.feedbackservice.repository.MovieRepository;
 import org.movierc.feedbackservice.repository.UserMovieRatingRepository;
-import org.movierc.feedbackservice.repository.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +24,6 @@ import static org.mockito.Mockito.*;
 class UserMovieRatingServiceTest {
 
     @Mock private UserMovieRatingRepository userMovieRatingRepository;
-    @Mock private UserRepository userRepository;
     @Mock private MovieRepository movieRepository;
 
     @InjectMocks
@@ -46,9 +42,8 @@ class UserMovieRatingServiceTest {
 
     @Test
     void getRatingsByUserId_ReturnsRatingList() {
-        UUID userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
         UserMovieRating entity = new UserMovieRating();
-        when(userRepository.existsById(userId)).thenReturn(true);
         when(userMovieRatingRepository.findByUserId(userId)).thenReturn(List.of(entity));
 
         List<UserMovieRating> result = userMovieRatingService.getRatingsByUserId(userId);
@@ -95,45 +90,30 @@ class UserMovieRatingServiceTest {
     void createRating_ValidInput_ReturnsEntity() {
         UUID userId = UUID.randomUUID();
         UUID movieId = UUID.randomUUID();
-        User user = new User();
         Movie movie = new Movie();
         UserMovieRating entity = new UserMovieRating();
         entity.setRatingDetails(Collections.emptyList());
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
         when(userMovieRatingRepository.save(entity)).thenReturn(entity);
 
-        UserMovieRating result = userMovieRatingService.createRating(entity, userId, movieId);
+        UserMovieRating result = userMovieRatingService.createRating(entity, movieId);
 
         assertEquals(entity, result);
         verify(userMovieRatingRepository).save(entity);
     }
 
     @Test
-    void createRating_UserNotFound_ThrowsException() {
-        UUID userId = UUID.randomUUID();
-        UserMovieRating entity = new UserMovieRating();
-
-      when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> userMovieRatingService.createRating(entity, userId, UUID.randomUUID()));
-        verify(userRepository).findById(userId);
-    }
-
-    @Test
     void updateRating_WhenExists_ReturnsUpdatedEntity() {
         UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        var userId = UUID.randomUUID().toString();
         UUID movieId = UUID.randomUUID();
-        User user = new User();
         Movie movie = new Movie();
         UserMovieRating entity = new UserMovieRating();
         List<RatingDetail> ratingDetails = Collections.emptyList();
         String comment = "Updated comment";
 
         when(userMovieRatingRepository.findById(id)).thenReturn(Optional.of(entity));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
         when(userMovieRatingRepository.save(entity)).thenReturn(entity);
 
@@ -150,7 +130,7 @@ class UserMovieRatingServiceTest {
 
         when(userMovieRatingRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.updateRating(id, UUID.randomUUID(), UUID.randomUUID(), ratingDetails, "No update"));
+        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.updateRating(id, UUID.randomUUID().toString(), UUID.randomUUID(), ratingDetails, "No update"));
         verify(userMovieRatingRepository).findById(id);
     }
 

@@ -8,9 +8,12 @@ import org.movierc.filmpersonservice.dto.FilmPersonDto;
 import org.movierc.filmpersonservice.dto.FilmPersonUpdateDto;
 import org.movierc.filmpersonservice.exception.FilmPersonNotFoundException;
 import org.movierc.filmpersonservice.facade.FilmPersonFacade;
+import org.movierc.shared.security.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -57,7 +60,11 @@ class FilmPersonControllerTest {
         when(filmPersonFacade.getAllFilmPersons()).thenReturn(List.of(dto));
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/filmPerson"))
+        mockMvc.perform(get("/api/v1/filmPerson")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL))
+                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is("John Doe")));
@@ -71,7 +78,11 @@ class FilmPersonControllerTest {
         when(filmPersonFacade.getAllFilmPersons()).thenReturn(Collections.emptyList());
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/filmPerson"))
+        mockMvc.perform(get("/api/v1/filmPerson")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL))
+                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
@@ -92,7 +103,11 @@ class FilmPersonControllerTest {
         when(filmPersonFacade.getFilmPersonById(id)).thenReturn(dto);
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/filmPerson/{id}", id))
+        mockMvc.perform(get("/api/v1/filmPerson/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL))
+                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(id.toString())))
                 .andExpect(jsonPath("$.name", is("Jane Doe")));
@@ -107,7 +122,11 @@ class FilmPersonControllerTest {
         when(filmPersonFacade.getFilmPersonById(id)).thenThrow(new FilmPersonNotFoundException(id));
 
         // Act & Verify
-        mockMvc.perform(get("/api/v1/filmPerson/{id}", id))
+        mockMvc.perform(get("/api/v1/filmPerson/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.READ_ALL))
+                        )
+                )
                 .andExpect(status().isNotFound());
 
         verify(filmPersonFacade).getFilmPersonById(id);
@@ -135,7 +154,11 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(post("/api/v1/filmPerson")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("New Person")));
 
@@ -154,7 +177,11 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(post("/api/v1/filmPerson")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isBadRequest());
     }
 
@@ -180,7 +207,11 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(put("/api/v1/filmPerson/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Updated Name")));
 
@@ -201,7 +232,11 @@ class FilmPersonControllerTest {
         // Act & Verify
         mockMvc.perform(put("/api/v1/filmPerson/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isNotFound());
 
         verify(filmPersonFacade).updateFilmPerson(id, updateDto);
@@ -213,7 +248,11 @@ class FilmPersonControllerTest {
         UUID id = UUID.randomUUID();
 
         // Act & Verify
-        mockMvc.perform(delete("/api/v1/filmPerson/{id}", id))
+        mockMvc.perform(delete("/api/v1/filmPerson/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isNoContent());
 
         verify(filmPersonFacade).deleteFilmPerson(id);
@@ -226,7 +265,11 @@ class FilmPersonControllerTest {
         doThrow(new FilmPersonNotFoundException(id)).when(filmPersonFacade).deleteFilmPerson(id);
 
         // Act & Verify
-        mockMvc.perform(delete("/api/v1/filmPerson/{id}", id))
+        mockMvc.perform(delete("/api/v1/filmPerson/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_SCOPE_FILM_PERSON))
+                        )
+                )
                 .andExpect(status().isNotFound());
 
         verify(filmPersonFacade).deleteFilmPerson(id);
