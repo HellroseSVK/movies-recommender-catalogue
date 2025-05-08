@@ -60,30 +60,4 @@ public class AuthHelper {
 
         return authentication.getName();
     }
-
-    /**
-     * Check if the user has one of the given scopes.
-     * @param authentication the authentication to check
-     * @param scopes the scopes to check for
-     * @return true if the user has one of the scopes, false otherwise
-     */
-    public static boolean hasAny(Authentication authentication, String... scopes) {
-        if (authentication == null) {
-            return false;
-        }
-
-        if (scopes != null) {
-            for (String scope : scopes) {
-                if (authentication
-                        .getAuthorities()
-                        .stream()
-                        .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(scope))
-                ) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 }

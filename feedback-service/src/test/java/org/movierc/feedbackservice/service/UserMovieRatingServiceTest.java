@@ -119,6 +119,18 @@ class UserMovieRatingServiceTest {
     }
 
     @Test
+    void updateRating_WhenExistsButWrongUser_ThrowsException() {
+        UUID id = UUID.randomUUID();
+        UserMovieRating entity = new UserMovieRating();
+        entity.setUserId("user1");
+        List<RatingDetail> ratingDetails = Collections.emptyList();
+
+        when(userMovieRatingRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.updateRating(id, ratingDetails, "No update", "user2"));
+    }
+
+    @Test
     void updateRating_WhenNotExists_ThrowsException() {
         UUID id = UUID.randomUUID();
         List<RatingDetail> ratingDetails = Collections.emptyList();
@@ -141,6 +153,18 @@ class UserMovieRatingServiceTest {
         assertEquals(entity, result);
         verify(userMovieRatingRepository).deleteById(id);
     }
+
+    @Test
+    void deleteRating_WhenExistsButWrongUser_ThrowsException() {
+        UUID id = UUID.randomUUID();
+        UserMovieRating entity = new UserMovieRating();
+        entity.setUserId("user1");
+
+        when(userMovieRatingRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        assertThrows(UserMovieRatingNotFoundException.class, () -> userMovieRatingService.deleteRating(id, "user2"));
+    }
+
 
     @Test
     void deleteRating_WhenNotExists_ThrowsException() {

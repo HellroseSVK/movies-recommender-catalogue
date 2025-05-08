@@ -12,6 +12,7 @@ import org.movierc.feedbackservice.dto.UserMovieRatingDto;
 import org.movierc.feedbackservice.dto.UserMovieRatingUpdateDto;
 import org.movierc.feedbackservice.facade.UserMovieRatingFacade;
 import org.movierc.shared.security.AuthHelper;
+import org.movierc.shared.security.Authorities;
 import org.movierc.shared.security.OAuth2;
 import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.http.HttpStatus;
@@ -90,7 +91,7 @@ public class UserMovieRatingController {
             @PathVariable String userId,
             Authentication authentication
     ) {
-        if (!AuthHelper.isOrHas(authentication, userId, OAuth2Scopes.WRITE_SCOPE_ADMIN)) {
+        if (!AuthHelper.isOrHas(authentication, userId, Authorities.WRITE_ALL_ADMIN)) {
             return ResponseEntity.ok(userMovieRatingFacade.getRatingsByUserId(userId));
         }
 
@@ -181,7 +182,7 @@ public class UserMovieRatingController {
             @RequestBody @Valid UserMovieRatingCreateDto userMovieRatingCreateDto,
             Authentication authentication
     ) {
-        if (!AuthHelper.isOrHas(authentication, userMovieRatingCreateDto.getUserId(), OAuth2Scopes.WRITE_SCOPE_ADMIN)) {
+        if (!AuthHelper.isOrHas(authentication, userMovieRatingCreateDto.getUserId(), Authorities.WRITE_ALL_ADMIN)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -221,7 +222,7 @@ public class UserMovieRatingController {
         UserMovieRatingDto userMovieRating = userMovieRatingFacade.updateRating(
                 id,
                 userMovieRatingUpdateDto,
-                AuthHelper.getNameUnlessHas(authentication, OAuth2Scopes.WRITE_SCOPE_ADMIN)
+                AuthHelper.getNameUnlessHas(authentication, Authorities.WRITE_ALL_ADMIN)
         );
         return ResponseEntity.status(HttpStatus.OK).body(userMovieRating);
     }
@@ -256,7 +257,7 @@ public class UserMovieRatingController {
     ) {
         userMovieRatingFacade.deleteRating(
                 id,
-                AuthHelper.getNameUnlessHas(authentication, OAuth2Scopes.WRITE_SCOPE_ADMIN)
+                AuthHelper.getNameUnlessHas(authentication, Authorities.WRITE_ALL_ADMIN)
         );
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

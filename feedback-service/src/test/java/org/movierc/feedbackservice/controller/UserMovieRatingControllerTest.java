@@ -135,6 +135,33 @@ class UserMovieRatingControllerTest {
     }
 
     @Test
+    void createRating_ReturnsCreatedRatingAsAdmin() throws Exception {
+        var userId = "test-user";
+        UserMovieRatingCreateDto createDto = UserMovieRatingCreateDto.builder()
+                .userId(userId)
+                .movieId(UUID.randomUUID())
+                .ratingDetails(Collections.emptyList())
+                .comment("Awesome!")
+                .build();
+
+        UserMovieRatingDto responseDto = new UserMovieRatingDto();
+        responseDto.setId(UUID.randomUUID());
+
+        when(userMovieRatingFacade.createRating(createDto)).thenReturn(responseDto);
+
+        mockMvc.perform(post("/api/v1/rating")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_ALL_ADMIN)))
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(responseDto.getId().toString())));
+
+        verify(userMovieRatingFacade).createRating(createDto);
+    }
+
+    @Test
     void updateRating_ReturnsUpdatedRating() throws Exception {
         var userId = "test-user";
         UUID id = UUID.randomUUID();
@@ -162,6 +189,32 @@ class UserMovieRatingControllerTest {
     }
 
     @Test
+    void updateRating_ReturnsUpdatedRatingAsAdmin() throws Exception {
+        var userId = "test-user";
+        UUID id = UUID.randomUUID();
+        UserMovieRatingUpdateDto updateDto = UserMovieRatingUpdateDto.builder()
+                .ratingDetails(Collections.emptyList())
+                .comment("Updated")
+                .build();
+
+        UserMovieRatingDto updated = new UserMovieRatingDto();
+        updated.setId(id);
+
+        when(userMovieRatingFacade.updateRating(id, updateDto, null)).thenReturn(updated);
+
+        mockMvc.perform(put("/api/v1/rating/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_ALL_ADMIN)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(id.toString())));
+
+        verify(userMovieRatingFacade).updateRating(id, updateDto, null);
+    }
+
+    @Test
     void deleteRating_ReturnsNoContent() throws Exception {
         var userId = "test-user";
         UUID id = UUID.randomUUID();
@@ -174,5 +227,19 @@ class UserMovieRatingControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(userMovieRatingFacade).deleteRating(id, userId);
+    }
+
+    @Test
+    void deleteRating_ReturnsNoContentAsAdmin() throws Exception {
+        var userId = "test-user";
+        UUID id = UUID.randomUUID();
+
+        mockMvc.perform(delete("/api/v1/rating/{id}", id)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt()
+                                .authorities(new SimpleGrantedAuthority(Authorities.WRITE_ALL_ADMIN)))
+                )
+                .andExpect(status().isNoContent());
+
+        verify(userMovieRatingFacade).deleteRating(id, null);
     }
 }
