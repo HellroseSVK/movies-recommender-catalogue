@@ -3,25 +3,6 @@ const axios = require('axios').default;
 
 const numberOfMovies = process.argv[2] || 100;
 
-function fetchGenres() {
-    return axios.get("http://localhost:8081/api/v1/genre")
-        .then(response => response.data)
-        .catch(() => {
-            console.error("Error fetching genres, assuming empty list");
-            return [];
-        });
-}
-
-function fetchFilmPersons() {
-    return axios.get("http://localhost:8082/api/v1/filmPerson")
-        .then(response => response.data)
-        .catch(() => {
-            console.error("Error fetching film persons, assuming empty list")
-            return [];
-        });
-}
-
-
 (async function seedAll() {
     const bearer = process.env.BEARER_TOKEN;
 
@@ -29,6 +10,24 @@ function fetchFilmPersons() {
         headers: {
             'Authorization': `Bearer ${bearer}`,
         }
+    }
+
+    function fetchGenres() {
+        return axios.get("http://localhost:8081/api/v1/genre", header)
+            .then(response => response.data)
+            .catch(() => {
+                console.error("Error fetching genres, assuming empty list");
+                return [];
+            });
+    }
+
+    function fetchFilmPersons() {
+        return axios.get("http://localhost:8082/api/v1/filmPerson", header)
+            .then(response => response.data)
+            .catch(() => {
+                console.error("Error fetching film persons, assuming empty list")
+                return [];
+            });
     }
 
     let genres = await fetchGenres();

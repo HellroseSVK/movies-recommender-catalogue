@@ -4,9 +4,9 @@
 
 The web application is a catalogue of movies of different genres.
 Each movie has a title, description, film director, and list of actors, and image(s) from the main playbill.
-Each movie is categorized in one or more genres. 
-Only the administrator can create, remove, and update the list of movies. 
-Users can rate the movies according to different criteria 
+Each movie is categorized in one or more genres.
+Only the administrator can create, remove, and update the list of movies.
+Users can rate the movies according to different criteria
 The main feature of the system is that users can pick one movie and get the list
 of similar movies and movies that were liked the most by other users watching the same movie.
 
@@ -63,7 +63,8 @@ Events are published and consumed through message queues, enabling loose couplin
 The feedback and recommendation microservices use batch processing to process user ratings.
 
 ### Authentication:
-The application uses OAuth2 for authentication and authorization. 
+
+The application uses OAuth2 for authentication and authorization.
 Users are provided with a token upon successful login, which is required for accessing protected resources.
 Users can get JWT token by using the OAuth2 client service, using MUNI credentials.
 
@@ -94,14 +95,16 @@ are used automatically unless a different setup is needed:**
 
 #### 📊 Available Services
 
-| Service                | Port  | Description                      |
-|------------------------|-------|----------------------------------|
-| OAuth2 Client          | 8080  | Oauth2 client for authentication |
-| Movie Service          | 8081  | Movie and genre management       |
-| Film Person Service    | 8082  | Actors, directors, creators      |
-| Feedback Service       | 8083  | Ratings, reviews                 |
-| Recommendation Service | 8084  | Movie recommendations            |
-| RabbitMQ Management UI | 15672 | http://localhost:15672           |
+| Service                | Port  | Description                                                |
+|------------------------|-------|------------------------------------------------------------|
+| Graffana               | 3000  | [Graffana](http://localhost:3000/)                         |
+| OAuth2 Client          | 8080  | [Oauth2 client for authentication](http://localhost:8080/) |
+| Movie Service          | 8081  | [Movie and genre management](http://localhost:8081/)       |
+| Film Person Service    | 8082  | [Actors, directors, creators](http://localhost:8082/)      |
+| Feedback Service       | 8083  | [Ratings, reviews](http://localhost:8083/)                 |
+| Recommendation Service | 8084  | [Movie recommendations](http://localhost:8084/)            |
+| Prometheus             | 9090  | [Prometheus](http://localhost:9090/)                       |
+| RabbitMQ               | 15672 | [RabbitMQ Management UI](http://localhost:15672)           |
 
 ---
 
@@ -136,6 +139,55 @@ Once running, each service provides OpenAPI documentation at:
 
 ---
 
+## 🌱 Seeding Guide
+
+### Setup
+
+Before seeding the database, please create a bearer token with scope `test_write` and set it as an environment variable
+`BEARER_TOKEN` in the terminal.
+
+* Windows
+
+```bash
+$env:BEARER_TOKEN = "your_token_value"
+```
+
+* Linux
+
+```bash
+export BEARER_TOKEN="your_token_value"
+```
+
+For authentication use the OAuth2 Client,
+
+To seed the databases with initial data, you can run `$ npm run seed` command in the root directory of the project or
+root
+directory of any service. Optionally you can also specify which service to seed from the root directory of the project
+with following commands:
+
+| Service             | URL                          |
+|---------------------|------------------------------|
+| All services        | `$ npm run seed`             |
+| Movie Service       | `$ npm run seed:movie`       |
+| Film Person Service | `$ npm run seed:film-person` |
+| Feedback Service    | `$ npm run seed:feedback`    |
+
+To specify the amount of seeded data in each service separately, you can use the following commands:
+
+```shell
+$ npm run seed:movie -- <number of entries>
+```
+
+This will not work when seeding all services at once.
+
+You can either seed all services at one, or it is advised to seed the databases in the following order:
+
+```
+Film Person Service --> Movie Service --> Feedback Service 
+```
+
+---
+
 ## Use case
 
 ![Use Case](https://gitlab.fi.muni.cz/xtefr/movies-recommender-catalogue/-/wikis/uploads/2adf2376ab25e987a9962c24c976aa7a/useCase.png)
@@ -147,31 +199,3 @@ Once running, each service provides OpenAPI documentation at:
 ## AI Disclosure
 
 During the development of this project, we utilized AI tools for coding assistance.
-
-## Seeding databases
-
-Before seeding the database, please create a bearer token with scope `test_write` and set it as an environment variable `BEARER_TOKEN` in the terminal.
-You can create such token by authorizing in swagger UI. You can then find the token in the `Manage Active Tokens in [Masaryk University OpenID Connect](https://id.muni.cz/oidc/manage/user/tokens)
-
-To seed the databases with initial data, you can run `$ npm run seed` command in the root directory of the project or root
-directory of any service. Optionally you can also specify which service to seed from the root directory of the project
-with following commands:
-
-| Service                | URL                              |
-|------------------------|----------------------------------|
-| All services           | `$ npm run seed`                 |
-| Movie Service          | `$ npm run seed:movie`           |
-| Film Person Service    | `$ npm run seed:film-person`     |
-| Feedback Service       | `$ npm run seed:feedback`        |
-
-To specify the amount of seeded data in each service separately, you can use the following commands:
-```shell
-$ npm run seed:movie -- <number of entries>
-```
-This will not work when seeding all services at once.
-
-You can either seed all services at one, or it is advised to seed the databases in the following order:
-```
-Film Person Service --> Movie Service --> Feedback Service 
-```
-

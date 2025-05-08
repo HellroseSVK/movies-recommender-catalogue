@@ -3,40 +3,6 @@ const axios = require('axios').default;
 
 const numberOfFeedbacks = process.argv[2] || 100;
 
-function generateUser() {
-    return {
-        id: faker.helpers.rangeToNumber({ min: 1, max:  564999}) + "@muni.cz",
-    }
-}
-
-function fakeUsers() {
-    let users = [];
-    for (let i = 0; i < numberOfFeedbacks; i++) {
-        const user = generateUser();
-        users.push(user);
-    }
-    return users;
-}
-
-function fetchMovies() {
-    return axios.get("http://localhost:8081/api/v1/movie")
-        .then(response => response.data)
-        .catch(() => {
-            console.error("Error fetching film persons, assuming empty list")
-            return [];
-        });
-}
-
-function fetchRatingCategories() {
-    return axios.get("http://localhost:8084/api/v1/rating/category")
-        .then(response => response.data)
-        .catch(() => {
-            console.error("Error fetching rating categories, assuming empty list");
-            return [];
-        });
-}
-
-
 (async function seedAll() {
     const bearer = process.env.BEARER_TOKEN;
 
@@ -44,6 +10,39 @@ function fetchRatingCategories() {
         headers: {
             'Authorization': `Bearer ${bearer}`,
         }
+    }
+
+    function generateUser() {
+        return {
+            id: faker.helpers.rangeToNumber({ min: 1, max:  564999}) + "@muni.cz",
+        }
+    }
+
+    function fakeUsers() {
+        let users = [];
+        for (let i = 0; i < numberOfFeedbacks; i++) {
+            const user = generateUser();
+            users.push(user);
+        }
+        return users;
+    }
+
+    function fetchMovies() {
+        return axios.get("http://localhost:8081/api/v1/movie", header)
+            .then(response => response.data)
+            .catch(() => {
+                console.error("Error fetching film persons, assuming empty list")
+                return [];
+            });
+    }
+
+    function fetchRatingCategories() {
+        return axios.get("http://localhost:8083/api/v1/rating/category", header)
+            .then(response => response.data)
+            .catch(() => {
+                console.error("Error fetching rating categories, assuming empty list");
+                return [];
+            });
     }
 
     let users = await fakeUsers();
@@ -67,7 +66,7 @@ function fetchRatingCategories() {
     async function createRatingCategory() {
         const ratingCategory = generateRatingCategory();
         try {
-            const response = await axios.post("http://localhost:8084/api/v1/rating/category", ratingCategory, header);
+            const response = await axios.post("http://localhost:8083/api/v1/rating/category", ratingCategory, header);
             console.log("Rating Category created:", response.data);
             ratingCategories.push(response.data);
         } catch (error) {
@@ -108,7 +107,7 @@ function fetchRatingCategories() {
     async function createRating() {
         const rating = generateRating();
         try {
-            const response = await axios.post("http://localhost:8084/api/v1/rating", rating, header);
+            const response = await axios.post("http://localhost:8083/api/v1/rating", rating, header);
             console.log("Rating created:", response.data);
         } catch (error) {
             console.error("Error creating rating:", error.response ? error.response.data : error.message);
