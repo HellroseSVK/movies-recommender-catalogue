@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.movierc.filmpersonservice.dto.FilmPersonCreateDto;
 import org.movierc.filmpersonservice.dto.FilmPersonDto;
 import org.movierc.filmpersonservice.dto.FilmPersonUpdateDto;
 import org.movierc.filmpersonservice.facade.FilmPersonFacade;
+import org.movierc.shared.security.OAuth2;
+import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +34,19 @@ public class FilmPersonController {
     private final FilmPersonFacade filmPersonFacade;
 
     @Operation(summary = "Get all film persons", description = "Returns a list of film persons.")
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.READ_SCOPE})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval"),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - access token not provided or not valid",
+                    content = @Content()
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden - insufficient scope",
+                    content = @Content()
+            ),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
     @GetMapping
@@ -41,9 +55,20 @@ public class FilmPersonController {
     }
 
     @Operation(summary = "Get film person by id", description = "Returns a single film person by id.")
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.READ_SCOPE})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval"),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - access token not provided or not valid",
+                    content = @Content()
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden - insufficient scope",
+                    content = @Content()
+            ),
             @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
@@ -53,9 +78,20 @@ public class FilmPersonController {
     }
 
     @Operation(summary = "Create film person", description = "Creates a new film person.")
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_FILM_PERSON})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Film person created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - access token not provided or not valid",
+                    content = @Content()
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden - insufficient scope",
+                    content = @Content()
+            ),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
     @PostMapping
@@ -65,9 +101,20 @@ public class FilmPersonController {
     }
 
     @Operation(summary = "Update film person", description = "Updates an existing film person by id.")
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_FILM_PERSON})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Film person updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - access token not provided or not valid",
+                    content = @Content()
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden - insufficient scope",
+                    content = @Content()
+            ),
             @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
@@ -77,9 +124,20 @@ public class FilmPersonController {
     }
 
     @Operation(summary = "Delete film person", description = "Deletes an existing film person by id.")
+    @SecurityRequirement(name = OAuth2.SECURITY_SCHEME, scopes = {OAuth2Scopes.WRITE_SCOPE_FILM_PERSON})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Film person deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content(mediaType = "application/problem+json")),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - access token not provided or not valid",
+                    content = @Content()
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden - insufficient scope",
+                    content = @Content()
+            ),
             @ApiResponse(responseCode = "404", description = "Film person not found", content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))
     })
