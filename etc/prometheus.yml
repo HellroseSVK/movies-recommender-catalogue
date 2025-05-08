@@ -9,6 +9,5 @@ scrape_configs:
       - targets:
           - 'movie-service:8081'
           - 'film-person-service:8082'
-          - 'user-service:8083'
-          - 'feedback-service:8084'
-          - 'recommendation-service:8085'
+          - 'feedback-service:8083'
+          - 'recommendation-service:8084'
