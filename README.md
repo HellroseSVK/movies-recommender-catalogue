@@ -188,6 +188,87 @@ Film Person Service --> Movie Service --> Feedback Service
 
 ---
 
+## 🧪 Load Testing Scenarios
+To verify the system's responsiveness and stability under typical user behavior, we implemented two Locust load testing scenarios. These scripts simulate realistic user flows across multiple microservices.
+
+### 📦 Requirements
+
+- Python 3.11+
+- Locust installed (`pip install locust`)
+- JWT decoding support (`pip install PyJWT`)
+
+### 🚀 Running Locust
+To start the load test interface:
+
+```bash
+locust -f locustfile.py
+```
+Then, open your web browser and navigate to `http://localhost:8089` to access the Locust web interface.
+
+### 📈 Expected Results
+
+- Identify which endpoints slow down under load
+- Verify stability of asynchronous recommendation logic
+- Ensure database queries (e.g., feedback by movie) return valid results under concurrency
+- Test real-time response behavior across interconnected services
+
+You can analyze performance metrics such as response time, throughput, and failure rates via the Locust web UI or export them for further profiling.
+
+### 🎯 Scenario 1: User Interacts with Recommendations and Ratings
+
+**Class:** `UserScenario`  
+**Goal:** Simulate a logged-in user browsing recommended movies and submitting ratings.
+
+#### 🧵 Flow
+
+1. The test client loads a pre-generated JWT token from the `BEARER_TOKEN` environment variable.
+2. It retrieves available rating categories from the Feedback Service.
+3. It fetches recommended movies based on a selected category.
+4. It submits a rating for one of the recommended movies, including a category-specific score and optional comment.
+
+#### 🧩 Services Involved
+
+- `RecommendationService` (port **8084**)
+- `FeedbackService` (port **8083**)
+
+#### ✅ Purpose
+
+This scenario represents a typical user browsing and rating movies. It puts moderate load on both:
+- the **Recommendation Service**, as recommendations are frequently fetched and parsed, and
+- the **Feedback Service**, as it handles rating submission and category logic.
+
+
+### 🎯 Scenario 2: User Views a Movie and Gets Similar Recommendations
+
+**Class:** `MovieRecommendationUser`  
+**Goal:** Simulate a user viewing details of a movie and exploring similar titles.
+
+#### 🧵 Flow
+
+1. The test client fetches a list of all movies from the Movie Service.
+2. It selects a random movie and:
+  - Retrieves the movie’s detail
+  - Retrieves ratings for the movie
+  - Retrieves a list of similar/recommended movies
+
+#### 🧩 Services Involved
+
+- `MovieService` (port **8081**)
+- `FeedbackService` (port **8083**)
+- `RecommendationService` (port **8084**)
+
+#### ✅ Purpose
+
+This scenario tests how the system performs when multiple related services are accessed in sequence — such as:
+- Viewing movie metadata,
+- Fetching aggregate or user-specific ratings, and
+- Generating movie-based recommendations.
+
+
+> 💡 **Note:** These scenarios assume the presence of seeded data and a valid bearer token. The system should be running (e.g., via Docker) before executing Locust tests.
+
+---
+
 ## Use case
 
 ![Use Case](https://gitlab.fi.muni.cz/xtefr/movies-recommender-catalogue/-/wikis/uploads/2adf2376ab25e987a9962c24c976aa7a/useCase.png)
