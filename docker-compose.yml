@@ -50,7 +50,7 @@ services:
     env_file: ./etc/dev.env
 
   artemis:
-    image: apache/activemq-artemis:latest
+    image: apache/activemq-artemis:2.41.0
     container_name: artemis-broker
     environment:
       - ARTEMIS_USERNAME=artemis
