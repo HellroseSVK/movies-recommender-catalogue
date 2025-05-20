@@ -1,15 +1,7 @@
 package org.movierc.movieservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,12 +12,19 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(
+        callSuper = false,
+        doNotUseGetters = true
+)
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Exclude
     private UUID id;
+    @Column(unique = true)
     private String name;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     private List<Movie> movies;
 }

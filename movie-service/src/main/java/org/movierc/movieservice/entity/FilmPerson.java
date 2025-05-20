@@ -1,15 +1,9 @@
 package org.movierc.movieservice.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -22,6 +16,10 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(
+        callSuper = false,
+        doNotUseGetters = true
+)
 public class FilmPerson {
     @Id
     private UUID id;
@@ -29,6 +27,7 @@ public class FilmPerson {
     private URL image;
     private LocalDate dateOfBirth;
     private String biography;
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "filmPerson")
     private List<FilmPersonInMovieRole> filmPersonRoles;
 }

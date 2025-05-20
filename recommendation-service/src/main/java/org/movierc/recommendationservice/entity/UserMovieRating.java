@@ -11,11 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,17 +30,24 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(
+        callSuper = false,
+        doNotUseGetters = true
+)
 public class UserMovieRating {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Exclude
     private UUID id;
 
     @Column(nullable = false)
     private String userId;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RatingDetail> ratingDetails;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Movie movie;
 }

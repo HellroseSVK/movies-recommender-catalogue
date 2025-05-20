@@ -5,11 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.movierc.shared.enm.FilmPersonRole;
 
 import java.util.UUID;
@@ -20,12 +16,19 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(
+        callSuper = false,
+        doNotUseGetters = true
+)
 public class FilmPersonInMovieRole {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Exclude
     private UUID id;
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     private Movie movie;
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     private FilmPerson filmPerson;
     private FilmPersonRole role;

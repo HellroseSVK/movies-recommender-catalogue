@@ -1,11 +1,7 @@
 package org.movierc.filmpersonservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.movierc.shared.enm.FilmPersonRole;
 
 import java.util.UUID;
@@ -16,15 +12,21 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(
+        callSuper = false,
+        doNotUseGetters = true
+)
 public class FilmPersonMovieAssignment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Exclude
     private UUID id;
 
     private UUID movieId;
 
     private FilmPersonRole role;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     private FilmPerson filmPerson;
 }
