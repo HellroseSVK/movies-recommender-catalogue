@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,11 +21,16 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(
+        callSuper = false,
+        doNotUseGetters = true
+)
 public class RatingCategory {
     @Id
     private UUID id;
     private String name;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "ratingCategory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RatingDetail> ratingDetails;
 }

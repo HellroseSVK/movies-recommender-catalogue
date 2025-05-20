@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,23 +27,34 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(
+        callSuper = false,
+        doNotUseGetters = true
+)
 public class Movie {
-    @ElementCollection
-    private final Map<UUID, Integer> totalRatings = new HashMap<>();
-    @ElementCollection
-    private final Map<UUID, Integer> numbersOfRatings = new HashMap<>();
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Exclude
     private UUID id;
     private String title;
     private String description;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "movies", fetch = FetchType.LAZY)
     private List<Genre> genres;
+
     @ElementCollection
     private List<URL> images;
+
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
     private List<FilmPersonInMovieRole> filmPersonRoles;
+
+    @ElementCollection
+    private final Map<UUID, Integer> totalRatings = new HashMap<>();
+
+    @ElementCollection
+    private final Map<UUID, Integer> numbersOfRatings = new HashMap<>();
 
     public float getRating() {
         int totalRating = totalRatings.values().stream().mapToInt(Integer::intValue).sum();

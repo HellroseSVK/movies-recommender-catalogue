@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("without-artemis")
-public class RecommendationServiceIntegrationTests {
+public class RecommendationServiceIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

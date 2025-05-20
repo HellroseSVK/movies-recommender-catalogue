@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.movierc.recommendationservice.dto.MovieDto;
-import org.movierc.recommendationservice.entity.Movie;
 import org.movierc.recommendationservice.entity.AverageMovieRating;
+import org.movierc.recommendationservice.entity.Movie;
 import org.movierc.recommendationservice.mapper.MovieMapper;
 import org.movierc.recommendationservice.service.RecommendationService;
 
@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

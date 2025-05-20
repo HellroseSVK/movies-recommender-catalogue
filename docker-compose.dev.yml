@@ -1,7 +1,7 @@
 name: movie_recommender_catalogue_dev
 services:
   artemis:
-    image: apache/activemq-artemis:latest
+    image: apache/activemq-artemis:2.41.0
     container_name: artemis-broker
     restart: unless-stopped
     environment:

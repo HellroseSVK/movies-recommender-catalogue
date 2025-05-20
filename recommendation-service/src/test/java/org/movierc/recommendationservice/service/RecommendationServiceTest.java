@@ -1,9 +1,9 @@
 package org.movierc.recommendationservice.service;
 
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.movierc.recommendationservice.entity.AverageMovieRating;
 import org.movierc.recommendationservice.entity.Movie;
 import org.movierc.recommendationservice.entity.RatingCategory;
@@ -11,16 +11,20 @@ import org.movierc.recommendationservice.exception.CategoryNotFoundException;
 import org.movierc.recommendationservice.exception.MovieNotFoundException;
 import org.movierc.recommendationservice.repository.MovieRepository;
 import org.movierc.recommendationservice.repository.RatingCategoryRepository;
-import org.movierc.recommendationservice.service.RecommendationService;
 import org.springframework.data.domain.Pageable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RecommendationServiceTest {

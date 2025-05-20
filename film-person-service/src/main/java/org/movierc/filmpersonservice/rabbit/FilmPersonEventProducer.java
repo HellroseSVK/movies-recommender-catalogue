@@ -7,8 +7,6 @@ import org.movierc.events.filmPerson.FilmPersonDeletedEvent;
 import org.movierc.events.filmPerson.FilmPersonEvents;
 import org.movierc.events.filmPerson.FilmPersonUpdatedEvent;
 import org.movierc.filmpersonservice.configuration.RabbitConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;

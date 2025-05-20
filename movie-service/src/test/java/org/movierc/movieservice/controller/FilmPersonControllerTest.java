@@ -9,7 +9,6 @@ import org.movierc.movieservice.dto.RemoveFilmPersonRoleDto;
 import org.movierc.movieservice.facade.MovieFacade;
 import org.movierc.shared.enm.FilmPersonRole;
 import org.movierc.shared.security.Authorities;
-import org.movierc.shared.security.OAuth2Scopes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;

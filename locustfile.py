@@ -1,7 +1,8 @@
+import jwt
 import os
 import random
-import jwt
 from locust import HttpUser, task, between
+
 
 class UserScenario(HttpUser):
     host = ""
