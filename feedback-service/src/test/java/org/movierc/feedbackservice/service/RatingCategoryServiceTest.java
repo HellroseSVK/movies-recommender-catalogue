@@ -3,12 +3,11 @@ package org.movierc.feedbackservice.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.movierc.feedbackservice.entity.RatingCategory;
-import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
-import org.movierc.feedbackservice.rabbit.RatingCategoryEventProducer;
-import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.movierc.feedbackservice.entity.RatingCategory;
+import org.movierc.feedbackservice.exception.RatingCategoryNotFoundException;
+import org.movierc.feedbackservice.repository.RatingCategoryRepository;
 
 import java.util.List;
 import java.util.Optional;

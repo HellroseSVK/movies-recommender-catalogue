@@ -1,7 +1,7 @@
 package org.movierc.movieservice;
 
-import org.movierc.shared.security.Authorities;
 import org.movierc.shared.config.SharedConfig;
+import org.movierc.shared.security.Authorities;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
